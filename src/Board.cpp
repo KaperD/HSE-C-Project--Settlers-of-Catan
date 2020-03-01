@@ -166,42 +166,48 @@ int Hexagon::getNum() const {
 }
 
 bool Hexagon::canBuild(PlayerNum cur_player) const {
+    (void)cur_player;
     return false;
 }
 
-Catan::Catan() : field(11, std::vector<Cell*>(21)) {
+Catan::Catan() : field(11), players(3) {
     srand(time (NULL));
+    for (int i = 0; i < 11; ++i) {
+        for (int k = 0; k < 21; ++k) {
+            field[i].push_back(nullptr);
+        }
+    }
 
-    players.push_back(new Player(PlayerNum::GAMER1));
-    players.push_back(new Player(PlayerNum::GAMER2));
-    players.push_back(new Player(PlayerNum::GAMER3));
+    players[0] = std::unique_ptr<Player>(new Player(PlayerNum::GAMER1));
+    players[1] = std::unique_ptr<Player>(new Player(PlayerNum::GAMER2));
+    players[2] = std::unique_ptr<Player>(new Player(PlayerNum::GAMER3));
     cur_player = PlayerNum::GAMER1;
 
-    for (int i = 0; i < 2; i++) {
-        for (int j = 0; j < 4; j++) {
-            field[i][j] = nullptr;
-            field[i][20 - j] = nullptr;
-            field[10 - i][j] = nullptr;
-            field[10 - i][20 - j] = nullptr;
-        }
-    }
-    for (int i = 2; i < 4; i++) {
-        for (int j = 0; j < 2; j++) {
-            field[i][j] = nullptr;
-            field[10 - i][j] = nullptr;
-            field[i][20 - j] = nullptr;
-            field[10 - i][20 - j] = nullptr;
-        }
-    }
+//    for (int i = 0; i < 2; i++) {
+//        for (int j = 0; j < 4; j++) {
+//            field[i][j] = nullptr;
+//            field[i][20 - j] = nullptr;
+//            field[10 - i][j] = nullptr;
+//            field[10 - i][20 - j] = nullptr;
+//        }
+//    }
+//    for (int i = 2; i < 4; i++) {
+//        for (int j = 0; j < 2; j++) {
+//            field[i][j] = nullptr;
+//            field[10 - i][j] = nullptr;
+//            field[i][20 - j] = nullptr;
+//            field[10 - i][20 - j] = nullptr;
+//        }
+//    }
 
     for (int i = 1; i < 4; i += 2) {
         for (int j = 5 - i; j < 16 + i; j++) {
             if ((j + i - 1) % 4 == 0) {
-                field[i][j] = new Road(i, j, false, false);
-                field[10 - i][j] = new Road(10 - i, j, false, false);
+                field[i][j] = std::unique_ptr<Road>(new Road(i, j, false, false));
+                field[10 - i][j] = std::unique_ptr<Road>(new Road(10 - i, j, false, false));
             } else if (j % 2 == 0) {
-                field[i][j] = new Hexagon(i, j);
-                field[10 - i][j] = new Hexagon(10 - i, j);
+                field[i][j] = std::unique_ptr<Hexagon>(new Hexagon(i, j));
+                field[10 - i][j] = std::unique_ptr<Hexagon>(new Hexagon(10 - i, j));
             } else {
                 field[i][j] = nullptr;
                 field[10 - i][j] = nullptr;
@@ -213,11 +219,11 @@ Catan::Catan() : field(11, std::vector<Cell*>(21)) {
         bool direction = false;
         for (int j = 4 - i; j < 17 + i; j++) {
             if (j % 2 == 0) {
-                field[i][j] = new Vertex(i, j, direction);
-                field[10 - i][j] = new Vertex(10 - i, j, !direction);
+                field[i][j] = std::unique_ptr<Vertex>(new Vertex(i, j, direction));
+                field[10 - i][j] = std::unique_ptr<Vertex>(new Vertex(10 - i, j, !direction));
             } else {
-                field[i][j] = new Road(i, j, true, direction);
-                field[10 - i][j] = new Road(10 - i, j, true, !direction);
+                field[i][j] = std::unique_ptr<Road>(new Road(i, j, true, direction));
+                field[10 - i][j] = std::unique_ptr<Road>(new Road(10 - i, j, true, !direction));
                 direction = !direction;
             }
         }
@@ -225,9 +231,9 @@ Catan::Catan() : field(11, std::vector<Cell*>(21)) {
 
     for (int j = 0; j < 21; j++) {
         if (j % 4 == 0) {
-            field[5][j] = new Road(5, j, false, false);
+            field[5][j] = std::unique_ptr<Road>(new Road(5, j, false, false));
         } else if (j % 2 == 0) {
-            field[5][j] = new Hexagon(5, j);
+            field[5][j] = std::unique_ptr<Hexagon>(new Hexagon(5, j));
         } else {
             field[5][j] = nullptr;
         }
@@ -279,6 +285,6 @@ Catan::Catan() : field(11, std::vector<Cell*>(21)) {
     //debug end
 }
 
-Cell* Catan::getFieldCell(int x, int y) const {
+const std::unique_ptr<Cell>& Catan::getFieldCell(int x, int y) const {
     return field[x][y];
 }
