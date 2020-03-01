@@ -2,6 +2,7 @@
 #define _BOARDS_H_
 
 #include <vector>
+#include <memory>
 
 const int BOARDSIZE = 5;
 const int TERRITORIESNUM = 6;
@@ -100,11 +101,11 @@ public:
     void setSettle(Settlement s, int vertex_num);
     void setRoad(PlayerNum player, int );
 
-    Cell* getFieldCell(int x, int y) const;
+    const std::unique_ptr<Cell>& getFieldCell(int x, int y) const;
 
 private:
-    std::vector<std::vector<Cell*>> field;
-    std::vector<Player*> players;
+    std::vector<std::vector<std::unique_ptr<Cell>>> field;
+    std::vector<std::unique_ptr<Player>> players;
     PlayerNum cur_player;
 };
 
