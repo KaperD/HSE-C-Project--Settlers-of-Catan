@@ -24,10 +24,10 @@ vpath %.proto $(PROTOS_PATH)
 
 all: system-check client server
 
-client: catan.pb.o catan.grpc.pb.o client.o
+client: game.pb.o game.grpc.pb.o client.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
-server: catan.pb.o catan.grpc.pb.o server.o
+server: game.pb.o game.grpc.pb.o server.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 %.grpc.pb.cc: %.proto

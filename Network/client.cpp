@@ -6,7 +6,7 @@
 #include <grpcpp/client_context.h>
 #include <grpcpp/create_channel.h>
 #include <grpcpp/security/credentials.h>
-#include "catan.grpc.pb.h"
+#include "game.grpc.pb.h"
 
 using grpc::Channel;
 using grpc::ClientContext;
@@ -15,15 +15,15 @@ using grpc::ClientReaderWriter;
 using grpc::ClientWriter;
 using grpc::Status;
 
-using catan::EventType;
-using catan::Void;
-using catan::OrderInfo;
-using catan::Event;
-using catan::Card;
-using catan::Dice;
-using catan::Market;
-using catan::Build;
-using catan::Player;
+using game::EventType;
+using game::Void;
+using game::OrderInfo;
+using game::Event;
+using game::Card;
+using game::Dice;
+using game::Market;
+using game::Build;
+using game::Player;
 
 class GameClient {
 public:
@@ -31,7 +31,7 @@ public:
 
 
 private:
-    std::unique_ptr<Catan::Stub> stub_;
+    std::unique_ptr<::game::Network::Stub> stub_;
 };
 
 int main(int argc, char** argv) {

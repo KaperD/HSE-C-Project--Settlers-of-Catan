@@ -2,21 +2,21 @@
 #define CLIENT_H
 
 #include <grpcpp/create_channel.h>
-#include "catan.grpc.pb.h"
+#include "game.grpc.pb.h"
 
 class GameClient {
 public:
     GameClient(std::shared_ptr<Channel> channel);
 
-    catan::OrderInfo Register();
+    game::OrderInfo Register();
 
-    void SendEvent(const ::catan::Event& event);
+    void SendEvent(const ::game::Event& event);
 
-    void GetEvents(const ::catan::Player& player);
+    void GetEvents(const ::game::Player& player);
 
 
 private:
-    std::unique_ptr<Catan::Stub> stub_;
+    std::unique_ptr<::game::Network::Stub> stub_;
 };
 
 #endif // CLIENT_H
