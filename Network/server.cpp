@@ -31,25 +31,25 @@ using game::Network;
 
 class EventQueue final {
 public:
-    EventQueue() : hasElement(false) { }
+    EventQueue() : hasElement_(false) { }
 
     void push(Event event) {
-        std::unique_lock<std::mutex> locker(lockqueue);
-        events.push(std::move(event));
-        hasElement.store(true);
-        queuecheck.notify_all();
+        std::unique_lock<std::mutex> locker(lockqueue_);
+        events_.push(std::move(event));
+        hasElement_.store(true);
+        queuecheck_.notify_all();
     }
 
     Event front() {
-        std::unique_lock<std::mutex> locker(lockqueue);
-        while (!hasElement.load()) {
-            queuecheck.wait(locker);
+        std::unique_lock<std::mutex> locker(lockqueue_);
+        while (!hasElement_.load()) {
+            queuecheck_.wait(locker);
         }
-        if (events.size() > 0) {
-            Event event = events.front();
-            events.pop();
-            if (events.size() == 0) {
-                hasElement.store(false);
+        if (events_.size() > 0) {
+            Event event = events_.front();
+            events_.pop();
+            if (events_.size() == 0) {
+                hasElement_.store(false);
             }
             return event;
         } else {
@@ -62,10 +62,10 @@ public:
 
 
 private:
-    std::queue<Event> events;
-    std::mutex lockqueue;
-    std::condition_variable queuecheck;
-    std::atomic_bool hasElement;
+    std::queue<Event> events_;
+    std::mutex lockqueue_;
+    std::condition_variable queuecheck_;
+    std::atomic_bool hasElement_;
 };
  
 
