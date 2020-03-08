@@ -52,7 +52,7 @@ void GameClient::SendEvent(const Event& event) {
 
     Status status = stub_->SendEvent(&context, event, &empty);
     if (!status.ok()) {
-        //throw NetworkException("Can't SendEvent");
+        throw NetworkException("Can't SendEvent");
     }
 }
 
@@ -76,8 +76,9 @@ using std::cout;
 int main() {
     GameClient game(grpc::CreateChannel("68.183.30.230:50051",
                           grpc::InsecureChannelCredentials()));
-    game.Register();
-    
+    OrderInfo i = game.Register();
+    cout << "My id is: " << i.id() << std::endl;
+
     int c = 0;
     int type = 0;
     while (cin >> c) {
@@ -86,7 +87,7 @@ int main() {
             cout << "Type: ";
             cin >> type;
             event.set_type((EventType)type);
-            event.mutable_player()->set_playerid(2);
+            event.set_playerid(i.id());
             game.SendEvent(event);
         } else if (c == 2) {
             Event event = game.GetEvent();

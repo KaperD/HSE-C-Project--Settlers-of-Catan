@@ -35,7 +35,7 @@ message Player {
 
 message Event {
     EventType type = 1;
-    Player player = 2;
+    int32 playerId = 2;
     
     oneof EventInfo {
         Card cardInfo = 3;

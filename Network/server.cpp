@@ -1,6 +1,4 @@
 #include <iostream>
-#include <chrono>
-#include <thread>
 #include <mutex>
 #include <queue>
 #include <exception>
@@ -58,6 +56,13 @@ public:
         }
     }
 
+    void clear() {
+        std::unique_lock<std::mutex> locker(lockqueue_);
+        while (events_.size() > 0) {
+            events_.pop();
+        }
+    }
+
 
 
 
@@ -71,39 +76,44 @@ private:
 
 class GameServerImpl final : public Network::Service {
 public:
-    GameServerImpl() : events_(4) { }
+    GameServerImpl() : events_(4), currentPlayerNumber_(0) { }
 private:
-    Status Register(::grpc::ServerContext* context, const Void* request,
-                    OrderInfo* response) override {
-        response->set_id(1);
+    Status Register(::grpc::ServerContext* context, const Void* request, OrderInfo* response) override {
+        int id = currentPlayerNumber_++;
+        if (id > 2) {
+            id %= 3;
+            events_[id].clear();
+        }
+        id %= 3;
+        response->set_id(id);
         response->set_numberofplayers(3);
+
         return Status::OK;
     }
 
     Status SendEvent(::grpc::ServerContext* context, const Event* request, Void* response) override {
         Event event = *request;
-        if (event.has_player()) {
-            int playerid = event.mutable_player()->playerid();
-            for (int k = 0; k < 3; ++k) {
-                if (k == playerid) continue;
-                events_[k].push(event);
-            }
-        } else {
-            std::cerr << "No playerid" << std::endl;
+        int playerid = event.playerid();
+        for (int k = 0; k < 3; ++k) {
+            if (k == playerid) continue;
+            events_[k].push(event);
         }
-
+    
         return Status::OK;
     }
 
     Status GetEvent(ServerContext* context, const Player* request, Event* response) override { 
         int playerid = request->playerid();
+        std::cout << playerid << std::endl;
         Event event = events_[playerid].front();
         *response = std::move(event);
+
         return Status::OK;
     }
   
 private:
     std::vector<EventQueue> events_;
+    std::atomic_int currentPlayerNumber_;
 };
 
  
