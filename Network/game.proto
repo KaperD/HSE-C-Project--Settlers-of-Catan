@@ -7,7 +7,7 @@ service Network {
 
     rpc SendEvent(Event) returns (Void) {}
 
-    rpc GetEvents(Player) returns (stream Event) {}
+    rpc GetEvent(Player) returns (Event) {}
 }
 
 message Void {}
@@ -23,12 +23,20 @@ enum EventType {
     MARKET = 2;
     BUILD = 3;
     ENDTURN = 4;
-    //TRADE = 5;
+    NEXTPHASE = 5;
+    //TRADE = 6;
 }
+
+
+message Player {
+    int32 playerId = 1;
+}
+
 
 message Event {
     EventType type = 1;
     Player player = 2;
+    
     oneof EventInfo {
         Card cardInfo = 3;
         Dice diceInfo = 4;
@@ -53,10 +61,6 @@ message Market {
 message Build {
     int32 x = 1;
     int32 y = 2;
-}
-
-message Player {
-    int32 playerId = 1;
 }
 
 

@@ -50,14 +50,12 @@ class Network final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::game::Void>> PrepareAsyncSendEvent(::grpc::ClientContext* context, const ::game::Event& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::game::Void>>(PrepareAsyncSendEventRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientReaderInterface< ::game::Event>> GetEvents(::grpc::ClientContext* context, const ::game::Player& request) {
-      return std::unique_ptr< ::grpc::ClientReaderInterface< ::game::Event>>(GetEventsRaw(context, request));
+    virtual ::grpc::Status GetEvent(::grpc::ClientContext* context, const ::game::Player& request, ::game::Event* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::game::Event>> AsyncGetEvent(::grpc::ClientContext* context, const ::game::Player& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::game::Event>>(AsyncGetEventRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::game::Event>> AsyncGetEvents(::grpc::ClientContext* context, const ::game::Player& request, ::grpc::CompletionQueue* cq, void* tag) {
-      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::game::Event>>(AsyncGetEventsRaw(context, request, cq, tag));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::game::Event>> PrepareAsyncGetEvents(::grpc::ClientContext* context, const ::game::Player& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::game::Event>>(PrepareAsyncGetEventsRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::game::Event>> PrepareAsyncGetEvent(::grpc::ClientContext* context, const ::game::Player& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::game::Event>>(PrepareAsyncGetEventRaw(context, request, cq));
     }
     class experimental_async_interface {
      public:
@@ -86,10 +84,17 @@ class Network final {
       #else
       virtual void SendEvent(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::Void* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
       #endif
+      virtual void GetEvent(::grpc::ClientContext* context, const ::game::Player* request, ::game::Event* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void GetEvent(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::Event* response, std::function<void(::grpc::Status)>) = 0;
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      virtual void GetEvents(::grpc::ClientContext* context, ::game::Player* request, ::grpc::ClientReadReactor< ::game::Event>* reactor) = 0;
+      virtual void GetEvent(::grpc::ClientContext* context, const ::game::Player* request, ::game::Event* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       #else
-      virtual void GetEvents(::grpc::ClientContext* context, ::game::Player* request, ::grpc::experimental::ClientReadReactor< ::game::Event>* reactor) = 0;
+      virtual void GetEvent(::grpc::ClientContext* context, const ::game::Player* request, ::game::Event* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void GetEvent(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::Event* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void GetEvent(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::Event* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
       #endif
     };
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
@@ -104,9 +109,8 @@ class Network final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::game::OrderInfo>* PrepareAsyncRegisterRaw(::grpc::ClientContext* context, const ::game::Void& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::game::Void>* AsyncSendEventRaw(::grpc::ClientContext* context, const ::game::Event& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::game::Void>* PrepareAsyncSendEventRaw(::grpc::ClientContext* context, const ::game::Event& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientReaderInterface< ::game::Event>* GetEventsRaw(::grpc::ClientContext* context, const ::game::Player& request) = 0;
-    virtual ::grpc::ClientAsyncReaderInterface< ::game::Event>* AsyncGetEventsRaw(::grpc::ClientContext* context, const ::game::Player& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
-    virtual ::grpc::ClientAsyncReaderInterface< ::game::Event>* PrepareAsyncGetEventsRaw(::grpc::ClientContext* context, const ::game::Player& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::game::Event>* AsyncGetEventRaw(::grpc::ClientContext* context, const ::game::Player& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::game::Event>* PrepareAsyncGetEventRaw(::grpc::ClientContext* context, const ::game::Player& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -125,14 +129,12 @@ class Network final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::game::Void>> PrepareAsyncSendEvent(::grpc::ClientContext* context, const ::game::Event& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::game::Void>>(PrepareAsyncSendEventRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientReader< ::game::Event>> GetEvents(::grpc::ClientContext* context, const ::game::Player& request) {
-      return std::unique_ptr< ::grpc::ClientReader< ::game::Event>>(GetEventsRaw(context, request));
+    ::grpc::Status GetEvent(::grpc::ClientContext* context, const ::game::Player& request, ::game::Event* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::game::Event>> AsyncGetEvent(::grpc::ClientContext* context, const ::game::Player& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::game::Event>>(AsyncGetEventRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncReader< ::game::Event>> AsyncGetEvents(::grpc::ClientContext* context, const ::game::Player& request, ::grpc::CompletionQueue* cq, void* tag) {
-      return std::unique_ptr< ::grpc::ClientAsyncReader< ::game::Event>>(AsyncGetEventsRaw(context, request, cq, tag));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncReader< ::game::Event>> PrepareAsyncGetEvents(::grpc::ClientContext* context, const ::game::Player& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncReader< ::game::Event>>(PrepareAsyncGetEventsRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::game::Event>> PrepareAsyncGetEvent(::grpc::ClientContext* context, const ::game::Player& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::game::Event>>(PrepareAsyncGetEventRaw(context, request, cq));
     }
     class experimental_async final :
       public StubInterface::experimental_async_interface {
@@ -161,10 +163,17 @@ class Network final {
       #else
       void SendEvent(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::Void* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
       #endif
+      void GetEvent(::grpc::ClientContext* context, const ::game::Player* request, ::game::Event* response, std::function<void(::grpc::Status)>) override;
+      void GetEvent(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::Event* response, std::function<void(::grpc::Status)>) override;
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      void GetEvents(::grpc::ClientContext* context, ::game::Player* request, ::grpc::ClientReadReactor< ::game::Event>* reactor) override;
+      void GetEvent(::grpc::ClientContext* context, const ::game::Player* request, ::game::Event* response, ::grpc::ClientUnaryReactor* reactor) override;
       #else
-      void GetEvents(::grpc::ClientContext* context, ::game::Player* request, ::grpc::experimental::ClientReadReactor< ::game::Event>* reactor) override;
+      void GetEvent(::grpc::ClientContext* context, const ::game::Player* request, ::game::Event* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void GetEvent(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::Event* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void GetEvent(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::Event* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
       #endif
      private:
       friend class Stub;
@@ -181,12 +190,11 @@ class Network final {
     ::grpc::ClientAsyncResponseReader< ::game::OrderInfo>* PrepareAsyncRegisterRaw(::grpc::ClientContext* context, const ::game::Void& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::game::Void>* AsyncSendEventRaw(::grpc::ClientContext* context, const ::game::Event& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::game::Void>* PrepareAsyncSendEventRaw(::grpc::ClientContext* context, const ::game::Event& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientReader< ::game::Event>* GetEventsRaw(::grpc::ClientContext* context, const ::game::Player& request) override;
-    ::grpc::ClientAsyncReader< ::game::Event>* AsyncGetEventsRaw(::grpc::ClientContext* context, const ::game::Player& request, ::grpc::CompletionQueue* cq, void* tag) override;
-    ::grpc::ClientAsyncReader< ::game::Event>* PrepareAsyncGetEventsRaw(::grpc::ClientContext* context, const ::game::Player& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::game::Event>* AsyncGetEventRaw(::grpc::ClientContext* context, const ::game::Player& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::game::Event>* PrepareAsyncGetEventRaw(::grpc::ClientContext* context, const ::game::Player& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_Register_;
     const ::grpc::internal::RpcMethod rpcmethod_SendEvent_;
-    const ::grpc::internal::RpcMethod rpcmethod_GetEvents_;
+    const ::grpc::internal::RpcMethod rpcmethod_GetEvent_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -196,7 +204,7 @@ class Network final {
     virtual ~Service();
     virtual ::grpc::Status Register(::grpc::ServerContext* context, const ::game::Void* request, ::game::OrderInfo* response);
     virtual ::grpc::Status SendEvent(::grpc::ServerContext* context, const ::game::Event* request, ::game::Void* response);
-    virtual ::grpc::Status GetEvents(::grpc::ServerContext* context, const ::game::Player* request, ::grpc::ServerWriter< ::game::Event>* writer);
+    virtual ::grpc::Status GetEvent(::grpc::ServerContext* context, const ::game::Player* request, ::game::Event* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_Register : public BaseClass {
@@ -239,26 +247,26 @@ class Network final {
     }
   };
   template <class BaseClass>
-  class WithAsyncMethod_GetEvents : public BaseClass {
+  class WithAsyncMethod_GetEvent : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithAsyncMethod_GetEvents() {
+    WithAsyncMethod_GetEvent() {
       ::grpc::Service::MarkMethodAsync(2);
     }
-    ~WithAsyncMethod_GetEvents() override {
+    ~WithAsyncMethod_GetEvent() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetEvents(::grpc::ServerContext* /*context*/, const ::game::Player* /*request*/, ::grpc::ServerWriter< ::game::Event>* /*writer*/) override {
+    ::grpc::Status GetEvent(::grpc::ServerContext* /*context*/, const ::game::Player* /*request*/, ::game::Event* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestGetEvents(::grpc::ServerContext* context, ::game::Player* request, ::grpc::ServerAsyncWriter< ::game::Event>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncServerStreaming(2, context, request, writer, new_call_cq, notification_cq, tag);
+    void RequestGetEvent(::grpc::ServerContext* context, ::game::Player* request, ::grpc::ServerAsyncResponseWriter< ::game::Event>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_Register<WithAsyncMethod_SendEvent<WithAsyncMethod_GetEvents<Service > > > AsyncService;
+  typedef WithAsyncMethod_Register<WithAsyncMethod_SendEvent<WithAsyncMethod_GetEvent<Service > > > AsyncService;
   template <class BaseClass>
   class ExperimentalWithCallbackMethod_Register : public BaseClass {
    private:
@@ -354,48 +362,57 @@ class Network final {
       { return nullptr; }
   };
   template <class BaseClass>
-  class ExperimentalWithCallbackMethod_GetEvents : public BaseClass {
+  class ExperimentalWithCallbackMethod_GetEvent : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    ExperimentalWithCallbackMethod_GetEvents() {
+    ExperimentalWithCallbackMethod_GetEvent() {
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
       ::grpc::Service::
     #else
       ::grpc::Service::experimental().
     #endif
         MarkMethodCallback(2,
-          new ::grpc_impl::internal::CallbackServerStreamingHandler< ::game::Player, ::game::Event>(
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::game::Player, ::game::Event>(
             [this](
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
                    ::grpc::CallbackServerContext*
     #else
                    ::grpc::experimental::CallbackServerContext*
     #endif
-                     context, const ::game::Player* request) { return this->GetEvents(context, request); }));
+                     context, const ::game::Player* request, ::game::Event* response) { return this->GetEvent(context, request, response); }));}
+    void SetMessageAllocatorFor_GetEvent(
+        ::grpc::experimental::MessageAllocator< ::game::Player, ::game::Event>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(2);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(2);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::game::Player, ::game::Event>*>(handler)
+              ->SetMessageAllocator(allocator);
     }
-    ~ExperimentalWithCallbackMethod_GetEvents() override {
+    ~ExperimentalWithCallbackMethod_GetEvent() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetEvents(::grpc::ServerContext* /*context*/, const ::game::Player* /*request*/, ::grpc::ServerWriter< ::game::Event>* /*writer*/) override {
+    ::grpc::Status GetEvent(::grpc::ServerContext* /*context*/, const ::game::Player* /*request*/, ::game::Event* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-    virtual ::grpc::ServerWriteReactor< ::game::Event>* GetEvents(
-      ::grpc::CallbackServerContext* /*context*/, const ::game::Player* /*request*/)
+    virtual ::grpc::ServerUnaryReactor* GetEvent(
+      ::grpc::CallbackServerContext* /*context*/, const ::game::Player* /*request*/, ::game::Event* /*response*/)
     #else
-    virtual ::grpc::experimental::ServerWriteReactor< ::game::Event>* GetEvents(
-      ::grpc::experimental::CallbackServerContext* /*context*/, const ::game::Player* /*request*/)
+    virtual ::grpc::experimental::ServerUnaryReactor* GetEvent(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::game::Player* /*request*/, ::game::Event* /*response*/)
     #endif
       { return nullptr; }
   };
   #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-  typedef ExperimentalWithCallbackMethod_Register<ExperimentalWithCallbackMethod_SendEvent<ExperimentalWithCallbackMethod_GetEvents<Service > > > CallbackService;
+  typedef ExperimentalWithCallbackMethod_Register<ExperimentalWithCallbackMethod_SendEvent<ExperimentalWithCallbackMethod_GetEvent<Service > > > CallbackService;
   #endif
 
-  typedef ExperimentalWithCallbackMethod_Register<ExperimentalWithCallbackMethod_SendEvent<ExperimentalWithCallbackMethod_GetEvents<Service > > > ExperimentalCallbackService;
+  typedef ExperimentalWithCallbackMethod_Register<ExperimentalWithCallbackMethod_SendEvent<ExperimentalWithCallbackMethod_GetEvent<Service > > > ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_Register : public BaseClass {
    private:
@@ -431,18 +448,18 @@ class Network final {
     }
   };
   template <class BaseClass>
-  class WithGenericMethod_GetEvents : public BaseClass {
+  class WithGenericMethod_GetEvent : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithGenericMethod_GetEvents() {
+    WithGenericMethod_GetEvent() {
       ::grpc::Service::MarkMethodGeneric(2);
     }
-    ~WithGenericMethod_GetEvents() override {
+    ~WithGenericMethod_GetEvent() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetEvents(::grpc::ServerContext* /*context*/, const ::game::Player* /*request*/, ::grpc::ServerWriter< ::game::Event>* /*writer*/) override {
+    ::grpc::Status GetEvent(::grpc::ServerContext* /*context*/, const ::game::Player* /*request*/, ::game::Event* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -488,23 +505,23 @@ class Network final {
     }
   };
   template <class BaseClass>
-  class WithRawMethod_GetEvents : public BaseClass {
+  class WithRawMethod_GetEvent : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawMethod_GetEvents() {
+    WithRawMethod_GetEvent() {
       ::grpc::Service::MarkMethodRaw(2);
     }
-    ~WithRawMethod_GetEvents() override {
+    ~WithRawMethod_GetEvent() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetEvents(::grpc::ServerContext* /*context*/, const ::game::Player* /*request*/, ::grpc::ServerWriter< ::game::Event>* /*writer*/) override {
+    ::grpc::Status GetEvent(::grpc::ServerContext* /*context*/, const ::game::Player* /*request*/, ::game::Event* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestGetEvents(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncWriter< ::grpc::ByteBuffer>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncServerStreaming(2, context, request, writer, new_call_cq, notification_cq, tag);
+    void RequestGetEvent(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -584,40 +601,40 @@ class Network final {
       { return nullptr; }
   };
   template <class BaseClass>
-  class ExperimentalWithRawCallbackMethod_GetEvents : public BaseClass {
+  class ExperimentalWithRawCallbackMethod_GetEvent : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    ExperimentalWithRawCallbackMethod_GetEvents() {
+    ExperimentalWithRawCallbackMethod_GetEvent() {
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
       ::grpc::Service::
     #else
       ::grpc::Service::experimental().
     #endif
         MarkMethodRawCallback(2,
-          new ::grpc_impl::internal::CallbackServerStreamingHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
                    ::grpc::CallbackServerContext*
     #else
                    ::grpc::experimental::CallbackServerContext*
     #endif
-                     context, const::grpc::ByteBuffer* request) { return this->GetEvents(context, request); }));
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetEvent(context, request, response); }));
     }
-    ~ExperimentalWithRawCallbackMethod_GetEvents() override {
+    ~ExperimentalWithRawCallbackMethod_GetEvent() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetEvents(::grpc::ServerContext* /*context*/, const ::game::Player* /*request*/, ::grpc::ServerWriter< ::game::Event>* /*writer*/) override {
+    ::grpc::Status GetEvent(::grpc::ServerContext* /*context*/, const ::game::Player* /*request*/, ::game::Event* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-    virtual ::grpc::ServerWriteReactor< ::grpc::ByteBuffer>* GetEvents(
-      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/)
+    virtual ::grpc::ServerUnaryReactor* GetEvent(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
     #else
-    virtual ::grpc::experimental::ServerWriteReactor< ::grpc::ByteBuffer>* GetEvents(
-      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/)
+    virtual ::grpc::experimental::ServerUnaryReactor* GetEvent(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
     #endif
       { return nullptr; }
   };
@@ -661,29 +678,29 @@ class Network final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedSendEvent(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::game::Event,::game::Void>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_Register<WithStreamedUnaryMethod_SendEvent<Service > > StreamedUnaryService;
   template <class BaseClass>
-  class WithSplitStreamingMethod_GetEvents : public BaseClass {
+  class WithStreamedUnaryMethod_GetEvent : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithSplitStreamingMethod_GetEvents() {
+    WithStreamedUnaryMethod_GetEvent() {
       ::grpc::Service::MarkMethodStreamed(2,
-        new ::grpc::internal::SplitServerStreamingHandler< ::game::Player, ::game::Event>(std::bind(&WithSplitStreamingMethod_GetEvents<BaseClass>::StreamedGetEvents, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler< ::game::Player, ::game::Event>(std::bind(&WithStreamedUnaryMethod_GetEvent<BaseClass>::StreamedGetEvent, this, std::placeholders::_1, std::placeholders::_2)));
     }
-    ~WithSplitStreamingMethod_GetEvents() override {
+    ~WithStreamedUnaryMethod_GetEvent() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status GetEvents(::grpc::ServerContext* /*context*/, const ::game::Player* /*request*/, ::grpc::ServerWriter< ::game::Event>* /*writer*/) override {
+    ::grpc::Status GetEvent(::grpc::ServerContext* /*context*/, const ::game::Player* /*request*/, ::game::Event* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    // replace default version of method with split streamed
-    virtual ::grpc::Status StreamedGetEvents(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::game::Player,::game::Event>* server_split_streamer) = 0;
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedGetEvent(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::game::Player,::game::Event>* server_unary_streamer) = 0;
   };
-  typedef WithSplitStreamingMethod_GetEvents<Service > SplitStreamedService;
-  typedef WithStreamedUnaryMethod_Register<WithStreamedUnaryMethod_SendEvent<WithSplitStreamingMethod_GetEvents<Service > > > StreamedService;
+  typedef WithStreamedUnaryMethod_Register<WithStreamedUnaryMethod_SendEvent<WithStreamedUnaryMethod_GetEvent<Service > > > StreamedUnaryService;
+  typedef Service SplitStreamedService;
+  typedef WithStreamedUnaryMethod_Register<WithStreamedUnaryMethod_SendEvent<WithStreamedUnaryMethod_GetEvent<Service > > > StreamedService;
 };
 
 }  // namespace game

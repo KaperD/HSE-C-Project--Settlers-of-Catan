@@ -99,12 +99,13 @@ enum EventType : int {
   MARKET = 2,
   BUILD = 3,
   ENDTURN = 4,
+  NEXTPHASE = 5,
   EventType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::min(),
   EventType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::max()
 };
 bool EventType_IsValid(int value);
 constexpr EventType EventType_MIN = CARD;
-constexpr EventType EventType_MAX = ENDTURN;
+constexpr EventType EventType_MAX = NEXTPHASE;
 constexpr int EventType_ARRAYSIZE = EventType_MAX + 1;
 
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EventType_descriptor();
@@ -377,6 +378,134 @@ class OrderInfo :
 };
 // -------------------------------------------------------------------
 
+class Player :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:game.Player) */ {
+ public:
+  Player();
+  virtual ~Player();
+
+  Player(const Player& from);
+  Player(Player&& from) noexcept
+    : Player() {
+    *this = ::std::move(from);
+  }
+
+  inline Player& operator=(const Player& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline Player& operator=(Player&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return GetMetadataStatic().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return GetMetadataStatic().reflection;
+  }
+  static const Player& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const Player* internal_default_instance() {
+    return reinterpret_cast<const Player*>(
+               &_Player_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    2;
+
+  friend void swap(Player& a, Player& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(Player* other) {
+    if (other == this) return;
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline Player* New() const final {
+    return CreateMaybeMessage<Player>(nullptr);
+  }
+
+  Player* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<Player>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const Player& from);
+  void MergeFrom(const Player& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  inline void SharedCtor();
+  inline void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(Player* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "game.Player";
+  }
+  private:
+  inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
+    return nullptr;
+  }
+  inline void* MaybeArenaPtr() const {
+    return nullptr;
+  }
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  private:
+  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
+    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_game_2eproto);
+    return ::descriptor_table_game_2eproto.file_level_metadata[kIndexInFileMessages];
+  }
+
+  public:
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kPlayerIdFieldNumber = 1,
+  };
+  // int32 playerId = 1;
+  void clear_playerid();
+  ::PROTOBUF_NAMESPACE_ID::int32 playerid() const;
+  void set_playerid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_playerid() const;
+  void _internal_set_playerid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:game.Player)
+ private:
+  class _Internal;
+
+  ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
+  ::PROTOBUF_NAMESPACE_ID::int32 playerid_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_game_2eproto;
+};
+// -------------------------------------------------------------------
+
 class Event :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:game.Event) */ {
  public:
@@ -427,7 +556,7 @@ class Event :
                &_Event_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    2;
+    3;
 
   friend void swap(Event& a, Event& b) {
     a.Swap(&b);
@@ -654,7 +783,7 @@ class Card :
                &_Card_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    3;
+    4;
 
   friend void swap(Card& a, Card& b) {
     a.Swap(&b);
@@ -782,7 +911,7 @@ class Dice :
                &_Dice_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    4;
+    5;
 
   friend void swap(Dice& a, Dice& b) {
     a.Swap(&b);
@@ -910,7 +1039,7 @@ class Market :
                &_Market_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    5;
+    6;
 
   friend void swap(Market& a, Market& b) {
     a.Swap(&b);
@@ -1049,7 +1178,7 @@ class Build :
                &_Build_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    6;
+    7;
 
   friend void swap(Build& a, Build& b) {
     a.Swap(&b);
@@ -1144,134 +1273,6 @@ class Build :
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_game_2eproto;
 };
-// -------------------------------------------------------------------
-
-class Player :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:game.Player) */ {
- public:
-  Player();
-  virtual ~Player();
-
-  Player(const Player& from);
-  Player(Player&& from) noexcept
-    : Player() {
-    *this = ::std::move(from);
-  }
-
-  inline Player& operator=(const Player& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  inline Player& operator=(Player&& from) noexcept {
-    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
-      if (this != &from) InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
-    return GetDescriptor();
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
-    return GetMetadataStatic().descriptor;
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
-    return GetMetadataStatic().reflection;
-  }
-  static const Player& default_instance();
-
-  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
-  static inline const Player* internal_default_instance() {
-    return reinterpret_cast<const Player*>(
-               &_Player_default_instance_);
-  }
-  static constexpr int kIndexInFileMessages =
-    7;
-
-  friend void swap(Player& a, Player& b) {
-    a.Swap(&b);
-  }
-  inline void Swap(Player* other) {
-    if (other == this) return;
-    InternalSwap(other);
-  }
-
-  // implements Message ----------------------------------------------
-
-  inline Player* New() const final {
-    return CreateMaybeMessage<Player>(nullptr);
-  }
-
-  Player* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
-    return CreateMaybeMessage<Player>(arena);
-  }
-  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
-  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
-  void CopyFrom(const Player& from);
-  void MergeFrom(const Player& from);
-  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
-  bool IsInitialized() const final;
-
-  size_t ByteSizeLong() const final;
-  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
-  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
-      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
-  int GetCachedSize() const final { return _cached_size_.Get(); }
-
-  private:
-  inline void SharedCtor();
-  inline void SharedDtor();
-  void SetCachedSize(int size) const final;
-  void InternalSwap(Player* other);
-  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
-  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "game.Player";
-  }
-  private:
-  inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
-    return nullptr;
-  }
-  inline void* MaybeArenaPtr() const {
-    return nullptr;
-  }
-  public:
-
-  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
-  private:
-  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
-    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_game_2eproto);
-    return ::descriptor_table_game_2eproto.file_level_metadata[kIndexInFileMessages];
-  }
-
-  public:
-
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  enum : int {
-    kPlayerIdFieldNumber = 1,
-  };
-  // int32 playerId = 1;
-  void clear_playerid();
-  ::PROTOBUF_NAMESPACE_ID::int32 playerid() const;
-  void set_playerid(::PROTOBUF_NAMESPACE_ID::int32 value);
-  private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_playerid() const;
-  void _internal_set_playerid(::PROTOBUF_NAMESPACE_ID::int32 value);
-  public:
-
-  // @@protoc_insertion_point(class_scope:game.Player)
- private:
-  class _Internal;
-
-  ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
-  ::PROTOBUF_NAMESPACE_ID::int32 playerid_;
-  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-  friend struct ::TableStruct_game_2eproto;
-};
 // ===================================================================
 
 
@@ -1325,6 +1326,30 @@ inline void OrderInfo::_internal_set_numberofplayers(::PROTOBUF_NAMESPACE_ID::in
 inline void OrderInfo::set_numberofplayers(::PROTOBUF_NAMESPACE_ID::int32 value) {
   _internal_set_numberofplayers(value);
   // @@protoc_insertion_point(field_set:game.OrderInfo.numberOfPlayers)
+}
+
+// -------------------------------------------------------------------
+
+// Player
+
+// int32 playerId = 1;
+inline void Player::clear_playerid() {
+  playerid_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 Player::_internal_playerid() const {
+  return playerid_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 Player::playerid() const {
+  // @@protoc_insertion_point(field_get:game.Player.playerId)
+  return _internal_playerid();
+}
+inline void Player::_internal_set_playerid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  playerid_ = value;
+}
+inline void Player::set_playerid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_playerid(value);
+  // @@protoc_insertion_point(field_set:game.Player.playerId)
 }
 
 // -------------------------------------------------------------------
@@ -1754,30 +1779,6 @@ inline void Build::_internal_set_y(::PROTOBUF_NAMESPACE_ID::int32 value) {
 inline void Build::set_y(::PROTOBUF_NAMESPACE_ID::int32 value) {
   _internal_set_y(value);
   // @@protoc_insertion_point(field_set:game.Build.y)
-}
-
-// -------------------------------------------------------------------
-
-// Player
-
-// int32 playerId = 1;
-inline void Player::clear_playerid() {
-  playerid_ = 0;
-}
-inline ::PROTOBUF_NAMESPACE_ID::int32 Player::_internal_playerid() const {
-  return playerid_;
-}
-inline ::PROTOBUF_NAMESPACE_ID::int32 Player::playerid() const {
-  // @@protoc_insertion_point(field_get:game.Player.playerId)
-  return _internal_playerid();
-}
-inline void Player::_internal_set_playerid(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  
-  playerid_ = value;
-}
-inline void Player::set_playerid(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_playerid(value);
-  // @@protoc_insertion_point(field_set:game.Player.playerId)
 }
 
 #ifdef __GNUC__
