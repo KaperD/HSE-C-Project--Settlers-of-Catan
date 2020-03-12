@@ -1,0 +1,75 @@
+project(Catan)
+cmake_minimum_required(VERSION 3.2)
+
+add_compile_options(-std=c++17)
+
+# GRPC and Protocol Buffers libraries location
+list(APPEND CMAKE_PREFIX_PATH "/opt/grpc" "/opt/protobuf")
+
+# Cmake find modules
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/Network/cmake")
+
+find_package(Protobuf REQUIRED)
+find_package(GRPC REQUIRED)
+
+set(PROTOS
+    ${CMAKE_CURRENT_SOURCE_DIR}/Network/game.proto
+)
+
+set(PROTO_SRC_DIR ${CMAKE_CURRENT_BINARY_DIR}/Network)
+file(MAKE_DIRECTORY ${PROTO_SRC_DIR})
+include_directories(${PROTO_SRC_DIR})
+
+protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_SRC_DIR} ${PROTOS})
+grpc_generate_cpp(GRPC_SRCS GRPC_HDRS ${PROTO_SRC_DIR} ${PROTOS})
+
+# SDL2
+# Могут понадобиться следующие команды
+# sudo apt-get install libsdl-image1.2-dev
+# sudo apt-get install libsdl-dev
+find_package(SDL2 REQUIRED)
+include_directories(${SDL2_INCLUDE_DIRS})
+
+add_library(
+    client
+    Client/Client.cpp
+    Client/Client.h
+)
+
+add_library(
+    controller
+    Controller/GameController.cpp
+    Controller/GameController.h
+)
+
+add_library(
+    model
+    Model/Board.cpp
+    Model/Board.h
+    Model/Cards.cpp
+    Model/Cards.h
+)
+
+
+# Building project
+add_executable(project
+    ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
+    GUI/sdl.cpp
+    ${PROTO_SRCS}
+    ${GRPC_SRCS}
+)
+
+target_link_libraries(project
+    ${SDL2_LIBRARIES}
+    gRPC::grpc++_reflection
+    protobuf::libprotobuf
+    model
+    controller
+    client
+)
+
+include_directories(Client)
+include_directories(Model)
+include_directories(Controller)
+include_directories(Network)
+include_directories(GUI)

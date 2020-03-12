@@ -620,28 +620,13 @@ class Event :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kPlayerFieldNumber = 2,
     kTypeFieldNumber = 1,
+    kPlayerIdFieldNumber = 2,
     kCardInfoFieldNumber = 3,
     kDiceInfoFieldNumber = 4,
     kMarketInfoFieldNumber = 5,
     kBuildInfoFieldNumber = 6,
   };
-  // .game.Player player = 2;
-  bool has_player() const;
-  private:
-  bool _internal_has_player() const;
-  public:
-  void clear_player();
-  const ::game::Player& player() const;
-  ::game::Player* release_player();
-  ::game::Player* mutable_player();
-  void set_allocated_player(::game::Player* player);
-  private:
-  const ::game::Player& _internal_player() const;
-  ::game::Player* _internal_mutable_player();
-  public:
-
   // .game.EventType type = 1;
   void clear_type();
   ::game::EventType type() const;
@@ -649,6 +634,15 @@ class Event :
   private:
   ::game::EventType _internal_type() const;
   void _internal_set_type(::game::EventType value);
+  public:
+
+  // int32 playerId = 2;
+  void clear_playerid();
+  ::PROTOBUF_NAMESPACE_ID::int32 playerid() const;
+  void set_playerid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_playerid() const;
+  void _internal_set_playerid(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
   // .game.Card cardInfo = 3;
@@ -725,8 +719,8 @@ class Event :
   inline void clear_has_EventInfo();
 
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
-  ::game::Player* player_;
   int type_;
+  ::PROTOBUF_NAMESPACE_ID::int32 playerid_;
   union EventInfoUnion {
     EventInfoUnion() {}
     ::game::Card* cardinfo_;
@@ -1376,64 +1370,24 @@ inline void Event::set_type(::game::EventType value) {
   // @@protoc_insertion_point(field_set:game.Event.type)
 }
 
-// .game.Player player = 2;
-inline bool Event::_internal_has_player() const {
-  return this != internal_default_instance() && player_ != nullptr;
+// int32 playerId = 2;
+inline void Event::clear_playerid() {
+  playerid_ = 0;
 }
-inline bool Event::has_player() const {
-  return _internal_has_player();
+inline ::PROTOBUF_NAMESPACE_ID::int32 Event::_internal_playerid() const {
+  return playerid_;
 }
-inline void Event::clear_player() {
-  if (GetArenaNoVirtual() == nullptr && player_ != nullptr) {
-    delete player_;
-  }
-  player_ = nullptr;
+inline ::PROTOBUF_NAMESPACE_ID::int32 Event::playerid() const {
+  // @@protoc_insertion_point(field_get:game.Event.playerId)
+  return _internal_playerid();
 }
-inline const ::game::Player& Event::_internal_player() const {
-  const ::game::Player* p = player_;
-  return p != nullptr ? *p : *reinterpret_cast<const ::game::Player*>(
-      &::game::_Player_default_instance_);
-}
-inline const ::game::Player& Event::player() const {
-  // @@protoc_insertion_point(field_get:game.Event.player)
-  return _internal_player();
-}
-inline ::game::Player* Event::release_player() {
-  // @@protoc_insertion_point(field_release:game.Event.player)
+inline void Event::_internal_set_playerid(::PROTOBUF_NAMESPACE_ID::int32 value) {
   
-  ::game::Player* temp = player_;
-  player_ = nullptr;
-  return temp;
+  playerid_ = value;
 }
-inline ::game::Player* Event::_internal_mutable_player() {
-  
-  if (player_ == nullptr) {
-    auto* p = CreateMaybeMessage<::game::Player>(GetArenaNoVirtual());
-    player_ = p;
-  }
-  return player_;
-}
-inline ::game::Player* Event::mutable_player() {
-  // @@protoc_insertion_point(field_mutable:game.Event.player)
-  return _internal_mutable_player();
-}
-inline void Event::set_allocated_player(::game::Player* player) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaNoVirtual();
-  if (message_arena == nullptr) {
-    delete player_;
-  }
-  if (player) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena = nullptr;
-    if (message_arena != submessage_arena) {
-      player = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, player, submessage_arena);
-    }
-    
-  } else {
-    
-  }
-  player_ = player;
-  // @@protoc_insertion_point(field_set_allocated:game.Event.player)
+inline void Event::set_playerid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_playerid(value);
+  // @@protoc_insertion_point(field_set:game.Event.playerId)
 }
 
 // .game.Card cardInfo = 3;
