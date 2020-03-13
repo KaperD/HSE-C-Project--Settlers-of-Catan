@@ -22,7 +22,7 @@ public:
     , gameModel_(model)
     , gameView_(view)
     , gameClient_(client) { }
-    virtual void processEvent(::game::Event& event) = 0; ///< @brief Вызывает нужные команды у модели
+    virtual void processEvent(::game::Event& event, bool needSend) = 0; ///< @brief Вызывает нужные команды у модели
     virtual void displayEvent(::game::Event& event) = 0; ///< @brief Вызывает нужные команды у GUI
     void sendEvent(::game::Event& event); ///< @brief Вызывает нужные команды у клиента
 protected:
@@ -37,7 +37,7 @@ public:
     CardHandler(Board::Catan& model, View& view, GameClient& client)
     : Handler(model, view, client)
     , cardType_(0) { }
-    void processEvent(::game::Event& event) override;
+    void processEvent(::game::Event& event, bool needSend) override;
     void displayEvent(::game::Event& event) override;
     using Handler::sendEvent;
 private:
@@ -49,7 +49,7 @@ public:
     DiceHandler(Board::Catan& model, View& view, GameClient& client)
     : Handler(model, view, client)
     , number_(0) { }
-    void processEvent(::game::Event& event) override;
+    void processEvent(::game::Event& event, bool needSend) override;
     void displayEvent(::game::Event& event) override;
     using Handler::sendEvent;
 private:
@@ -62,7 +62,7 @@ public:
     : Handler(model, view, client)
     , requiredResource_(0)
     , ownedResource_(0) { }
-    void processEvent(::game::Event& event) override;
+    void processEvent(::game::Event& event, bool needSend) override;
     void displayEvent(::game::Event& event) override;
     using Handler::sendEvent;
 private:
@@ -77,7 +77,7 @@ public:
     , buildingType_(0)
     , x_(0)
     , y_(0) { }
-    void processEvent(::game::Event& event) override;
+    void processEvent(::game::Event& event, bool needSend) override;
     void displayEvent(::game::Event& event) override;
     using Handler::sendEvent;
 private:
@@ -90,7 +90,7 @@ class EndTurnHandler : public Handler {
 public:
     EndTurnHandler(Board::Catan& model, View& view, GameClient& client)
     : Handler(model, view, client) { }
-    void processEvent(::game::Event& event) override;
+    void processEvent(::game::Event& event, bool needSend) override;
     void displayEvent(::game::Event& event) override;
     using Handler::sendEvent;
 };
@@ -99,7 +99,7 @@ class NextPhaseHandler : public Handler {
 public:
     NextPhaseHandler(Board::Catan& model, View& view, GameClient& client)
     : Handler(model, view, client) { }
-    void processEvent(::game::Event& event) override;
+    void processEvent(::game::Event& event, bool needSend) override;
     void displayEvent(::game::Event& event) override;
     using Handler::sendEvent;
 };

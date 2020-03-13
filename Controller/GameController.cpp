@@ -34,7 +34,7 @@ void Handler::sendEvent(::game::Event& event) {
 
 //===============CardHandler===============
 
-void CardHandler::processEvent(Event& event) {
+void CardHandler::processEvent(Event& event, bool needSend) {
     if (event.type() != EventType::CARD) {
         throw std::logic_error("Wrong type");
     }
@@ -60,7 +60,7 @@ void CardHandler::displayEvent(Event& event) {
 
 //===============DiceHandler===============
 
-void DiceHandler::processEvent(Event& event) {
+void DiceHandler::processEvent(Event& event, bool needSend) {
     if (event.type() != EventType::DICE) {
         throw std::logic_error("Wrong type");
     }
@@ -95,7 +95,7 @@ void DiceHandler::displayEvent(Event& event) {
 
 //===============MarketHandler===============
 
-void MarketHandler::processEvent(Event& event) {
+void MarketHandler::processEvent(Event& event, bool needSend) {
     if (event.type() != EventType::MARKET) {
         throw std::logic_error("Wrong type");
     }
@@ -126,7 +126,7 @@ void MarketHandler::displayEvent(Event& event) {
 
 //===============BuildHandler===============
 
-void BuildHandler::processEvent(Event& event) {
+void BuildHandler::processEvent(Event& event, bool needSend) {
     if (event.type() != EventType::MARKET) {
     throw std::logic_error("Wrong type");
     }
@@ -155,9 +155,11 @@ void BuildHandler::displayEvent(Event& event) {
 
 //===============EndTurnHandler===============
 
-void EndTurnHandler::processEvent(Event& event) {
+void EndTurnHandler::processEvent(Event& event, bool needSend) {
     //displayEvent(event);
-    sendEvent(event);
+    if (needSend) {
+        sendEvent(event);
+    }
 }
 
 void EndTurnHandler::displayEvent(Event& event) {
@@ -170,9 +172,11 @@ void EndTurnHandler::displayEvent(Event& event) {
 
 //===============NextPhaseHandler===============
 
-void NextPhaseHandler::processEvent(Event& event) {
+void NextPhaseHandler::processEvent(Event& event, bool needSend) {
     displayEvent(event);
-    sendEvent(event);
+    if (needSend) {
+        sendEvent(event);
+    }
 }
 
 void NextPhaseHandler::displayEvent(Event& event) {
@@ -200,6 +204,7 @@ GameController::GameController(Board::Catan& model, GameClient& client, View& vi
 void GameController::RunGame() {
     game::OrderInfo info = gameClient_.Register();
     myTurn_ = info.id();
+    myTurn_ %= 2;
     std::cout << myTurn_ << std::endl;
 
     bool quit = false;
@@ -207,9 +212,10 @@ void GameController::RunGame() {
         if (currentTurn_ == myTurn_) {
             while (true) {
                 Event event = gameView_.getTurn();
+                event.set_playerid(myTurn_);
                 int x = event.type();
                 std::cout << x << std::endl;
-                handlers_[x]->processEvent(event);
+                handlers_[x]->processEvent(event, true);
                 if (x == EventType::ENDTURN) {
                     quit = true;
                     break;
@@ -222,7 +228,7 @@ void GameController::RunGame() {
                 Event event = gameClient_.GetEvent();
                 int x = event.type();
                 std::cout << x << std::endl;
-                handlers_[x]->processEvent(event);
+                handlers_[x]->processEvent(event, false);
                 if (x == EventType::ENDTURN) {
                     quit = true;
                     break;

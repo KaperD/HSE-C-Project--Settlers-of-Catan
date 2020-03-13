@@ -29,7 +29,6 @@ public:
     SDL_Surface *BMP_road2;
     SDL_Texture *road2;
     SDL_Rect dest;
-	SDL_Event e;
     SDL_Texture *road;
     SDL_Surface *BMP_back;
     SDL_Texture *back;
@@ -78,8 +77,13 @@ inline void View::update() {
 }
 
 inline ::game::Event View::getTurn() {
+    SDL_Event e;
+   
     bool quit = false;
     SDL_RenderPresent(ren);
+    SDL_PumpEvents();
+    SDL_FlushEvents(0, UINT32_MAX);
+    std::cout << "Cleared\n";
 	while (!quit)
 	{
         frameStart = SDL_GetTicks();
@@ -153,14 +157,14 @@ inline ::game::Event View::getTurn() {
 			    }
                 if (x < 100 && y < 100) {
                     update();
-                    ::game::Event e;
-                    e.set_type(::game::EventType::NEXTPHASE);
-                    return e;
+                    ::game::Event ret;
+                    ret.set_type(::game::EventType::NEXTPHASE);
+                    return ret;
                 }
-                if (x > 900 && y > 900) {
-                    ::game::Event e;
-                    e.set_type(::game::EventType::ENDTURN);
-                    return e;
+                if (x > 900 && x < 1000 && y > 900 && y < 1000) {
+                    ::game::Event ret;
+                    ret.set_type(::game::EventType::ENDTURN);
+                    return ret;
                 }
                 SDL_RenderPresent(ren);
 
@@ -176,9 +180,9 @@ inline ::game::Event View::getTurn() {
 		// SDL_RenderPresent(ren); //Погнали!!
 
 	}
-    ::game::Event e;
-    e.set_type(::game::EventType::BUILD);
-    return e;
+    ::game::Event ret;
+    ret.set_type(::game::EventType::ENDTURN);
+    return ret;
 }
 
 
