@@ -152,38 +152,42 @@ int gui (int argc, char ** args) {
 
 
 
-	SDL_RenderClear(ren); //Очистка рендера
-	SDL_Rect dest1;
-		dest1.x = 0;
-		dest1.y = 0;
-		dest1.w = displayMode.w;
-		dest1.h = displayMode.h;
-	SDL_RenderCopy(ren,back_ground,NULL,&dest1); //Копируем в рендер фон
+	auto mainField = [&]() {
+        SDL_RenderClear(ren); //Очистка рендера
+        SDL_Rect dest1;
+            dest1.x = 0;
+            dest1.y = 0;
+            dest1.w = displayMode.w;
+            dest1.h = displayMode.h;
+        SDL_RenderCopy(ren,back_ground,NULL,&dest1); //Копируем в рендер фон
 
-		dest1.x = 0;
-		dest1.y = 0;
-		dest1.w = displayMode.w;
-		dest1.h = displayMode.h;
-	SDL_RenderCopy(ren,back,NULL,&dest1); //Копируем в рендер фон
+            dest1.x = 0;
+            dest1.y = 0;
+            dest1.w = displayMode.w;
+            dest1.h = displayMode.h;
+        SDL_RenderCopy(ren,back,NULL,&dest1); //Копируем в рендер фон
 
-	SDL_Rect dest;
-	dest.x = displayMode.w / 2 - 265*sqrt(3);
-	dest.y = displayMode.h / 2 - 540;
-	dest.w = 100*sqrt(3);
-	dest.h = 200;
-	int k = 3;
-	for (int i = 0; i < 5; ++i){
-		dest.y += 150;
-		for (int i = 0; i < k; ++i){
-			dest.x += 100*sqrt(3);
-			SDL_RenderCopy(ren, arr[rand() % 6], NULL, &dest); //Копируем в рендер персонажа
-		}
-		dest.x-= 100*sqrt(3)*k;
-		if (i < 2) {k+=1;dest.x-= 50*sqrt(3);}
-		else {k-=1;dest.x+= 50*sqrt(3);}
-	}
+        SDL_Rect dest;
+        dest.x = displayMode.w / 2 - 265*sqrt(3);
+        dest.y = displayMode.h / 2 - 540;
+        dest.w = 100*sqrt(3);
+        dest.h = 200;
+        int k = 3;
+        for (int i = 0; i < 5; ++i){
+            dest.y += 150;
+            for (int i = 0; i < k; ++i){
+                dest.x += 100*sqrt(3);
+                SDL_RenderCopy(ren, arr[rand() % 6], NULL, &dest); //Копируем в рендер персонажа
+            }
+            dest.x-= 100*sqrt(3)*k;
+            if (i < 2) {k+=1;dest.x-= 50*sqrt(3);}
+            else {k-=1;dest.x+= 50*sqrt(3);}
+        }
+    };
 
+    mainField();
 
+    SDL_Rect dest;
 	
 	
 			// Структура события
@@ -270,6 +274,9 @@ int gui (int argc, char ** args) {
 						}
 			        }
 			    }
+                if (x < 100 && y < 100) {
+                    mainField();
+                }
                 SDL_RenderPresent(ren);
 
 	     	}

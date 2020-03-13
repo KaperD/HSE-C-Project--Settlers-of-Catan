@@ -73,3 +73,5 @@ include_directories(Model)
 include_directories(Controller)
 include_directories(Network)
 include_directories(GUI)
+
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
