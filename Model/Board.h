@@ -4,6 +4,8 @@
 #include <vector>
 #include <memory>
 
+namespace Board {
+
 const int BOARDSIZE = 5;
 const int TERRITORIESNUM = 6;
 const int VERTEXNUM = 54;
@@ -112,5 +114,7 @@ private:
     std::vector<std::unique_ptr<Player>> players;
     PlayerNum cur_player;
 };
+
+} // namespace Board
 
 #endif

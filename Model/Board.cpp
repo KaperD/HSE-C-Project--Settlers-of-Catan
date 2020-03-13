@@ -4,6 +4,8 @@
 
 #include "Board.h"
 
+namespace Board {
+
 #define getCellPlayer(v) board.getFieldCell(v.first, v.second).getPlayer()
 #define cell(x, y) field[x][y]
 
@@ -260,4 +262,5 @@ bool Catan::canBuild(BuildingType mod, PlayerNum player, int x, int y) const {
     return false;
 }
 
+} // namespace Board
 //обсудить также предстоящие статик касты или виртуальные мутки, опять же получается говнокод какой-то либо я себя накручиваю

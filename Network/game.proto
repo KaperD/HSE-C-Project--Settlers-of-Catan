@@ -17,6 +17,7 @@ message OrderInfo {
     int32 numberOfPlayers = 2;
 }
 
+
 enum EventType {
     CARD = 0;
     DICE = 1;
@@ -59,8 +60,9 @@ message Market {
 }
 
 message Build {
-    int32 x = 1;
-    int32 y = 2;
+    int32 buildingType = 1;
+    int32 x = 2;
+    int32 y = 3;
 }
 
 
