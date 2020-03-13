@@ -75,3 +75,5 @@ include_directories(Network)
 include_directories(GUI)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
+
+target_compile_options(project PRIVATE -Werror -Wall -Wextra)
