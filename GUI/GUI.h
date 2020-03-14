@@ -45,11 +45,56 @@ public:
 
 
 inline void View::build(int x, int y) {
-    dest.x = x;//470 + 2*100*sqrt(3);
-    dest.y = y;//150 + 50;
-    dest.w = 50*sqrt(3);//60
-    dest.h = 80;//100
-    SDL_RenderCopy(ren, road1, NULL, &dest); //Копируем в рендер персонажа
+    std::cout << x << ' ' << y << '\n';
+    for (int i = 0; i < 5; ++i){
+        int a = 0;
+        int b = 11;
+        if (i == 0) {a = 1; b = 10;}
+        if (i == 4) {a = 1; b = 10;}
+        for (int j = a; j < b; ++j){
+            if ((i+j) % 2 != 0) continue;
+            if (x > 487+ j*50*sqrt(3) && x <  515+j*50*sqrt(3) && y > 199 + 3*i*50 && y < 294 + 3*i*50) {
+                dest.x = 460 + j*50*sqrt(3);
+                dest.y = 150 + 50 + 3*i*50;
+                dest.w = 80;//60
+                dest.h = 100;//100
+                SDL_RenderCopy(ren, road, NULL, &dest);
+                break;
+            }
+        }
+    }
+
+
+
+    for (int i = 0; i < 6; ++i){
+		        	int a = 0;
+		        	int b = 10;
+		        	if (i == 0) {a = 2; b = 8;}
+		        	if (i == 1) {a = 1; b = 9;}
+		        	if (i == 5) {a = 2; b = 8;}
+		        	if (i == 4) {a = 1; b = 9;}
+		        	for (int j = a; j < b; ++j){
+		        		if ((i+j) % 2 == 0) {
+				        if (x > 499+ j*50*sqrt(3) && x <  570+j*50*sqrt(3) && y > 160 + 3*i*50 && y < 195 + 3*i*50) {
+				        	dest.x = 500 + j*50*sqrt(3);//470 + 2*100*sqrt(3);
+							dest.y = 140 + 3*i*50;//150 + 50;
+							dest.w = 50*sqrt(3);//60
+							dest.h = 80;//100
+							SDL_RenderCopy(ren, road1, NULL, &dest); //Копируем в рендер персонажа
+							break;
+						}}
+						else {
+							if (x > 499+ j*50*sqrt(3) && x <  570+j*50*sqrt(3) && y > 160 + 3*i*50 && y < 195 + 3*i*50) {
+				        	dest.x = 500 + j*50*sqrt(3);//470 + 2*100*sqrt(3);
+							dest.y = 140 + 3*i*50;//150 + 50;
+							dest.w = 50*sqrt(3);//60
+							dest.h = 80;//100
+							SDL_RenderCopy(ren, road2, NULL, &dest); //Копируем в рендер персонажа
+							break;
+						}
+						}
+			        }
+			    }
     SDL_RenderPresent(ren);
 }
 
@@ -113,7 +158,7 @@ inline ::game::Event View::getTurn() {
 			{
 		        int x, y;
 		        SDL_GetMouseState(&x, &y); // Получить координаты мыши
-		        std::cout << x << ' ' << y << '\n';
+		        
 		        for (int i = 0; i < 5; ++i){
 		        	int a = 0;
 		        	int b = 11;
@@ -131,8 +176,8 @@ inline ::game::Event View::getTurn() {
 							::game::Event ret;
                             ret.set_type(::game::EventType::BUILD);
                             auto xy = ret.mutable_buildinfo();
-                            xy->set_x(dest.x);
-                            xy->set_y(dest.y);
+                            xy->set_x(x);
+                            xy->set_y(y);
                             return ret;
 						}
 			        }
@@ -159,8 +204,8 @@ inline ::game::Event View::getTurn() {
                             ::game::Event ret;
                             ret.set_type(::game::EventType::BUILD);
                             auto xy = ret.mutable_buildinfo();
-                            xy->set_x(dest.x);
-                            xy->set_y(dest.y);
+                            xy->set_x(x);
+                            xy->set_y(y);
                             return ret;
 						}}
 						else {
@@ -174,8 +219,8 @@ inline ::game::Event View::getTurn() {
 							::game::Event ret;
                             ret.set_type(::game::EventType::BUILD);
                             auto xy = ret.mutable_buildinfo();
-                            xy->set_x(dest.x);
-                            xy->set_y(dest.y);
+                            xy->set_x(x);
+                            xy->set_y(y);
                             return ret;
 						}
 						}
