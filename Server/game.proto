@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package game;
+
+service Network {
+    rpc Register(Void) returns (OrderInfo) {}
+
+    rpc SendEvent(Event) returns (Void) {}
+
+    rpc GetEvent(Player) returns (Event) {}
+}
+
+message Void {}
+
+message OrderInfo {
+    int32 id = 1;
+    int32 numberOfPlayers = 2;
+}
+
+enum EventType {
+    CARD = 0;
+    DICE = 1;
+    MARKET = 2;
+    BUILD = 3;
+    ENDTURN = 4;
+    NEXTPHASE = 5;
+    //TRADE = 6;
+}
+
+
+message Player {
+    int32 playerId = 1;
+}
+
+
+message Event {
+    EventType type = 1;
+    int32 playerId = 2;
+    
+    oneof EventInfo {
+        Card cardInfo = 3;
+        Dice diceInfo = 4;
+        Market marketInfo = 5;
+        Build buildInfo = 6;
+    }
+}
+
+message Card {
+    int32 cardType = 1;
+}
+
+message Dice {
+    int32 number = 1;
+}
+
+message Market {
+    int32 requiredResource = 1;
+    int32 ownedResource = 2;
+}
+
+message Build {
+    int32 buildingType = 1;
+    int32 x = 2;
+    int32 y = 3;
+}
+
+
