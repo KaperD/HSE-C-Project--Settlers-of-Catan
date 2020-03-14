@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.2)
 add_compile_options(-std=c++17)
 
 # GRPC and Protocol Buffers libraries location
-list(APPEND CMAKE_PREFIX_PATH "/opt/grpc" "/opt/protobuf")
+list(APPEND CMAKE_PREFIX_PATH "/usr/lib" "/usr/local/lib")
 
 # Cmake find modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/Network/cmake")
@@ -75,3 +75,5 @@ include_directories(Network)
 include_directories(GUI)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
+
+target_compile_options(project PRIVATE -Werror -Wall -Wextra)

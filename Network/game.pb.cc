@@ -231,6 +231,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_game_2eproto::offsets[] PROTOB
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
+  PROTOBUF_FIELD_OFFSET(::game::Build, buildingtype_),
   PROTOBUF_FIELD_OFFSET(::game::Build, x_),
   PROTOBUF_FIELD_OFFSET(::game::Build, y_),
 };
@@ -267,13 +268,14 @@ const char descriptor_table_protodef_game_2eproto[] PROTOBUF_SECTION_VARIABLE(pr
   "(\0132\013.game.BuildH\000B\013\n\tEventInfo\"\030\n\004Card\022\020"
   "\n\010cardType\030\001 \001(\005\"\026\n\004Dice\022\016\n\006number\030\001 \001(\005"
   "\"9\n\006Market\022\030\n\020requiredResource\030\001 \001(\005\022\025\n\r"
-  "ownedResource\030\002 \001(\005\"\035\n\005Build\022\t\n\001x\030\001 \001(\005\022"
-  "\t\n\001y\030\002 \001(\005*R\n\tEventType\022\010\n\004CARD\020\000\022\010\n\004DIC"
-  "E\020\001\022\n\n\006MARKET\020\002\022\t\n\005BUILD\020\003\022\013\n\007ENDTURN\020\004\022"
-  "\r\n\tNEXTPHASE\020\0052\205\001\n\007Network\022)\n\010Register\022\n"
-  ".game.Void\032\017.game.OrderInfo\"\000\022&\n\tSendEve"
-  "nt\022\013.game.Event\032\n.game.Void\"\000\022\'\n\010GetEven"
-  "t\022\014.game.Player\032\013.game.Event\"\000b\006proto3"
+  "ownedResource\030\002 \001(\005\"3\n\005Build\022\024\n\014building"
+  "Type\030\001 \001(\005\022\t\n\001x\030\002 \001(\005\022\t\n\001y\030\003 \001(\005*R\n\tEven"
+  "tType\022\010\n\004CARD\020\000\022\010\n\004DICE\020\001\022\n\n\006MARKET\020\002\022\t\n"
+  "\005BUILD\020\003\022\013\n\007ENDTURN\020\004\022\r\n\tNEXTPHASE\020\0052\205\001\n"
+  "\007Network\022)\n\010Register\022\n.game.Void\032\017.game."
+  "OrderInfo\"\000\022&\n\tSendEvent\022\013.game.Event\032\n."
+  "game.Void\"\000\022\'\n\010GetEvent\022\014.game.Player\032\013."
+  "game.Event\"\000b\006proto3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_game_2eproto_deps[1] = {
 };
@@ -290,7 +292,7 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_gam
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_game_2eproto_once;
 static bool descriptor_table_game_2eproto_initialized = false;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_game_2eproto = {
-  &descriptor_table_game_2eproto_initialized, descriptor_table_protodef_game_2eproto, "game.proto", 678,
+  &descriptor_table_game_2eproto_initialized, descriptor_table_protodef_game_2eproto, "game.proto", 700,
   &descriptor_table_game_2eproto_once, descriptor_table_game_2eproto_sccs, descriptor_table_game_2eproto_deps, 8, 0,
   schemas, file_default_instances, TableStruct_game_2eproto::offsets,
   file_level_metadata_game_2eproto, 8, file_level_enum_descriptors_game_2eproto, file_level_service_descriptors_game_2eproto,
@@ -1951,16 +1953,16 @@ Build::Build(const Build& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
       _internal_metadata_(nullptr) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::memcpy(&x_, &from.x_,
+  ::memcpy(&buildingtype_, &from.buildingtype_,
     static_cast<size_t>(reinterpret_cast<char*>(&y_) -
-    reinterpret_cast<char*>(&x_)) + sizeof(y_));
+    reinterpret_cast<char*>(&buildingtype_)) + sizeof(y_));
   // @@protoc_insertion_point(copy_constructor:game.Build)
 }
 
 void Build::SharedCtor() {
-  ::memset(&x_, 0, static_cast<size_t>(
+  ::memset(&buildingtype_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&y_) -
-      reinterpret_cast<char*>(&x_)) + sizeof(y_));
+      reinterpret_cast<char*>(&buildingtype_)) + sizeof(y_));
 }
 
 Build::~Build() {
@@ -1986,9 +1988,9 @@ void Build::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  ::memset(&x_, 0, static_cast<size_t>(
+  ::memset(&buildingtype_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&y_) -
-      reinterpret_cast<char*>(&x_)) + sizeof(y_));
+      reinterpret_cast<char*>(&buildingtype_)) + sizeof(y_));
   _internal_metadata_.Clear();
 }
 
@@ -1999,16 +2001,23 @@ const char* Build::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::inte
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
     CHK_(ptr);
     switch (tag >> 3) {
-      // int32 x = 1;
+      // int32 buildingType = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 8)) {
+          buildingtype_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // int32 x = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
           x_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // int32 y = 2;
-      case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
+      // int32 y = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 24)) {
           y_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
@@ -2039,16 +2048,22 @@ failure:
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 x = 1;
-  if (this->x() != 0) {
+  // int32 buildingType = 1;
+  if (this->buildingtype() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(1, this->_internal_x(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(1, this->_internal_buildingtype(), target);
   }
 
-  // int32 y = 2;
+  // int32 x = 2;
+  if (this->x() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(2, this->_internal_x(), target);
+  }
+
+  // int32 y = 3;
   if (this->y() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(2, this->_internal_y(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(3, this->_internal_y(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -2067,14 +2082,21 @@ size_t Build::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // int32 x = 1;
+  // int32 buildingType = 1;
+  if (this->buildingtype() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
+        this->_internal_buildingtype());
+  }
+
+  // int32 x = 2;
   if (this->x() != 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
         this->_internal_x());
   }
 
-  // int32 y = 2;
+  // int32 y = 3;
   if (this->y() != 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
@@ -2112,6 +2134,9 @@ void Build::MergeFrom(const Build& from) {
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
+  if (from.buildingtype() != 0) {
+    _internal_set_buildingtype(from._internal_buildingtype());
+  }
   if (from.x() != 0) {
     _internal_set_x(from._internal_x());
   }
@@ -2141,6 +2166,7 @@ bool Build::IsInitialized() const {
 void Build::InternalSwap(Build* other) {
   using std::swap;
   _internal_metadata_.Swap(&other->_internal_metadata_);
+  swap(buildingtype_, other->buildingtype_);
   swap(x_, other->x_);
   swap(y_, other->y_);
 }

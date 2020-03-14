@@ -2,7 +2,10 @@
 #define _BOARDS_H_
 
 #include <vector>
+#include <unordered_map>
 #include <memory>
+
+namespace Board {
 
 const int BOARDSIZE = 5;
 const int TERRITORIESNUM = 6;
@@ -26,20 +29,17 @@ enum class Resource {
     WHEAT //пшеница
 };
 
-enum class Settlement {
-    NONE,
-    VILLAGE,
-    CITY
-};
-
 enum class BuildingType {
     NONE,
-    SETTLEMENT,
+    VILLAGE,
+    CITY,
     ROAD
 };
 
 class Cell {
 public:
+    Cell(BuildingType type);
+
     PlayerNum getPlayer() const;
     void setPlayer(PlayerNum new_player);
 
@@ -47,8 +47,12 @@ public:
     size_t getRoadsNum() const;
     std::pair<int, int> getRoad(int i) const;
     std::pair<int, int> getVertex(int i) const;
+    BuildingType getType() const;
+    void setBuildingType(BuildingType type);
 
 protected:
+
+    BuildingType type = BuildingType::NONE;
     PlayerNum player = PlayerNum::NONE;
     std::vector<std::pair<int, int>> vertexes;
     std::vector<std::pair<int, int>> roads;
@@ -57,12 +61,6 @@ protected:
 class Vertex : public Cell {
 public:
     Vertex(int x, int y, bool direction);
-
-    Settlement getSettlement() const;
-    void setSettlement(Settlement new_s);
-
-private:
-    Settlement s = Settlement::CITY;
 };
 
 class Road : public Cell {
@@ -78,6 +76,7 @@ public:
     void setRobbers();
     Resource getResource() const;
     int getNum() const;
+    bool robbersIsHere() const;
 
 private:
     Resource re;
@@ -88,10 +87,18 @@ private:
 class Player {
 public:
     Player(PlayerNum id);
+
+    void giveResource(Resource re, int num);
+    void getResource(Resource re, int num);
+    void giveVictoryPoints(int vp);
+    int getVictoryPoints() const;
+
+    int checkResourceNum(Resource re);
+
 private:
     PlayerNum id;
-    int victory_points = 0;
-    std::vector<Resource> resources;
+    int victory_points;
+    std::unordered_map<Resource, int> cards;
     // TODO: std::vector<DevCard>;
 };
 
@@ -99,18 +106,29 @@ class Catan {
 public:
     Catan();
 
+    //нужно будет убррать player в аргументтах тех функций, которым не надо
     void setRobbers(int hex_num);
-    void setSettle(Settlement s, PlayerNum player, int x, int y);
-    void setRoad(PlayerNum player, int x, int y);
+    void settle(BuildingType s, PlayerNum player, int x, int y);
+    void giveResources(int cubes_num);
+    //возвращает true, если торговля прошла успешно, false, если не хватило ресурсов на обмен
+    bool trade(Resource re_for_trade, Resource need_re);
 
     bool canBuild(BuildingType mod, PlayerNum player, int x, int y) const;
+    bool checkCards(BuildingType building);
 
     const std::unique_ptr<Cell>& getFieldCell(int x, int y) const;
+    void changeCurPlayer(PlayerNum new_player);
+
+    bool isFinished();
 
 private:
     std::vector<std::vector<std::unique_ptr<Cell>>> field;
-    std::vector<std::unique_ptr<Player>> players;
+    std::vector<Hexagon*> hexes;
+    std::unordered_map<PlayerNum, std::unique_ptr<Player>> players;
+    int robbers_hex;
     PlayerNum cur_player;
 };
+
+}
 
 #endif

@@ -1236,10 +1236,20 @@ class Build :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kXFieldNumber = 1,
-    kYFieldNumber = 2,
+    kBuildingTypeFieldNumber = 1,
+    kXFieldNumber = 2,
+    kYFieldNumber = 3,
   };
-  // int32 x = 1;
+  // int32 buildingType = 1;
+  void clear_buildingtype();
+  ::PROTOBUF_NAMESPACE_ID::int32 buildingtype() const;
+  void set_buildingtype(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_buildingtype() const;
+  void _internal_set_buildingtype(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // int32 x = 2;
   void clear_x();
   ::PROTOBUF_NAMESPACE_ID::int32 x() const;
   void set_x(::PROTOBUF_NAMESPACE_ID::int32 value);
@@ -1248,7 +1258,7 @@ class Build :
   void _internal_set_x(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
-  // int32 y = 2;
+  // int32 y = 3;
   void clear_y();
   ::PROTOBUF_NAMESPACE_ID::int32 y() const;
   void set_y(::PROTOBUF_NAMESPACE_ID::int32 value);
@@ -1262,6 +1272,7 @@ class Build :
   class _Internal;
 
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
+  ::PROTOBUF_NAMESPACE_ID::int32 buildingtype_;
   ::PROTOBUF_NAMESPACE_ID::int32 x_;
   ::PROTOBUF_NAMESPACE_ID::int32 y_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
@@ -1695,7 +1706,27 @@ inline void Market::set_ownedresource(::PROTOBUF_NAMESPACE_ID::int32 value) {
 
 // Build
 
-// int32 x = 1;
+// int32 buildingType = 1;
+inline void Build::clear_buildingtype() {
+  buildingtype_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 Build::_internal_buildingtype() const {
+  return buildingtype_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 Build::buildingtype() const {
+  // @@protoc_insertion_point(field_get:game.Build.buildingType)
+  return _internal_buildingtype();
+}
+inline void Build::_internal_set_buildingtype(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  buildingtype_ = value;
+}
+inline void Build::set_buildingtype(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_buildingtype(value);
+  // @@protoc_insertion_point(field_set:game.Build.buildingType)
+}
+
+// int32 x = 2;
 inline void Build::clear_x() {
   x_ = 0;
 }
@@ -1715,7 +1746,7 @@ inline void Build::set_x(::PROTOBUF_NAMESPACE_ID::int32 value) {
   // @@protoc_insertion_point(field_set:game.Build.x)
 }
 
-// int32 y = 2;
+// int32 y = 3;
 inline void Build::clear_y() {
   y_ = 0;
 }
