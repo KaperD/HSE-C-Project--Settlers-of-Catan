@@ -127,8 +127,8 @@ void MarketHandler::displayEvent(Event& event) {
 //===============BuildHandler===============
 
 void BuildHandler::processEvent(Event& event, bool needSend) {
-    if (event.type() != EventType::MARKET) {
-    throw std::logic_error("Wrong type");
+    if (event.type() != EventType::BUILD) {
+        throw std::logic_error("Wrong type");
     }
 
     currentPlayer_ = event.playerid();
@@ -136,6 +136,10 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
     x_ = event.mutable_buildinfo()->x();
     y_ = event.mutable_buildinfo()->y();
 
+    displayEvent(event);
+    if (needSend) {
+        sendEvent(event);
+    }
     /*
     if (gameModel.canBuild(buildingType_, currentPlayer_, x_, y_)) {
         gameModel.build(buildingType_, currentPlayer_, x_, y_);
@@ -146,6 +150,7 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
 }
 
 void BuildHandler::displayEvent(Event& event) {
+    gameView_.build(x_, y_);
     /*
     Построить, обновить очки игрока
     */
@@ -156,6 +161,9 @@ void BuildHandler::displayEvent(Event& event) {
 //===============EndTurnHandler===============
 
 void EndTurnHandler::processEvent(Event& event, bool needSend) {
+    if (event.type() != EventType::ENDTURN) {
+        throw std::logic_error("Wrong type");
+    }
     //displayEvent(event);
     if (needSend) {
         sendEvent(event);
@@ -173,6 +181,9 @@ void EndTurnHandler::displayEvent(Event& event) {
 //===============NextPhaseHandler===============
 
 void NextPhaseHandler::processEvent(Event& event, bool needSend) {
+    if (event.type() != EventType::NEXTPHASE) {
+        throw std::logic_error("Wrong type");
+    }
     displayEvent(event);
     if (needSend) {
         sendEvent(event);
@@ -180,7 +191,7 @@ void NextPhaseHandler::processEvent(Event& event, bool needSend) {
 }
 
 void NextPhaseHandler::displayEvent(Event& event) {
-    gameView_.update();
+    //gameView_.update();
     /*
     Отобразить новые кнопки
     */
@@ -197,6 +208,7 @@ GameController::GameController(Board::Catan& model, GameClient& client, View& vi
     for (int k = 0; k < 7; ++k) {
         handlers_.push_back(nullptr);
     }
+    handlers_[3] = std::unique_ptr<BuildHandler>(new BuildHandler(gameModel_, gameView_, gameClient_));
     handlers_[4] = std::unique_ptr<EndTurnHandler>(new EndTurnHandler(gameModel_, gameView_, gameClient_));
     handlers_[5] = std::unique_ptr<NextPhaseHandler>(new NextPhaseHandler(gameModel_, gameView_, gameClient_));
 }
@@ -219,7 +231,7 @@ void GameController::RunGame() {
                 if (x == EventType::ENDTURN) {
                     quit = true;
                     break;
-                } else {
+                } else if (x == EventType::NEXTPHASE) {
                     break;
                 }
             }
@@ -232,7 +244,7 @@ void GameController::RunGame() {
                 if (x == EventType::ENDTURN) {
                     quit = true;
                     break;
-                } else {
+                } else if (x == EventType::NEXTPHASE) {
                     break;
                 }
             }

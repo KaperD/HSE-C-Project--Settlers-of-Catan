@@ -17,6 +17,8 @@ public:
     ::game::Event getTurn();
     void endGame();
 
+    void build(int x, int y);
+
     SDL_DisplayMode displayMode;
     SDL_Renderer *ren;
     SDL_Texture *back_ground;
@@ -40,7 +42,16 @@ public:
     int frameTime = 0;
 };
 
-View& get();
+
+
+inline void View::build(int x, int y) {
+    dest.x = x;//470 + 2*100*sqrt(3);
+    dest.y = y;//150 + 50;
+    dest.w = 50*sqrt(3);//60
+    dest.h = 80;//100
+    SDL_RenderCopy(ren, road1, NULL, &dest); //Копируем в рендер персонажа
+    SDL_RenderPresent(ren);
+}
 
 
 inline void View::update() {
@@ -57,7 +68,6 @@ inline void View::update() {
         dest1.w = displayMode.w;
         dest1.h = displayMode.h;
     SDL_RenderCopy(ren,back,NULL,&dest1); //Копируем в рендер фон
-
     SDL_Rect dest;
     dest.x = displayMode.w / 2 - 265*sqrt(3);
     dest.y = displayMode.h / 2 - 540;
@@ -74,6 +84,7 @@ inline void View::update() {
         if (i < 2) {k+=1;dest.x-= 50*sqrt(3);}
         else {k-=1;dest.x+= 50*sqrt(3);}
     }
+    //SDL_RenderPresent(ren);
 }
 
 inline ::game::Event View::getTurn() {
@@ -115,9 +126,14 @@ inline ::game::Event View::getTurn() {
 							dest.y = 150 + 50 + 3*i*50;
 							dest.w = 80;//60
 							dest.h = 100;//100
-							SDL_RenderCopy(ren, road, NULL, &dest); //Копируем в рендер персонажа
-							break;
-                            SDL_RenderPresent(ren);
+
+
+							::game::Event ret;
+                            ret.set_type(::game::EventType::BUILD);
+                            auto xy = ret.mutable_buildinfo();
+                            xy->set_x(dest.x);
+                            xy->set_y(dest.y);
+                            return ret;
 						}
 			        }
 			    }
@@ -138,9 +154,14 @@ inline ::game::Event View::getTurn() {
 							dest.y = 140 + 3*i*50;//150 + 50;
 							dest.w = 50*sqrt(3);//60
 							dest.h = 80;//100
-							SDL_RenderCopy(ren, road1, NULL, &dest); //Копируем в рендер персонажа
-							break;
-                            SDL_RenderPresent(ren);
+
+
+                            ::game::Event ret;
+                            ret.set_type(::game::EventType::BUILD);
+                            auto xy = ret.mutable_buildinfo();
+                            xy->set_x(dest.x);
+                            xy->set_y(dest.y);
+                            return ret;
 						}}
 						else {
 							if (x > 499+ j*50*sqrt(3) && x <  570+j*50*sqrt(3) && y > 160 + 3*i*50 && y < 195 + 3*i*50) {
@@ -148,9 +169,14 @@ inline ::game::Event View::getTurn() {
 							dest.y = 140 + 3*i*50;//150 + 50;
 							dest.w = 50*sqrt(3);//60
 							dest.h = 80;//100
-							SDL_RenderCopy(ren, road2, NULL, &dest); //Копируем в рендер персонажа
-							break;
-                            SDL_RenderPresent(ren);
+
+
+							::game::Event ret;
+                            ret.set_type(::game::EventType::BUILD);
+                            auto xy = ret.mutable_buildinfo();
+                            xy->set_x(dest.x);
+                            xy->set_y(dest.y);
+                            return ret;
 						}
 						}
 			        }
@@ -188,7 +214,7 @@ inline ::game::Event View::getTurn() {
 
 
 inline View::View() {
-    srand(time(0));
+    //srand(time(0));
 
     if( SDL_Init( SDL_INIT_EVERYTHING ) != 0 )
     {
@@ -330,6 +356,7 @@ inline View::View() {
 
     update();
     SDL_RenderPresent(ren);
+    //SDL_RenderPresent(ren);
 }
 
 
