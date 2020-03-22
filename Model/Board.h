@@ -12,6 +12,7 @@ const int TERRITORIESNUM = 6;
 const int VERTEXNUM = 54;
 const int FIELDHEIGHT = 11;
 const int FIELDWIDTH = 21;
+const int HEXESNUM = 19;
 
 enum class PlayerNum {
     NONE,
@@ -107,7 +108,6 @@ public:
     Catan();
 
     //нужно будет убррать player в аргументтах тех функций, которым не надо
-    void setRobbers(int hex_num);
     void settle(BuildingType s, PlayerNum player, int x, int y);
     void giveResources(int cubes_num);
     //возвращает true, если торговля прошла успешно, false, если не хватило ресурсов на обмен
@@ -118,6 +118,8 @@ public:
 
     const std::unique_ptr<Cell>& getFieldCell(int x, int y) const;
     void changeCurPlayer(PlayerNum new_player);
+    void setRobbers(int hex_num);
+    Hexagon* getHex(int indx) const;
 
     bool isFinished();
 
