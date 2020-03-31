@@ -269,13 +269,13 @@ const char descriptor_table_protodef_game_2eproto[] PROTOBUF_SECTION_VARIABLE(pr
   "\n\010cardType\030\001 \001(\005\"\026\n\004Dice\022\016\n\006number\030\001 \001(\005"
   "\"9\n\006Market\022\030\n\020requiredResource\030\001 \001(\005\022\025\n\r"
   "ownedResource\030\002 \001(\005\"3\n\005Build\022\024\n\014building"
-  "Type\030\001 \001(\005\022\t\n\001x\030\002 \001(\005\022\t\n\001y\030\003 \001(\005*R\n\tEven"
+  "Type\030\001 \001(\005\022\t\n\001x\030\002 \001(\005\022\t\n\001y\030\003 \001(\005*_\n\tEven"
   "tType\022\010\n\004CARD\020\000\022\010\n\004DICE\020\001\022\n\n\006MARKET\020\002\022\t\n"
-  "\005BUILD\020\003\022\013\n\007ENDTURN\020\004\022\r\n\tNEXTPHASE\020\0052\205\001\n"
-  "\007Network\022)\n\010Register\022\n.game.Void\032\017.game."
-  "OrderInfo\"\000\022&\n\tSendEvent\022\013.game.Event\032\n."
-  "game.Void\"\000\022\'\n\010GetEvent\022\014.game.Player\032\013."
-  "game.Event\"\000b\006proto3"
+  "\005BUILD\020\003\022\013\n\007ENDTURN\020\004\022\r\n\tNEXTPHASE\020\005\022\013\n\007"
+  "ENDGAME\020\0062\205\001\n\007Network\022)\n\010Register\022\n.game"
+  ".Void\032\017.game.OrderInfo\"\000\022&\n\tSendEvent\022\013."
+  "game.Event\032\n.game.Void\"\000\022\'\n\010GetEvent\022\014.g"
+  "ame.Player\032\013.game.Event\"\000b\006proto3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_game_2eproto_deps[1] = {
 };
@@ -292,7 +292,7 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_gam
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_game_2eproto_once;
 static bool descriptor_table_game_2eproto_initialized = false;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_game_2eproto = {
-  &descriptor_table_game_2eproto_initialized, descriptor_table_protodef_game_2eproto, "game.proto", 700,
+  &descriptor_table_game_2eproto_initialized, descriptor_table_protodef_game_2eproto, "game.proto", 713,
   &descriptor_table_game_2eproto_once, descriptor_table_game_2eproto_sccs, descriptor_table_game_2eproto_deps, 8, 0,
   schemas, file_default_instances, TableStruct_game_2eproto::offsets,
   file_level_metadata_game_2eproto, 8, file_level_enum_descriptors_game_2eproto, file_level_service_descriptors_game_2eproto,
@@ -313,6 +313,7 @@ bool EventType_IsValid(int value) {
     case 3:
     case 4:
     case 5:
+    case 6:
       return true;
     default:
       return false;

@@ -9,6 +9,7 @@
 #include "Client.h"
 #include "Client.h"
 #include "GUI.h"
+#include "EventQueue.h"
 
 namespace Controller {
 /**
@@ -104,6 +105,15 @@ public:
     using Handler::sendEvent;
 };
 
+class EndGameHandler : public Handler {
+public:
+    EndGameHandler(Board::Catan& model, View& view, GameClient& client)
+    : Handler(model, view, client) { }
+    void processEvent(::game::Event& event, bool needSend) override;
+    void displayEvent(::game::Event& event) override;
+    using Handler::sendEvent;
+};
+
 class GameController final {
 public: 
     GameController(Board::Catan& model, GameClient& client, View& view);
@@ -119,6 +129,8 @@ private:
     Board::Catan& gameModel_;
     View& gameView_;
     GameClient& gameClient_;
+    
+
     int myTurn_;
     int currentTurn_ = 0;
 };

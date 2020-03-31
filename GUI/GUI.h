@@ -4,6 +4,7 @@
 #include <random>
 #include <ctime>
 
+
 #include "game.grpc.pb.h"
 #include "Client.h"
 
@@ -16,7 +17,7 @@ public:
     void update();
     ::game::Event getTurn();
     void endGame();
-
+	void loop();
     void build(int x, int y);
 
     SDL_DisplayMode displayMode;
@@ -40,8 +41,21 @@ public:
 
     uint32_t frameStart = 0;
     int frameTime = 0;
+	static int qwe;
 };
 
+
+inline void View::loop() {
+	frameStart = SDL_GetTicks();
+
+	SDL_RenderPresent(ren);
+	//std::cout << 6 << std::endl;
+
+	frameTime = SDL_GetTicks() - frameStart;
+	if (frameDelay > frameTime) {
+        SDL_Delay(frameDelay - frameTime);
+    }
+}
 
 
 inline void View::build(int x, int y) {
@@ -95,7 +109,7 @@ inline void View::build(int x, int y) {
 						}
 			        }
 			    }
-    SDL_RenderPresent(ren);
+    //SDL_RenderPresent(ren);
 }
 
 
@@ -129,20 +143,21 @@ inline void View::update() {
         if (i < 2) {k+=1;dest.x-= 50*sqrt(3);}
         else {k-=1;dest.x+= 50*sqrt(3);}
     }
-    //SDL_RenderPresent(ren);
+    SDL_RenderPresent(ren);
+	
 }
 
 inline ::game::Event View::getTurn() {
     SDL_Event e;
    
     bool quit = false;
-    SDL_RenderPresent(ren);
+    //SDL_RenderPresent(ren);
     SDL_PumpEvents();
     SDL_FlushEvents(0, UINT32_MAX);
-    std::cout << "Cleared\n";
+    
 	while (!quit)
 	{
-        frameStart = SDL_GetTicks();
+		//SDL_RenderPresent(ren);
 		// Обработка событий
 		while (SDL_PollEvent(&e))
 		{
@@ -227,25 +242,21 @@ inline ::game::Event View::getTurn() {
 			        }
 			    }
                 if (x < 100 && y < 100) {
-                    update();
-                    ::game::Event ret;
-                    ret.set_type(::game::EventType::NEXTPHASE);
-                    return ret;
-                }
-                if (x > 900 && x < 1000 && y > 900 && y < 1000) {
+                    //update();
                     ::game::Event ret;
                     ret.set_type(::game::EventType::ENDTURN);
                     return ret;
                 }
-                SDL_RenderPresent(ren);
+                if (x > 1000 && y > 1000) {
+                    ::game::Event ret;
+                    ret.set_type(::game::EventType::ENDGAME);
+                    return ret;
+                }
+                //SDL_RenderPresent(ren);
 
 	     	}
 		}
-		frameTime = SDL_GetTicks() - frameStart;
-		
-        if (frameDelay > frameTime) {
-            SDL_Delay(frameDelay - frameTime);
-        }
+		loop();
 
 		// Отображение сцены
 		// SDL_RenderPresent(ren); //Погнали!!
@@ -259,6 +270,9 @@ inline ::game::Event View::getTurn() {
 
 
 inline View::View() {
+	std::cout << ++qwe << std::endl;
+	std::cout << std::endl;
+	std::cout << std::endl;
     //srand(time(0));
 
     if( SDL_Init( SDL_INIT_EVERYTHING ) != 0 )
@@ -293,36 +307,7 @@ inline View::View() {
 	if (back_ground == nullptr){
 		std::cout << "SDL_CreateTextureFromSurface Error: " << SDL_GetError() << std::endl;
 		return;
-	}/*
-
-	SDL_Surface *BMP_player = SDL_LoadBMP("oct.bmp");
-	if (BMP_player == nullptr){
-		std::cout << "SDL_LoadBMP Error: " << SDL_GetError() << std::endl;
-		return 1;
 	}
-
-	SDL_Texture *player = SDL_CreateTextureFromSurface(ren, BMP_player);
-	SDL_FreeSurface(BMP_player); //Очищение памяти поверхности
-	if (player == nullptr){
-		std::cout << "SDL_CreateTextureFromSurface Error: " << SDL_GetError() << std::endl;
-		return 1;
-	}
-
-
-	SDL_Surface *BMP_player1 = SDL_LoadBMP("oct1.bmp");
-	if (BMP_player1 == nullptr){
-		std::cout << "SDL_LoadBMP Error: " << SDL_GetError() << std::endl;
-		return 1;
-	}
-
-	SDL_Texture *player1 = SDL_CreateTextureFromSurface(ren, BMP_player1);
-	SDL_FreeSurface(BMP_player1); //Очищение памяти поверхности
-	if (player1 == nullptr){
-		std::cout << "SDL_CreateTextureFromSurface Error: " << SDL_GetError() << std::endl;
-		return 1;
-	}
-*/
-	
 
 	std::string s = "image/oct .bmp";
 	for (int i = 0; i < 6; ++i) {
@@ -400,8 +385,7 @@ inline View::View() {
 	}
 
     update();
-    SDL_RenderPresent(ren);
-    //SDL_RenderPresent(ren);
+	//SDL_RenderPresent(ren);
 }
 
 

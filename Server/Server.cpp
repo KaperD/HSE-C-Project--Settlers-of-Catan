@@ -44,12 +44,15 @@ private:
     Status SendEvent(::grpc::ServerContext* context, const Event* request, Void* response) override {
         Event event = *request;
         int playerid = event.playerid();
-        std::cout << playerid << ' ' << event.type() << std::endl;
+        
         for (int k = 0; k < 3; ++k) {
             if (k == playerid) continue;
             events_[k].push(event);
         }
-    
+        if (event.type() == EventType::ENDGAME) {
+            events_[playerid].push(event);
+        }
+        std::cout << playerid << ' ' << event.type() << std::endl;
         return Status::OK;
     }
 
