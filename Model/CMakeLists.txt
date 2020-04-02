@@ -11,8 +11,6 @@ add_executable(ModelTest
     Test/test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Board.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Board.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/Cards.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Cards.h
 )
 
 target_include_directories(ModelTest
