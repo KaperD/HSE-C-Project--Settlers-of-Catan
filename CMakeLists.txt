@@ -46,8 +46,6 @@ add_library(
     model
     Model/Board.cpp
     Model/Board.h
-    Model/Cards.cpp
-    Model/Cards.h
 )
 
 
