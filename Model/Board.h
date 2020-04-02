@@ -7,11 +7,11 @@
 
 namespace Board {
 
-const int BOARDSIZE = 5;
-const int TERRITORIESNUM = 6;
+const int TERRITORIESNUM = 5;
 const int VERTEXNUM = 54;
 const int FIELDHEIGHT = 11;
 const int FIELDWIDTH = 21;
+const int HEXESNUM = 19;
 
 enum class PlayerNum {
     NONE,
@@ -27,6 +27,15 @@ enum class Resource {
     CLAY, //глина
     TREE,
     WHEAT //пшеница
+};
+
+enum class DevelopmentCard {
+    NONE,
+    KNIGHT,
+    VICTORY_POINT,
+    ROAD_BUILDING,
+    MONOPOLY,
+    INVENTION
 };
 
 enum class BuildingType {
@@ -61,6 +70,7 @@ protected:
 class Vertex : public Cell {
 public:
     Vertex(int x, int y, bool direction);
+
 };
 
 class Road : public Cell {
@@ -91,33 +101,48 @@ public:
     void giveResource(Resource re, int num);
     void getResource(Resource re, int num);
     void giveVictoryPoints(int vp);
+    void decrVictoryPoints(int vp);
+    void giveDevCard(DevelopmentCard dev_card);
+    void incrArmy();
+    void addRoad();
+    void delDevCard(DevelopmentCard dev_card);
+
     int getVictoryPoints() const;
+    int getKnightsNum() const;
+    int getRoadsNum() const;
 
     int checkResourceNum(Resource re);
 
 private:
     PlayerNum id;
     int victory_points;
+    int roads = 0;
+    int knights = 0;
     std::unordered_map<Resource, int> cards;
-    // TODO: std::vector<DevCard>;
+    std::unordered_map<DevelopmentCard, int> dev_cards;
 };
 
 class Catan {
 public:
     Catan();
 
-    //нужно будет убррать player в аргументтах тех функций, которым не надо
-    void setRobbers(int hex_num);
-    void settle(BuildingType s, PlayerNum player, int x, int y);
+    void settle(BuildingType s, int x, int y);
     void giveResources(int cubes_num);
     //возвращает true, если торговля прошла успешно, false, если не хватило ресурсов на обмен
     bool trade(Resource re_for_trade, Resource need_re);
 
-    bool canBuild(BuildingType mod, PlayerNum player, int x, int y) const;
+    bool canBuild(BuildingType mod, int x, int y) const;
     bool checkCards(BuildingType building);
 
     const std::unique_ptr<Cell>& getFieldCell(int x, int y) const;
     void changeCurPlayer(PlayerNum new_player);
+    void setRobbers(int hex_num);
+    Hexagon* getHex(int indx) const;
+
+    int getRoadsRecord() const;
+    int getKnightRecord() const;
+    void setRoadsRecord(int new_record);
+    void setKnightRecord(int new_record);
 
     bool isFinished();
 
@@ -127,6 +152,13 @@ private:
     std::unordered_map<PlayerNum, std::unique_ptr<Player>> players;
     int robbers_hex;
     PlayerNum cur_player;
+    /*Если у кого-то из игроков значения больше, то рекорды обновляются.
+     *Реализуется в контроллере с помощью геттеров и сеттеров модели.
+     *После этого на экране должна обновиться информация об очках победы*/
+    PlayerNum last_roads_record_holder = PlayerNum::NONE;
+    int roads_record = 4;
+    PlayerNum last_knights_record_holder = PlayerNum::NONE;
+    int knights_record = 2;
 };
 
 }

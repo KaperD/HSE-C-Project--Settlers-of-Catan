@@ -100,12 +100,13 @@ enum EventType : int {
   BUILD = 3,
   ENDTURN = 4,
   NEXTPHASE = 5,
+  ENDGAME = 6,
   EventType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::min(),
   EventType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::max()
 };
 bool EventType_IsValid(int value);
 constexpr EventType EventType_MIN = CARD;
-constexpr EventType EventType_MAX = NEXTPHASE;
+constexpr EventType EventType_MAX = ENDGAME;
 constexpr int EventType_ARRAYSIZE = EventType_MAX + 1;
 
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EventType_descriptor();
