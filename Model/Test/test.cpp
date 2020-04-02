@@ -74,6 +74,21 @@ TEST(CatanGraph, ShowGraph) {
             std::cout << '\n';
         }
     }
+
+    std::cout << '\n';
+    std::cout << "Check Hexes Resources\n";
+    for (int i = 0; i < HEXESNUM; i++) {
+        if (board.getHex(i)->robbersIsHere()) {
+            std::cout << 0 << ' ';
+            continue;
+        }
+        std::cout << static_cast<int>(board.getHex(i)->getResource()) << ' ';
+    }
+    std::cout << '\n';
+    std::cout << "Check Hexes Num\n";
+    for (int i = 0; i < HEXESNUM; i++) {
+        std::cout << board.getHex(i)->getNum() << ' ';
+    }
 }
 
 

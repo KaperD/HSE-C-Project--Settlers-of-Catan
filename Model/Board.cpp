@@ -1,6 +1,5 @@
 #include <cstdlib>
 #include <ctime>
-#include <iostream> //for debug
 #include <memory>
 
 #include "Board.h"
@@ -11,10 +10,12 @@ namespace Board {
 #define getPlayerCardNum(card) players[cur_player]->checkResourceNum(card)
 
 static bool check(int x, int y) {
-    return !(x < 0 || y < 0 || x >= 11 || y >= 21  ||
+    return !(x < 0 || y < 0 || x >= FIELDHEIGHT || y >= FIELDWIDTH  ||
           ((x < 2 || x > 8) && (y < 4 || y > 16)) ||
           ((x < 4 || x > 6) && (y < 2 || y > 18)));
 }
+
+//===============Player===================
 
 Player::Player(PlayerNum id) : id(id), victory_points(0) {
     cards[Resource::WOOL] = 0;
@@ -22,6 +23,12 @@ Player::Player(PlayerNum id) : id(id), victory_points(0) {
     cards[Resource::CLAY] = 0;
     cards[Resource::TREE] = 0;
     cards[Resource::WHEAT] = 0;
+
+    dev_cards[DevelopmentCard::KNIGHT] = 0;
+    dev_cards[DevelopmentCard::ROAD_BUILDING] = 0;
+    dev_cards[DevelopmentCard::VICTORY_POINT] = 0;
+    dev_cards[DevelopmentCard::MONOPOLY] = 0;
+    dev_cards[DevelopmentCard::INVENTION] = 0;
 }
 
 void Player::giveResource(Resource re, int num) {
@@ -43,6 +50,39 @@ int Player::getVictoryPoints() const {
 void Player::giveVictoryPoints(int vp) {
     victory_points += vp;
 }
+
+void Player::decrVictoryPoints(int vp) {
+    victory_points -= vp;
+}
+
+int Player::getRoadsNum() const {
+    return roads;
+}
+
+int Player::getKnightsNum() const {
+    return knights;
+}
+
+void Player::incrArmy() {
+    knights++;
+}
+
+void Player::addRoad() {
+    roads++;
+}
+
+void Player::giveDevCard(DevelopmentCard dev_card) {
+    cards[Resource::WHEAT]--;
+    cards[Resource::WOOL]--;
+    cards[Resource::ORE]--;
+    dev_cards[dev_card]++;
+}
+
+void Player::delDevCard(DevelopmentCard dev_card) {
+    dev_cards[dev_card]--;
+}
+
+//==============Cell==================
 
 Cell::Cell(BuildingType type) : type(type) {}
 
@@ -78,6 +118,8 @@ std::pair<int, int> Cell::getVertex(int i) const {
     return vertexes[i];
 }
 
+//================Vertex==================
+
 Vertex::Vertex(int x, int y, bool direction) : Cell(BuildingType::VILLAGE) {
     if (direction) {
         if (check(x - 2, y)) {
@@ -107,6 +149,8 @@ Vertex::Vertex(int x, int y, bool direction) : Cell(BuildingType::VILLAGE) {
         roads.emplace_back(x, y - 1);
     }
 }
+
+//===============Road=================
 
 Road::Road(int x, int y, bool is_horizontal, bool is_even) : Cell(BuildingType::ROAD) {
     //тут много кода повторяется, потом поправлю
@@ -152,6 +196,8 @@ Road::Road(int x, int y, bool is_horizontal, bool is_even) : Cell(BuildingType::
     }
 }
 
+//================Hexagon==================
+
 Hexagon::Hexagon(int x, int y) : Cell(BuildingType::NONE) {
     vertexes.emplace_back(x + 1, y + 2);
     vertexes.emplace_back(x + 1, y);
@@ -163,8 +209,8 @@ Hexagon::Hexagon(int x, int y) : Cell(BuildingType::NONE) {
     int random_resource = rand() % TERRITORIESNUM + 1;
     re = static_cast<Resource>(random_resource);
     robbers = false;
-    num = rand() % 12 + 1;
-    if (num == 1) num++;
+    num = rand() % 11 + 2;
+    if (num == 7) num++;
 }
 
 void Hexagon::setRobbers() {
@@ -183,10 +229,13 @@ bool Hexagon::robbersIsHere() const {
     return robbers;
 }
 
+//=================Catan====================
+
 Catan::Catan() : field(FIELDHEIGHT), players(4) {
     srand(time (nullptr));
-    for (int i = 0; i < FIELDHEIGHT; ++i) {
-        for (int k = 0; k < FIELDWIDTH; ++k) {
+
+    for (int i = 0; i < FIELDHEIGHT; i++) {
+        for (int k = 0; k < FIELDWIDTH; k++) {
             field[i].push_back(nullptr);
         }
     }
@@ -226,7 +275,7 @@ Catan::Catan() : field(FIELDHEIGHT), players(4) {
         }
     }
 
-    for (int j = 0; j < 21; j++) {
+    for (int j = 0; j < FIELDWIDTH; j++) {
         if (j % 4 == 0) {
             cell(5, j) = std::make_unique<Road>(5, j, false, false);
         } else if (j % 2 == 0) {
@@ -250,10 +299,10 @@ Hexagon* Catan::getHex(int indx) const {
     return hexes[indx];
 }
 
-bool Catan::canBuild(BuildingType mod, PlayerNum player, int x, int y) const {
+bool Catan::canBuild(BuildingType mod, int x, int y) const {
     if (cell(x, y) == nullptr ||
         (cell(x, y)->getPlayer() != PlayerNum::NONE &&
-        cell(x, y)->getPlayer() != player) ||
+        cell(x, y)->getPlayer() != cur_player) ||
         cell(x, y)->getType() != mod) {
         return false;
     }
@@ -273,7 +322,7 @@ bool Catan::canBuild(BuildingType mod, PlayerNum player, int x, int y) const {
 
     for (size_t i = 0; i < lenV; i++) {
         std::pair<int, int> neighbourV = cell(x, y)->getVertex(i);
-        if (cell(neighbourV.first, neighbourV.second)->getPlayer() == player) {
+        if (cell(neighbourV.first, neighbourV.second)->getPlayer() == cur_player) {
             return true;
         }
     }
@@ -281,13 +330,13 @@ bool Catan::canBuild(BuildingType mod, PlayerNum player, int x, int y) const {
     for (size_t i = 0; i < lenR; i++) {
         int neighbourRx = cell(x, y)->getRoad(i).first;
         int neighbourRy = cell(x, y)->getRoad(i).second;
-        if (cell(neighbourRx, neighbourRy)->getPlayer() == player) {
+        if (cell(neighbourRx, neighbourRy)->getPlayer() == cur_player) {
             size_t neigh_lenV = cell(neighbourRx, neighbourRy)->getVertexNum();
             for (size_t j = 0; j < neigh_lenV; j++) {
                 int vx = cell(neighbourRx, neighbourRy)->getVertex(j).first;
                 int vy = cell(neighbourRx, neighbourRy)->getVertex(j).second;
                 if (cell(vx, vy)->getPlayer() != PlayerNum::NONE &&
-                    cell(vx, vy)->getPlayer() != player) {
+                    cell(vx, vy)->getPlayer() != cur_player) {
                     return false;
                 }
             }
@@ -309,21 +358,21 @@ bool Catan::checkCards(BuildingType building) {
     return getPlayerCardNum(Resource::TREE) > 0 && getPlayerCardNum(Resource::CLAY) > 0;
 }
 
-void Catan::settle(BuildingType s, PlayerNum player, int x, int y) {
-    //можно для каждого строения сделать методы у Player
+void Catan::settle(BuildingType s, int x, int y) {
     if (s == BuildingType::VILLAGE) {
-        players[player]->getResource(Resource::TREE, 1);
-        players[player]->getResource(Resource::CLAY, 1);
-        players[player]->getResource(Resource::WOOL, 1);
-        players[player]->getResource(Resource::WHEAT, 1);
+        players[cur_player]->getResource(Resource::TREE, 1);
+        players[cur_player]->getResource(Resource::CLAY, 1);
+        players[cur_player]->getResource(Resource::WOOL, 1);
+        players[cur_player]->getResource(Resource::WHEAT, 1);
     } else if (s == BuildingType::CITY) {
-        players[player]->getResource(Resource::ORE, 3);
-        players[player]->getResource(Resource::WHEAT, 2);
+        players[cur_player]->getResource(Resource::ORE, 3);
+        players[cur_player]->getResource(Resource::WHEAT, 2);
     } else {
-        players[player]->getResource(Resource::TREE, 1);
-        players[player]->getResource(Resource::CLAY, 1);
+        players[cur_player]->getResource(Resource::TREE, 1);
+        players[cur_player]->getResource(Resource::CLAY, 1);
+        players[cur_player]->addRoad();
     }
-    cell(x, y)->setPlayer(player);
+    cell(x, y)->setPlayer(cur_player);
     cell(x, y)->setBuildingType(s);
 }
 
@@ -361,7 +410,29 @@ bool Catan::trade(Resource re_for_trade, Resource need_re) {
     players[cur_player]->getResource(re_for_trade, 4);
     players[cur_player]->giveResource(need_re, 1);
     return true;
-};
+}
+
+int Catan::getRoadsRecord() const {
+    return roads_record;
+}
+
+int Catan::getKnightRecord() const {
+    return knights_record;
+}
+
+void Catan::setRoadsRecord(int new_record) {
+    players[last_roads_record_holder]->decrVictoryPoints(2);
+    players[cur_player]->giveVictoryPoints(2);
+    last_roads_record_holder = cur_player;
+    roads_record = new_record;
+}
+
+void Catan::setKnightRecord(int new_record) {
+    players[last_knights_record_holder]->decrVictoryPoints(2);
+    players[cur_player]->giveVictoryPoints(2);
+    last_knights_record_holder = cur_player;
+    knights_record = new_record;
+}
 
 bool Catan::isFinished() {
     return players[PlayerNum::GAMER1]->getVictoryPoints() == 10 ||
