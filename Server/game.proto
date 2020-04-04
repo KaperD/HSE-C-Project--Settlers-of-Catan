@@ -17,6 +17,7 @@ message OrderInfo {
     int32 numberOfPlayers = 2;
 }
 
+
 enum EventType {
     CARD = 0;
     DICE = 1;
@@ -24,7 +25,8 @@ enum EventType {
     BUILD = 3;
     ENDTURN = 4;
     NEXTPHASE = 5;
-    //TRADE = 6;
+    ENDGAME = 6;
+    //TRADE = 7;
 }
 
 

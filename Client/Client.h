@@ -27,7 +27,7 @@ public:
 
     game::OrderInfo Register();
 
-    void SendEvent(const ::game::Event& event);
+    void SendEvent(::game::Event event);
 
     ::game::Event GetEvent();
 

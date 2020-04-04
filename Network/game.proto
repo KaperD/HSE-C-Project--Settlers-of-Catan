@@ -25,7 +25,8 @@ enum EventType {
     BUILD = 3;
     ENDTURN = 4;
     NEXTPHASE = 5;
-    //TRADE = 6;
+    ENDGAME = 6;
+    //TRADE = 7;
 }
 
 

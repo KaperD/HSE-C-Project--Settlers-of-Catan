@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.2)
 add_compile_options(-std=c++17)
 
 # GRPC and Protocol Buffers libraries location
-list(APPEND CMAKE_PREFIX_PATH "/opt/grpc" "/opt/protobuf")
+list(APPEND CMAKE_PREFIX_PATH "/usr/lib" "/usr/local/lib")
 
 # Cmake find modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/Network/cmake")
@@ -46,8 +46,6 @@ add_library(
     model
     Model/Board.cpp
     Model/Board.h
-    Model/Cards.cpp
-    Model/Cards.h
 )
 
 

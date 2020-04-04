@@ -1,9 +1,5 @@
 #include <iostream>
-#include <mutex>
-#include <queue>
 #include <exception>
-#include <condition_variable>
-#include <atomic>
 
 #include <grpc/grpc.h>
 #include <grpcpp/server.h>
@@ -11,6 +7,7 @@
 #include <grpcpp/server_context.h>
 #include <grpcpp/security/server_credentials.h>
 #include "game.grpc.pb.h"
+#include "EventQueue.h"
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -26,53 +23,6 @@ using game::Market;
 using game::Build;
 using game::Player;
 using game::Network;
-
-class EventQueue final {
-public:
-    EventQueue() : hasElement_(false) { }
-
-    void push(Event event) {
-        std::unique_lock<std::mutex> locker(lockqueue_);
-        events_.push(std::move(event));
-        hasElement_.store(true);
-        queuecheck_.notify_all();
-    }
-
-    Event front() {
-        std::unique_lock<std::mutex> locker(lockqueue_);
-        while (!hasElement_.load()) {
-            queuecheck_.wait(locker);
-        }
-        if (events_.size() > 0) {
-            Event event = events_.front();
-            events_.pop();
-            if (events_.size() == 0) {
-                hasElement_.store(false);
-            }
-            return event;
-        } else {
-            std::cerr << "front()" << std::endl;
-            throw (std::logic_error("front()"));
-        }
-    }
-
-    void clear() {
-        std::unique_lock<std::mutex> locker(lockqueue_);
-        while (events_.size() > 0) {
-            events_.pop();
-        }
-    }
-
-
-
-
-private:
-    std::queue<Event> events_;
-    std::mutex lockqueue_;
-    std::condition_variable queuecheck_;
-    std::atomic_bool hasElement_;
-};
- 
 
 class GameServerImpl final : public Network::Service {
 public:
@@ -94,12 +44,15 @@ private:
     Status SendEvent(::grpc::ServerContext* context, const Event* request, Void* response) override {
         Event event = *request;
         int playerid = event.playerid();
-        std::cout << playerid << ' ' << event.type() << std::endl;
+        
         for (int k = 0; k < 3; ++k) {
             if (k == playerid) continue;
             events_[k].push(event);
         }
-    
+        if (event.type() == EventType::ENDGAME) {
+            events_[playerid].push(event);
+        }
+        std::cout << playerid << ' ' << event.type() << std::endl;
         return Status::OK;
     }
 
