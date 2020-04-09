@@ -15,7 +15,17 @@ git clone -b v1.27.3 https://github.com/grpc/grpc
 cd grpc
 git submodule update --init
 
-cd /home/travis/build/KaperD/HSE-C-Project--Settlers-of-Catan/grpc/
+cd /home/travis/build/KaperD/HSE-C-Project--Settlers-of-Catan/grpc/third_party/protobuf
+git submodule update --init --recursive
+./autogen.sh
+
+./configure
+make -j8
+make check -j8
+sudo make install -j8
+sudo ldconfig
+
+cd /home/travis/build/KaperD/HSE-C-Project--Settlers-of-Catan/grpc/third_party/protobuf
 make -j8
 sudo make install -j8
 
