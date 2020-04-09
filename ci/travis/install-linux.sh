@@ -19,16 +19,16 @@ git submodule update --init
 cd ./third_party/protobuf
 ./autogen.sh
 ./configure --prefix=/usr/local
-make -j10
-sudo make install
+make -j8
+sudo make install -j8
 sudo ldconfig
   
 # Build and install gRPC
 cd ../..
-make -j10 PROTOC=/usr/local/bin/protoc 
+make -j8 PROTOC=/usr/local/bin/protoc 
 sudo make prefix=/usr install
 
-cd /home/travis/build/KaperD/HSE-C-Project--Settlers-of-Catan/
+cd ..
 
 # SDL2
 sudo apt-get install libsdl2-dev -y
