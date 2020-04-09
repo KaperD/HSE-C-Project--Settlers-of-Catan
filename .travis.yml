@@ -1,0 +1,16 @@
+dist: bionic
+
+language: cpp
+
+os: linux
+
+compiler: g++
+
+install: 
+  - source ci/travis/install-linux.sh
+
+script:
+  - mkdir build 
+  - cd build
+  - cmake ..
+  - make -j4
