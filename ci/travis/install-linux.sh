@@ -21,6 +21,7 @@ cd ./third_party/protobuf
 ./configure --prefix=/usr/local
 make -j10
 sudo make install
+sudo ldconfig
   
 # Build and install gRPC
 cd ../..
