@@ -11,6 +11,8 @@ sudo apt-get install automake curl make unzip
 
 sudo apt-get install build-essential autoconf libtool pkg-config
 
+sudo apt install libprotobuf-dev protobuf-compiler
+
 git clone -b v1.27.3 https://github.com/grpc/grpc
 cd grpc
 git submodule update --init

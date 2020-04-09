@@ -7,6 +7,7 @@ add_compile_options(-std=c++17)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/Network/cmake")
 
 find_package(GRPC REQUIRED)
+find_package(Protobuf REQUIRED)
 
 # SDL2
 # Могут понадобиться следующие команды
@@ -45,6 +46,7 @@ add_executable(project
 target_link_libraries(project
     ${SDL2_LIBRARIES}
     gRPC::grpc++
+    protobuf::libprotobuf
     model
     controller
     client
