@@ -10,7 +10,7 @@ list(APPEND CMAKE_PREFIX_PATH "/opt/grpc" "/opt/protobuf")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/Network/cmake")
 
 find_package(Protobuf REQUIRED)
-find_package(gRPC CONFIG REQUIRED)
+find_package(GRPC REQUIRED)
 
 set(PROTOS
     ${CMAKE_CURRENT_SOURCE_DIR}/Network/game.proto
