@@ -1,3 +1,6 @@
+#!/bin/bash
+echo toolchain
+
 sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
 sudo apt install software-properties-common
 
