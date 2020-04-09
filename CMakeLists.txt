@@ -4,13 +4,13 @@ cmake_minimum_required(VERSION 3.2)
 add_compile_options(-std=c++17)
 
 # GRPC and Protocol Buffers libraries location
-list(APPEND CMAKE_PREFIX_PATH "/usr/lib" "/usr/local/lib")
+list(APPEND CMAKE_PREFIX_PATH "/opt/grpc" "/opt/protobuf")
 
 # Cmake find modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/Network/cmake")
 
 find_package(Protobuf REQUIRED)
-find_package(GRPC REQUIRED)
+find_package(gRPC CONFIG REQUIRED)
 
 set(PROTOS
     ${CMAKE_CURRENT_SOURCE_DIR}/Network/game.proto
@@ -59,7 +59,7 @@ add_executable(project
 
 target_link_libraries(project
     ${SDL2_LIBRARIES}
-    gRPC::grpc++_reflection
+    gRPC::grpc++
     protobuf::libprotobuf
     model
     controller
