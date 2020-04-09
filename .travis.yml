@@ -1,0 +1,17 @@
+dist: bionic
+
+language: cpp
+
+os: linux
+
+compiler: g++
+
+install: 
+  - source ci/travis/install-linux.sh
+
+script:
+  - mkdir /home/travis/build/KaperD/HSE-C-Project--Settlers-of-Catan/build
+  - pwd
+  - cd /home/travis/build/KaperD/HSE-C-Project--Settlers-of-Catan/build
+  - cmake ..
+  - make -j4

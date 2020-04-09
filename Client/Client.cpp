@@ -52,9 +52,10 @@ OrderInfo GameClient::Register() {
     return info;
 }
 
-void GameClient::SendEvent(const Event& event) {
+void GameClient::SendEvent(Event event) {
     ClientContext context;
     Void empty;
+    event.set_playerid(player_.playerid());
 
     Status status = stub_->SendEvent(&context, event, &empty);
     if (!status.ok()) {
@@ -74,33 +75,3 @@ Event GameClient::GetEvent() {
 
     return event;
 }
-
-// int main() {
-//     GameClient game;
-
-//     OrderInfo info = game.Register();
-
-//     int id = info.id();
-//     int command = 0;
-
-//     while (std::cin >> command) {
-//         if (command == 1) {
-//             Event e;
-//             e.set_type(EventType::BUILD);
-//             e.set_playerid(id);
-//             Build* bi = e.mutable_buildinfo();
-//             bi->set_x(id);
-//             bi->set_y(id + 1);
-//             game.SendEvent(e);
-//         } else if (command == 2) {
-//             Event e = game.GetEvent();
-//             std::cout << "Player " << e.playerid() << ":\n";
-//             std::cout << "Event type " << e.type() << ":\n";
-//             Build* turn = e.mutable_buildinfo();
-//             std::cout << turn->x() << ' ' << turn->y() << '\n';
-//         } 
-
-//     }
-
-//     return 0;
-// }
