@@ -11,16 +11,21 @@ sudo apt-get install automake curl make unzip
 
 sudo apt-get install build-essential autoconf libtool pkg-config
 
-sudo apt install libprotobuf-dev protobuf-compiler
-
-# install vcpkg package manager on your system using the official instructions
-git clone https://github.com/Microsoft/vcpkg.git
-cd vcpkg
-./bootstrap-vcpkg.sh
-./vcpkg integrate install
-
-# install gRPC using vcpkg package manager
-vcpkg install grpc
+git clone -b v1.27.3 https://github.com/grpc/grpc
+cd grpc
+git submodule update --init
+ 
+# Build and install protobuf
+cd ./third_party/protobuf
+./autogen.sh
+./configure --prefix=/opt/protobuf
+make -j10
+sudo make install
+  
+# Build and install gRPC
+cd ../..
+make -j10 PROTOC=/opt/protobuf/bin/protoc 
+sudo make prefix=/opt/grpc install
 
 cd /home/travis/build/KaperD/HSE-C-Project--Settlers-of-Catan/
 
