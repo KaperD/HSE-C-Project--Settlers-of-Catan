@@ -17,21 +17,20 @@ git submodule update --init --recursive
 ./autogen.sh
 
 ./configure
-make
-make check
-sudo make install
+make -j8
+make check -j8
+sudo make install -j8
 sudo ldconfig
 
 cd /home/travis/build/KaperD/HSE-C-Project--Settlers-of-Catan/
 
-# install vcpkg package manager on your system using the official instructions
-git clone https://github.com/Microsoft/vcpkg.git
-cd vcpkg
-./bootstrap-vcpkg.sh
-./vcpkg integrate install
+git clone -b v1.27.3 https://github.com/grpc/grpc
+cd grpc
+git submodule update --init
 
-# install gRPC using vcpkg package manager
-vcpkg install grpc
+make -j8
+
+cd /home/travis/build/KaperD/HSE-C-Project--Settlers-of-Catan/
 
 # SDL2
 sudo apt-get install libsdl2-dev -y
