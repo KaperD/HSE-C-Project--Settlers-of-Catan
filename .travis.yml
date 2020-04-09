@@ -15,3 +15,9 @@ script:
   - cd /home/travis/build/KaperD/HSE-C-Project--Settlers-of-Catan/build
   - cmake ..
   - make -j4
+  - cd ..
+  - cd Server
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make -j4

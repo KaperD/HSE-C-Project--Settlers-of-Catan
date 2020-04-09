@@ -33,3 +33,4 @@ target_link_libraries(server
     protobuf::libprotobuf
 )
 
+include_directories(../Controller)
