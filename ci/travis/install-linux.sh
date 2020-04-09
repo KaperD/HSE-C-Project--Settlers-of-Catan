@@ -11,21 +11,12 @@ sudo apt-get install automake curl make unzip
 
 sudo apt-get install build-essential autoconf libtool pkg-config
 
-git clone -b $(curl -L https://grpc.io/release) https://github.com/grpc/grpc
+git clone -b v1.27.3 https://github.com/grpc/grpc
 cd grpc
 git submodule update --init
- 
-# Build and install protobuf
-cd ./third_party/protobuf
-./autogen.sh
-./configure --prefix=/opt/protobuf
-make -j10
-sudo make install
-  
-# Build and install gRPC
-cd ../..
-make -j10 PROTOC=/opt/protobuf/bin/protoc 
-sudo make prefix=/opt/grpc install
+
+make -j8
+sudo make install -j8
 
 cd /home/travis/build/KaperD/HSE-C-Project--Settlers-of-Catan/
 
