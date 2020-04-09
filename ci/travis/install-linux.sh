@@ -11,8 +11,11 @@ sudo apt-get install automake curl make unzip
 
 sudo apt-get install build-essential autoconf libtool pkg-config
 
-git clone https://github.com/protocolbuffers/protobuf.git
-cd protobuf
+git clone -b v1.27.3 https://github.com/grpc/grpc
+cd grpc
+git submodule update --init
+
+cd /home/travis/build/KaperD/HSE-C-Project--Settlers-of-Catan/grpc/third_party/protobuf
 git submodule update --init --recursive
 ./autogen.sh
 
@@ -22,12 +25,7 @@ make check -j8
 sudo make install -j8
 sudo ldconfig
 
-cd /home/travis/build/KaperD/HSE-C-Project--Settlers-of-Catan/
-
-git clone -b v1.27.3 https://github.com/grpc/grpc
-cd grpc
-git submodule update --init
-
+cd /home/travis/build/KaperD/HSE-C-Project--Settlers-of-Catan/grpc/
 make -j8
 
 cd /home/travis/build/KaperD/HSE-C-Project--Settlers-of-Catan/
