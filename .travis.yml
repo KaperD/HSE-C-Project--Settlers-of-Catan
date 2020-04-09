@@ -10,7 +10,8 @@ install:
   - source ci/travis/install-linux.sh
 
 script:
-  - mkdir build 
-  - cd build
+  - mkdir /home/travis/build/KaperD/HSE-C-Project--Settlers-of-Catan/build
+  - pwd
+  - cd /home/travis/build/KaperD/HSE-C-Project--Settlers-of-Catan/build
   - cmake ..
   - make -j4
