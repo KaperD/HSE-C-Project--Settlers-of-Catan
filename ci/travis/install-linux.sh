@@ -21,7 +21,6 @@ git submodule update --init --recursive
 
 ./configure
 make -j8
-make check -j8
 sudo make install -j8
 sudo ldconfig
 
