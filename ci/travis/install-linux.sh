@@ -7,7 +7,22 @@ sudo apt-get install g++-7 > output
 sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 40
 sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 40
 
+sudo apt-get install automake curl make unzip
+
 sudo apt-get install build-essential autoconf libtool pkg-config
+
+git clone https://github.com/protocolbuffers/protobuf.git
+cd protobuf
+git submodule update --init --recursive
+./autogen.sh
+
+./configure
+make
+make check
+sudo make install
+sudo ldconfig
+
+cd /home/travis/build/KaperD/HSE-C-Project--Settlers-of-Catan/
 
 # install vcpkg package manager on your system using the official instructions
 git clone https://github.com/Microsoft/vcpkg.git
