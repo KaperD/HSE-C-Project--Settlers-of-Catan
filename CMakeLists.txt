@@ -40,13 +40,18 @@ set(
     controller
     Controller/GameController.cpp
     Controller/GameController.h
-    Controller/EventQueue.h
 )
 
 set(
     model
     Model/Board.cpp
     Model/Board.h
+)
+
+set(
+    spinlock
+    Utility/spinlock.cpp
+    Utility/spinlock.h
 )
 
 
@@ -59,7 +64,7 @@ add_executable(project
     ${model}
     ${controller}
     ${client}
-
+    ${spinlock}
 )
 
 target_link_libraries(project
@@ -73,6 +78,7 @@ include_directories(Model)
 include_directories(Controller)
 include_directories(Network)
 include_directories(GUI)
+include_directories(Utility)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
 
