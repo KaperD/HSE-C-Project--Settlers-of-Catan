@@ -55,8 +55,8 @@ private:
                 events_[k].clear();
             }
             currentPlayerNumber_ = 0;
-            std::thread ref(refresher, this);
-            ref.detach();
+            // std::thread ref(refresher, this);
+            // ref.detach();
         }
         isRun_.store(true);
         int id = currentPlayerNumber_++;

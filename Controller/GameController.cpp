@@ -146,6 +146,10 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
     y_ = event.mutable_buildinfo()->y();
 
     gameModel_.changeCurPlayer(currentPlayer_);
+    displayEvent(event);
+    if (needSend) {
+        sendEvent(event);
+    }
 
     //auto type = static_cast<Board::BuildingType>(buildingType_);
 
