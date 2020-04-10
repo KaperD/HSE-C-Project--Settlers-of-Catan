@@ -35,7 +35,7 @@ public:
 
     void RefreshGame() {
         std::lock_guard<threads_sync::spinlock> guard(spin_);
-        if (isRun_ == true) {
+        if (isRun_.load() == true) {
             Event endgame;
             endgame.set_type(EventType::ENDGAME);
             for (int k = 0; k < 3; ++k) {
@@ -43,19 +43,19 @@ public:
                 events_[k].clear();
                 events_[k].push(endgame);
             }
-            isRun_ = false;
+            isRun_.store(false);
         }
     }
 private:
     Status Register(::grpc::ServerContext* context, const Void* request, OrderInfo* response) override {
         std::lock_guard<threads_sync::spinlock> guard(spin_);
-        if (isRun_ == false) {
+        if (isRun_.load() == false) {
             for (int k = 0; k < 3; ++k) {
                 events_[k].clear();
             }
             currentPlayerNumber_ = 0;
         }
-        isRun_ = true;
+        isRun_.store(true);
         int id = currentPlayerNumber_++;
         if (id > 2) {
             id %= 3;
@@ -79,6 +79,7 @@ private:
         }
         if (event.type() == EventType::ENDGAME) {
             events_[playerid].push(event);
+            isRun_.store(false);
         }
         std::cout << playerid << ' ' << event.type() << std::endl;
         return Status::OK;
@@ -95,7 +96,7 @@ private:
 private:
     std::vector<EventQueue> events_;
     int currentPlayerNumber_;
-    bool isRun_ = false;
+    std::atomic_bool isRun_ { false };
     threads_sync::spinlock spin_;
 };
 
