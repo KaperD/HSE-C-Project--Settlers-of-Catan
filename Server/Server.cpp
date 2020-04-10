@@ -28,12 +28,11 @@ using game::Build;
 using game::Player;
 using game::Network;
 
-
 class GameServerImpl final : public Network::Service {
 public:
     GameServerImpl() : events_(4), currentPlayerNumber_(0) { }
 
-    void RefreshGame() {
+    bool RefreshGame() {
         std::lock_guard<threads_sync::spinlock> guard(spin_);
         if (isRun_.load() == true) {
             Event endgame;
@@ -44,7 +43,9 @@ public:
                 events_[k].push(endgame);
             }
             isRun_.store(false);
+            return true;
         }
+        return false;
     }
 private:
     Status Register(::grpc::ServerContext* context, const Void* request, OrderInfo* response) override {
@@ -54,6 +55,8 @@ private:
                 events_[k].clear();
             }
             currentPlayerNumber_ = 0;
+            std::thread ref(refresher, this);
+            ref.detach();
         }
         isRun_.store(true);
         int id = currentPlayerNumber_++;
@@ -104,7 +107,9 @@ private:
 void refresher(GameServerImpl* server) {
     while (true) {
         std::this_thread::sleep_for(std::chrono::seconds(30));
-        server->RefreshGame();
+        if (server->RefreshGame()) {
+            return;
+        }
     }
 }
 
@@ -118,9 +123,6 @@ void RunServer() {
     builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
     builder.RegisterService(&service);
     std::unique_ptr<Server> server(builder.BuildAndStart());
-
-    std::thread ref(refresher, &service);
-    ref.detach();
 
     server->Wait();
 }

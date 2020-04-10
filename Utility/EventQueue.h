@@ -42,6 +42,7 @@ public:
         while (events_.size() > 0) {
             events_.pop();
         }
+        hasElement_.store(false);
     }
 
     bool empty() {
