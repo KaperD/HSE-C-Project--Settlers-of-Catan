@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.2)
 add_compile_options(-std=c++17)
 
 # GRPC and Protocol Buffers libraries location
-list(APPEND CMAKE_PREFIX_PATH "/usr/lib" "/usr/local/lib")
+list(APPEND CMAKE_PREFIX_PATH "/usr/local")
 
 # Cmake find modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/Network/cmake")
@@ -30,22 +30,34 @@ grpc_generate_cpp(GRPC_SRCS GRPC_HDRS ${PROTO_SRC_DIR} ${PROTOS})
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
 
-add_library(
+set(
     client
     Client/Client.cpp
     Client/Client.h
 )
 
-add_library(
+set(
     controller
     Controller/GameController.cpp
     Controller/GameController.h
 )
 
-add_library(
+set(
     model
     Model/Board.cpp
     Model/Board.h
+)
+
+set(
+    spinlock
+    Utility/spinlock.cpp
+    Utility/spinlock.h
+)
+
+set(
+    random
+    Utility/random.cpp
+    Utility/random.h
 )
 
 
@@ -54,16 +66,18 @@ add_executable(project
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
     GUI/sdl.cpp
     ${PROTO_SRCS}
-    ${GRPC_SRCS}
+    ${GRPC_SRCS}    
+    ${model}
+    ${controller}
+    ${client}
+    ${spinlock}
+    ${random}
 )
 
 target_link_libraries(project
     ${SDL2_LIBRARIES}
     gRPC::grpc++_reflection
     protobuf::libprotobuf
-    model
-    controller
-    client
 )
 
 include_directories(Client)
@@ -71,7 +85,8 @@ include_directories(Model)
 include_directories(Controller)
 include_directories(Network)
 include_directories(GUI)
+include_directories(Utility)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
 
-target_compile_options(project PRIVATE -Werror -Wall -Wextra)
+target_compile_options(project PRIVATE -Werror -Wall)

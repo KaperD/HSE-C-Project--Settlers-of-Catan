@@ -163,7 +163,9 @@ inline ::game::Event View::getTurn() {
 		{
 			if (e.type == SDL_QUIT)
 			{
-				quit = true;
+				::game::Event ret;
+                ret.set_type(::game::EventType::ENDGAME);
+                return ret;
 			}
 			/*if (e.type == SDL_KEYDOWN)
 			{
@@ -245,11 +247,6 @@ inline ::game::Event View::getTurn() {
                     //update();
                     ::game::Event ret;
                     ret.set_type(::game::EventType::ENDTURN);
-                    return ret;
-                }
-                if (x > 1000 && y > 1000) {
-                    ::game::Event ret;
-                    ret.set_type(::game::EventType::ENDGAME);
                     return ret;
                 }
                 //SDL_RenderPresent(ren);
