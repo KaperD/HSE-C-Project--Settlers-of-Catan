@@ -42,7 +42,8 @@ enum class BuildingType {
     NONE,
     VILLAGE,
     CITY,
-    ROAD
+    ROAD,
+    DevCard
 };
 
 class Cell {
@@ -131,6 +132,10 @@ public:
     //возвращает true, если торговля прошла успешно, false, если не хватило ресурсов на обмен
     bool trade(Resource re_for_trade, Resource need_re);
 
+    //возвращает true или false аналогично торговле
+    bool buildDevCard();
+    void playDevCard(DevelopmentCard card, int extraData);
+
     bool canBuild(BuildingType mod, int x, int y) const;
     bool checkCards(BuildingType building);
 
@@ -152,9 +157,7 @@ private:
     std::unordered_map<PlayerNum, std::unique_ptr<Player>> players;
     int robbers_hex;
     PlayerNum cur_player;
-    /*Если у кого-то из игроков значения больше, то рекорды обновляются.
-     *Реализуется в контроллере с помощью геттеров и сеттеров модели.
-     *После этого на экране должна обновиться информация об очках победы*/
+
     PlayerNum last_roads_record_holder = PlayerNum::NONE;
     int roads_record = 4;
     PlayerNum last_knights_record_holder = PlayerNum::NONE;
