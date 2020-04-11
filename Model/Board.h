@@ -161,6 +161,6 @@ private:
     int knights_record = 2;
 };
 
-}
+} // namespace Board
 
 #endif

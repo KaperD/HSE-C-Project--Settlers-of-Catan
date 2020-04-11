@@ -54,6 +54,12 @@ set(
     Utility/spinlock.h
 )
 
+set(
+    random
+    Utility/random.cpp
+    Utility/random.h
+)
+
 
 # Building project
 add_executable(project
@@ -65,6 +71,7 @@ add_executable(project
     ${controller}
     ${client}
     ${spinlock}
+    ${random}
 )
 
 target_link_libraries(project

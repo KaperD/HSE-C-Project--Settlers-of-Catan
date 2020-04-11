@@ -3,7 +3,7 @@
 
 #include <atomic>
 
-namespace threads_sync {
+namespace utility {
 
 class spinlock {
 public:
@@ -21,6 +21,6 @@ private:
     std::atomic_bool guard_ { false };
 };
 
-} // namespace threads_sync
+} // namespace utility
 
 #endif

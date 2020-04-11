@@ -28,7 +28,7 @@ using game::Player;
 using game::Network;
 
 
-GameClient::GameClient(std::shared_ptr<Channel> channel)
+GameClient::GameClient(const std::shared_ptr<Channel>& channel)
     : stub_(Network::NewStub(channel)), player_() {
 }
 

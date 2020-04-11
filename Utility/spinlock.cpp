@@ -4,7 +4,7 @@
 
 #include "spinlock.h"
 
-namespace threads_sync {
+namespace utility {
 
 namespace {
 
@@ -34,4 +34,4 @@ void spinlock::unlock() noexcept {
     guard_.exchange(false);
 }
 
-} // namespace threads_sync
+} // namespace utility

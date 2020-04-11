@@ -33,8 +33,8 @@ public:
     GameServerImpl() : events_(4), currentPlayerNumber_(0) { }
 
     bool RefreshGame() {
-        std::lock_guard<threads_sync::spinlock> guard(spin_);
-        if (isRun_.load() == true) {
+        std::lock_guard<utility::spinlock> guard(spin_);
+        if (isRun_.load()) {
             Event endgame;
             endgame.set_type(EventType::ENDGAME);
             for (int k = 0; k < 3; ++k) {
@@ -49,8 +49,8 @@ public:
     }
 private:
     Status Register(::grpc::ServerContext* context, const Void* request, OrderInfo* response) override {
-        std::lock_guard<threads_sync::spinlock> guard(spin_);
-        if (isRun_.load() == false) {
+        std::lock_guard<utility::spinlock> guard(spin_);
+        if (!isRun_.load()) {
             for (int k = 0; k < 3; ++k) {
                 events_[k].clear();
             }
@@ -97,10 +97,10 @@ private:
     }
 
 private:
-    std::vector<EventQueue> events_;
+    std::vector<utility::EventQueue> events_;
     int currentPlayerNumber_;
     std::atomic_bool isRun_ { false };
-    threads_sync::spinlock spin_;
+    utility::spinlock spin_;
 };
 
 

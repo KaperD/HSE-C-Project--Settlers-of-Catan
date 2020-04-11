@@ -1,3 +1,4 @@
+#include <memory>
 #include <stdexcept>
 #include <random>
 #include <ctime>
@@ -6,6 +7,7 @@
 
 #include "GameController.h"
 #include "EventQueue.h"
+#include "random.h"
 
 using game::EventType;
 using game::Void;
@@ -18,14 +20,9 @@ using game::Build;
 using game::Player;
 using game::Network;
 
+using utility::Random;
+
 namespace Controller {
-
-namespace {
-    std::random_device rd;
-    std::mt19937 random(rd());
-    std::uniform_int_distribution<int> randomDiceNumber(1, 6); 
-}
-
 
 //===============Handler===============
 
@@ -72,7 +69,7 @@ void DiceHandler::processEvent(Event& event, bool needSend) {
     number_ = diceInfo->number();
 
     if (number_== 0) {
-        number_ = randomDiceNumber(random) + randomDiceNumber(random);
+        number_ = Random::getRandomNumberFromTo(1, 6) + Random::getRandomNumberFromTo(1, 6);
         diceInfo->set_number(number_);
     }
 
@@ -229,7 +226,7 @@ void EndGameHandler::displayEvent(Event& event) {
 
 namespace {
 
-EventQueue events_;
+utility::EventQueue events_;
 
 void getEventsFromServer(GameClient* gameClient_) {
     while (true) {
@@ -257,13 +254,13 @@ GameController::GameController(Board::Catan& model, GameClient& client, View& vi
     for (int k = 0; k < 7; ++k) {
         handlers_.push_back(nullptr);
     }
-    handlers_[0] = std::unique_ptr<CardHandler>(new CardHandler(gameModel_, gameView_, gameClient_));
-    handlers_[1] = std::unique_ptr<DiceHandler>(new DiceHandler(gameModel_, gameView_, gameClient_));
-    handlers_[2] = std::unique_ptr<MarketHandler>(new MarketHandler(gameModel_, gameView_, gameClient_));
-    handlers_[3] = std::unique_ptr<BuildHandler>(new BuildHandler(gameModel_, gameView_, gameClient_));
-    handlers_[4] = std::unique_ptr<EndTurnHandler>(new EndTurnHandler(gameModel_, gameView_, gameClient_));
-    handlers_[5] = std::unique_ptr<NextPhaseHandler>(new NextPhaseHandler(gameModel_, gameView_, gameClient_));
-    handlers_[6] = std::unique_ptr<EndGameHandler>(new EndGameHandler(gameModel_, gameView_, gameClient_));
+    handlers_[0] = std::make_unique<CardHandler>(gameModel_, gameView_, gameClient_);
+    handlers_[1] = std::make_unique<DiceHandler>(gameModel_, gameView_, gameClient_);
+    handlers_[2] = std::make_unique<MarketHandler>(gameModel_, gameView_, gameClient_);
+    handlers_[3] = std::make_unique<BuildHandler>(gameModel_, gameView_, gameClient_);
+    handlers_[4] = std::make_unique<EndTurnHandler>(gameModel_, gameView_, gameClient_);
+    handlers_[5] = std::make_unique<NextPhaseHandler>(gameModel_, gameView_, gameClient_);
+    handlers_[6] = std::make_unique<EndGameHandler>(gameModel_, gameView_, gameClient_);
 }
 
 void GameController::RunGame() {

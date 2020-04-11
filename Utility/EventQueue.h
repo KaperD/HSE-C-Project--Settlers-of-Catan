@@ -8,53 +8,57 @@
 
 #include "game.grpc.pb.h"
 
-class EventQueue final {
-public:
-    EventQueue() : hasElement_(false) { }
+namespace utility {
 
-    void push(::game::Event event) {
-        std::unique_lock<std::mutex> locker(lockqueue_);
-        events_.push(std::move(event));
-        hasElement_.store(true);
-        queuecheck_.notify_all();
-    }
+    class EventQueue final {
+    public:
+        EventQueue() : hasElement_(false) {}
 
-    ::game::Event front() {
-        std::unique_lock<std::mutex> locker(lockqueue_);
-        while (!hasElement_.load()) {
-            queuecheck_.wait(locker);
+        void push(::game::Event event) {
+            std::unique_lock<std::mutex> locker(lockqueue_);
+            events_.push(std::move(event));
+            hasElement_.store(true);
+            queuecheck_.notify_all();
         }
-        if (events_.size() > 0) {
-            ::game::Event event = events_.front();
-            events_.pop();
-            if (events_.size() == 0) {
-                hasElement_.store(false);
+
+        ::game::Event front() {
+            std::unique_lock<std::mutex> locker(lockqueue_);
+            while (!hasElement_.load()) {
+                queuecheck_.wait(locker);
             }
-            return event;
-        } else {
-            std::cerr << "front()" << std::endl;
-            throw (std::logic_error("front()"));
+            if (!events_.empty()) {
+                ::game::Event event = events_.front();
+                events_.pop();
+                if (events_.empty()) {
+                    hasElement_.store(false);
+                }
+                return event;
+            } else {
+                std::cerr << "front()" << std::endl;
+                throw (std::logic_error("front()"));
+            }
         }
-    }
 
-    void clear() {
-        std::unique_lock<std::mutex> locker(lockqueue_);
-        while (events_.size() > 0) {
-            events_.pop();
+        void clear() {
+            std::unique_lock<std::mutex> locker(lockqueue_);
+            while (!events_.empty()) {
+                events_.pop();
+            }
+            hasElement_.store(false);
         }
-        hasElement_.store(false);
-    }
 
-    bool empty() {
-        return hasElement_.load();
-    }
+        bool empty() {
+            return hasElement_.load();
+        }
 
 
-private:
-    std::queue<::game::Event> events_;
-    std::mutex lockqueue_;
-    std::condition_variable queuecheck_;
-    std::atomic_bool hasElement_;
-};
+    private:
+        std::queue<::game::Event> events_;
+        std::mutex lockqueue_;
+        std::condition_variable queuecheck_;
+        std::atomic_bool hasElement_;
+    };
+
+} // namespace utility
 
 #endif

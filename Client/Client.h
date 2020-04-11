@@ -3,6 +3,7 @@
 
 #include <exception>
 #include <string>
+#include <utility>
 
 #include <grpcpp/create_channel.h>
 
@@ -10,9 +11,8 @@
 
 class NetworkException : public std::exception {
 public:
-    NetworkException(const std::string& what) : whatStr_(what) { }
-    NetworkException(std::string&& what) noexcept : whatStr_(std::move(what)) { }
-    const char* what() const noexcept override {
+    explicit NetworkException(std::string  what) : whatStr_(std::move(what)) { }
+    [[nodiscard]] const char* what() const noexcept override {
         return whatStr_.c_str();
     }
 
@@ -23,7 +23,7 @@ private:
 class GameClient {
 public:
     GameClient();
-    GameClient(std::shared_ptr<::grpc::Channel> channel);
+    explicit GameClient(const std::shared_ptr<::grpc::Channel>& channel);
 
     game::OrderInfo Register();
 
