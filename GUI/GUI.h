@@ -5,7 +5,7 @@
 #include <ctime>
 
 
-#include "game.grpc.pb.h"
+//#include "game.grpc.pb.h"
 #include "Client.h"
 
 const int SCREEN_WIDTH = 1000;
@@ -15,7 +15,7 @@ class View {
 public:
     View();
     void update();
-    ::game::Event getTurn();
+    //::game::Event getTurn();
     void endGame();
 	void loop();
     void build(int x, int y);
