@@ -17,6 +17,9 @@ void seedRandom() {
     utility::Random::random_.seed(x);
     std::ofstream fout("RandomLog.txt", std::ios_base::app);
     fout << x << '\n';
+    for (int k = 0; k < 10; ++k) {
+        std::cout << utility::Random::getRandomNumberFromTo(1, 6) << std::endl;
+    }
 }
 
 

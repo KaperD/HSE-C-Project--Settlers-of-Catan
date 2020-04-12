@@ -65,6 +65,10 @@ void DiceHandler::processEvent(Event& event, bool needSend) {
         throw std::logic_error("Wrong type");
     }
 
+    int Player = event.playerid() + 1;
+    auto currentPlayer_ = static_cast<Board::PlayerNum>(Player);
+    gameModel_.changeCurPlayer(currentPlayer_);
+
     auto diceInfo = event.mutable_diceinfo();
     number_ = diceInfo->number();
 
@@ -77,7 +81,14 @@ void DiceHandler::processEvent(Event& event, bool needSend) {
         throw std::logic_error("Wrong dice number");
     }
 
-    gameModel_.giveResources(number_);
+    if (number_ == 7) {
+        int hexNum = 0;
+        // hexNum = запросить у View
+        gameModel_.setRobbers(hexNum);
+        // изменить hexNum у View
+    } else {
+        gameModel_.giveResources(number_);
+    }
     displayEvent(event);
     if (needSend) {
         sendEvent(event);
