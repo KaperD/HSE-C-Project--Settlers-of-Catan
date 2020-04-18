@@ -143,12 +143,14 @@ public:
     void changeCurPlayer(PlayerNum new_player);
     void setRobbers(int hex_num);
     Hexagon* getHex(int indx) const;
+    bool isBeginning() const;
 
     int getRoadsRecord() const;
     int getKnightRecord() const;
     void setRoadsRecord(int new_record);
     void setKnightRecord(int new_record);
 
+    void gotoNextGamePhase();
     bool isFinished();
 
 private:
@@ -157,6 +159,7 @@ private:
     std::unordered_map<PlayerNum, std::unique_ptr<Player>> players;
     int robbers_hex;
     PlayerNum cur_player;
+    bool is_beginning = true;
 
     PlayerNum last_roads_record_holder = PlayerNum::NONE;
     int roads_record = 4;

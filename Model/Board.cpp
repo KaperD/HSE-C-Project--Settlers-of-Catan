@@ -299,25 +299,41 @@ Hexagon* Catan::getHex(int indx) const {
     return hexes[indx];
 }
 
+void Catan::gotoNextGamePhase() {
+    is_beginning = false;
+}
+
+bool Catan::isBeginning() const {
+    return is_beginning;
+}
+
 bool Catan::canBuild(BuildingType mod, int x, int y) const {
-    if (cell(x, y) == nullptr ||
-        (cell(x, y)->getPlayer() != PlayerNum::NONE &&
-        cell(x, y)->getPlayer() != cur_player) ||
-        cell(x, y)->getType() != mod) {
-        return false;
-    }
+    if (cell(x, y) == nullptr || cell(x, y)->getType() != mod) return false;
 
     size_t lenV = cell(x, y)->getVertexNum();
     size_t lenR = cell(x, y)->getRoadsNum();
 
-    if (mod == BuildingType::VILLAGE || mod == BuildingType::CITY) {
+    if (mod == BuildingType::CITY) {
+        return cell(x, y)->getPlayer() == cur_player;
+    }
+
+    if (cell(x, y)->getPlayer() != PlayerNum::NONE) return false;
+
+    if (mod == BuildingType::VILLAGE) {
         for (size_t i = 0; i < lenV; i++) {
             std::pair<int, int> neighbour = cell(x, y)->getVertex(i);
             if (cell(neighbour.first, neighbour.second)->getPlayer() != PlayerNum::NONE) {
                 return false;
             }
         }
-        return true;
+        if (is_beginning) return true;
+        for (size_t i = 0; i < lenR; i++) {
+            std::pair<int, int> neighbour = cell(x, y)->getRoad(i);
+            if (cell(neighbour.first, neighbour.second)->getPlayer() == cur_player) {
+                return true;
+            }
+        }
+        return false;
     }
 
     for (size_t i = 0; i < lenV; i++) {
@@ -369,6 +385,7 @@ void Catan::settle(BuildingType s, int x, int y) {
         players[cur_player]->getResource(Resource::CLAY, 1);
         players[cur_player]->getResource(Resource::WOOL, 1);
         players[cur_player]->getResource(Resource::WHEAT, 1);
+        cell(x, y)->setBuildingType(BuildingType::CITY);
     } else if (s == BuildingType::CITY) {
         players[cur_player]->getResource(Resource::ORE, 3);
         players[cur_player]->getResource(Resource::WHEAT, 2);
@@ -381,7 +398,7 @@ void Catan::settle(BuildingType s, int x, int y) {
         }
     }
     cell(x, y)->setPlayer(cur_player);
-    cell(x, y)->setBuildingType(s);
+    //cell(x, y)->setBuildingType(s); чёт я даже не помню, зачем это, когда в конструкторах всё есть
 }
 
 void Catan::setRobbers(int hex_num) {

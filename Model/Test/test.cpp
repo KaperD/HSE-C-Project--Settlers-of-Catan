@@ -5,17 +5,6 @@
 
 using namespace Board;
 
-TEST(HexagonNum, GetRandomNum) {
-    Hexagon hex(1, 6);
-    ASSERT_EQ(hex.robbersIsHere(), false);
-}
-
-TEST(HexagonNum, GetRandomNum2) {
-    Hexagon hex(1, 6);
-    hex.setRobbers();
-    ASSERT_EQ(hex.robbersIsHere(), true);
-}
-
 TEST(CatanGraph, HexDesert) {
     Catan board;
     int desert_cnt = 0;
@@ -91,4 +80,66 @@ TEST(CatanGraph, ShowGraph) {
     }
 }
 
+TEST(canBuildTest, simpleVillageCase) {
+    Catan board;
+    board.settle(BuildingType::VILLAGE, 8, 6);
+    board.settle(BuildingType::ROAD, 8, 7);
+    board.changeCurPlayer(PlayerNum::GAMER2);
+    ASSERT_EQ(board.canBuild(BuildingType::VILLAGE, 8, 4), false);
+    ASSERT_EQ(board.canBuild(BuildingType::VILLAGE, 8, 2), true);
+}
 
+TEST(canBuildTest, nearEnemyVillageCase) {
+    Catan board;
+    board.settle(BuildingType::VILLAGE, 8, 6);
+    board.settle(BuildingType::ROAD, 8, 7);
+    board.settle(BuildingType::ROAD, 8, 9);
+    board.changeCurPlayer(PlayerNum::GAMER2);
+    ASSERT_EQ(board.canBuild(BuildingType::VILLAGE, 8, 10), true);
+}
+
+TEST(canBuildTest, afterBeginningVillageCase) {
+    Catan board;
+    board.settle(BuildingType::VILLAGE, 8, 6);
+    board.settle(BuildingType::ROAD, 8, 7);
+    board.settle(BuildingType::ROAD, 8, 9);
+    board.gotoNextGamePhase();
+    ASSERT_EQ(board.canBuild(BuildingType::VILLAGE, 8, 10), true);
+    ASSERT_EQ(board.canBuild(BuildingType::VILLAGE, 8, 18), false);
+}
+
+TEST(canBuildTest, simpleCityCase) {
+    Catan board;
+    board.settle(BuildingType::VILLAGE, 8, 6);
+    board.changeCurPlayer(PlayerNum::GAMER2);
+    board.settle(BuildingType::VILLAGE, 4, 4);
+    ASSERT_EQ(board.canBuild(BuildingType::CITY, 8, 6), false);
+    ASSERT_EQ(board.canBuild(BuildingType::CITY, 4, 4), true);
+}
+
+TEST(canBuildTest, simpleRoadCase) {
+    Catan board;
+    board.settle(BuildingType::VILLAGE, 8, 6);
+    board.settle(BuildingType::ROAD, 8, 7);
+    board.changeCurPlayer(PlayerNum::GAMER2);
+    board.settle(BuildingType::VILLAGE, 8, 10);
+    ASSERT_EQ(board.canBuild(BuildingType::ROAD, 8, 9), true);
+    ASSERT_EQ(board.canBuild(BuildingType::ROAD, 8, 7), false);
+    ASSERT_EQ(board.canBuild(BuildingType::ROAD, 4, 7), false);
+}
+
+TEST(canBuildTest, fromRulesRoadCase) {
+    Catan board;
+    board.settle(BuildingType::VILLAGE, 8, 6);
+    board.settle(BuildingType::ROAD, 9, 6);
+    board.changeCurPlayer(PlayerNum::GAMER2);
+    board.settle(BuildingType::VILLAGE, 8, 10);
+    board.settle(BuildingType::ROAD, 8, 9);
+    ASSERT_EQ(board.canBuild(BuildingType::ROAD, 8, 7), true);
+    board.settle(BuildingType::ROAD, 8, 7);
+    ASSERT_EQ(board.canBuild(BuildingType::ROAD, 9, 8), true);
+    ASSERT_EQ(board.canBuild(BuildingType::ROAD, 7, 10), true);
+    ASSERT_EQ(board.canBuild(BuildingType::ROAD, 8, 11), true);
+    ASSERT_EQ(board.canBuild(BuildingType::ROAD, 9, 8), true);
+    ASSERT_EQ(board.canBuild(BuildingType::ROAD, 8, 5), false);
+}
