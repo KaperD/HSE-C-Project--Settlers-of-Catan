@@ -5,68 +5,56 @@
 #include <iostream>
 #include <random>
 #include <time.h>
-const int SCREEN_WIDTH = 1000;
-const int SCREEN_HEIGHT = 1000;
-int tmp_sound = 0;
-int render_type;
-
-int alarm(int kol) {
-	clock_t bt = clock();
-	clock_t et = clock();
-	while (et - bt < kol * CLOCKS_PER_SEC) {
-		et = clock();
-	}
-	return 1;
-}
-
-std::vector<std::pair<int, int>> roades_vec;
-std::vector<std::pair<int, int>> hous_vec;
-std::pair<int, int> tmp_rode;
-Mix_Chunk *sfx, *button_sound, *build_sound;
-std::pair<int, int> tmp_hous;
-std::pair<SDL_Texture*, int> cur_table;
-SDL_Texture *back, *back_ground, *road, *road1, *road2,
- *oct, *cur_road, *cur_road1, *cur_road2, *table, *table_1, *table_2, *table_time, *hous, *hous1, *hous2, *hous_cur;
-SDL_Texture* arr[6];
-bool quit = false;
-
-int field_arr[19];
-SDL_Renderer *ren;
-	SDL_DisplayMode displayMode;
-	SDL_Window *win;
-
-class scene {
+class GUI {
 public:
-	scene();
-	~scene();
-private:
+	std::vector<std::pair<int, int>> roades_vec;
+	std::vector<std::pair<int, int>> hous_vec;
+	std::pair<int, int> tmp_rode;
+	Mix_Chunk *sfx, *button_sound, *build_sound;
+	std::pair<int, int> tmp_hous;
+	std::pair<SDL_Texture*, int> cur_table;
+	SDL_Texture *back, *back_ground, *road, *road1, *road2,
+	 *oct, *cur_road, *cur_road1, *cur_road2, *table, *table_1, *table_2, *table_time, *hous, *hous1, *hous2, *hous_cur;
+	SDL_Texture* arr[6];
+	bool quit = false;
+	int field_arr[19];
+	int tmp_sound = 0;
+	int render_type;
 	SDL_Renderer *ren;
 	SDL_DisplayMode displayMode;
 	SDL_Window *win;
+	sf::Thread thread_music(&play_music);
+	sf::Thread thread(&upgrade);
+
+	GUI();
+	~GUI();
+	void play_music();
+	void load_textures();
+	void destroy_textures();
+	void render_background();
+	void render_tables();
+	void render_field();
+	void road_type(std::pair<int, int> e, SDL_Texture * fst_road, SDL_Texture * snd_road, SDL_Texture * thrd_road);
+	void render_roades();
+	void hous_type(std::pair<int, int> e, SDL_Texture * hous);
+	void render_houses();
+	void render_tables_time();
+	void make_render();
+	void upgrade();
+	void get_coors_road();
+	void get_coors_building();
+	void main_menu();
 };
 
 void play_music() {
-	kek:
-	
-	std::cout << 1;
-	Mix_PlayChannel(-1, sfx, 0);
-	for (int i = 0; i < 18000; ++i) {
-		if (quit) return;
-		SDL_Delay(10);
+	while (!quit){
+		std::cout << 1;
+		Mix_PlayChannel(-1, sfx, 0);
+		for (int i = 0; i < 18000; ++i) {
+			if (quit) return;
+			SDL_Delay(10);
+		}
 	}
-	goto kek;
-}
-
-sf::Thread thread_music(&play_music);
-
-
-void add_obj(int x, int y) {
-	roades_vec.push_back(std::make_pair(x, y));
-}
-
-
-void add_hous(int x, int y) {
-	hous_vec.push_back(std::make_pair(x, y));
 }
 
 void load_textures() {
@@ -160,64 +148,14 @@ void render_field() {
 
 }
 
-void road_type(std::pair<int, int> e, SDL_Texture * fst_road, SDL_Texture * snd_road, SDL_Texture * thrd_road) {
-	int x, y;
-	x = e.first;
-	y = e.second;
-	SDL_Rect dest;
-    for (int i = 0; i < 5; ++i){
-    	int a = 0;
-    	int b = 11;
-    	if (i == 0) {a = 1; b = 10;}
-    	if (i == 4) {a = 1; b = 10;}
-    	for (int j = a; j < b; ++j){
-    		if ((i+j) % 2 != 0) continue;
-	        if (x > 497 + 20 + j*50*sqrt(3) && x <  525 + 20 +j*50*sqrt(3) && y > 199 + 3*i*50 && y < 294 + 3*i*50) {
-	        	dest.x = 470 + 20 + j*50*sqrt(3);
-				dest.y = 150 + 50 + 3*i*50;
-				dest.w = 80;//60
-				dest.h = 100;//100
-				SDL_RenderCopy(ren, fst_road, NULL, &dest); //Копируем в рендер персонажа
-				break;
-			}
-        }
-    }
-
-    for (int i = 0; i < 6; ++i) {
-    	int a = 0;
-    	int b = 10;
-    	if (i == 0) {a = 2; b = 8;}
-    	if (i == 1) {a = 1; b = 9;}
-    	if (i == 5) {a = 2; b = 8;}
-    	if (i == 4) {a = 1; b = 9;}
-    	for (int j = a; j < b; ++j) {
-    		dest.x = 510 + 20  + j*50*sqrt(3);//470 + 2*100*sqrt(3);
-			dest.y = 140 + 3*i*50;//150 + 50;
-			dest.w = 50*sqrt(3);//60
-			dest.h = 80;//100
-    		if ((i+j) % 2 == 0) {
-		        if (x > 509 + 20 + j*50*sqrt(3) && x <  580 + 20 +j*50*sqrt(3) && y > 160 + 3*i*50 && y < 195 + 3*i*50) {
-						SDL_RenderCopy(ren, snd_road, NULL, &dest); //Копируем в рендер персонажа
-						break;
-					}
-			} else {
-				if (x > 509 + 20 + j*50*sqrt(3) && x <  580 + 20 +j*50*sqrt(3) && y > 160 + 3*i*50 && y < 195 + 3*i*50) {
-					SDL_RenderCopy(ren, thrd_road, NULL, &dest); //Копируем в рендер персонажа
-					break;
-				}
-			}
-        }
-
-    }
-}
-
 void render_roades() {
 	SDL_Rect dest;
 	for (auto e: roades_vec) {
-		road_type(e, road, road1, road2);
+		if (e.builded)
+			SDL_RenderCopy(ren, e.texture, NULL, &e.dest);
 	}
 	if (render_type == 1) {
-		road_type(tmp_rode, cur_road, cur_road1, cur_road2);
+		SDL_RenderCopy(ren, .cur_texture, NULL, &e.dest);
 	}
 }
 
@@ -288,15 +226,13 @@ void upgrade() {
 	pop:
 	SDL_Delay(20);
 	make_render();
-	SDL_RenderPresent(ren); //Погнали!!	
+	SDL_RenderPresent(ren); 
 	if (quit) return;
 	goto pop;
 } 
 
-sf::Thread thread(&upgrade);
 
-
-void begin_gui() {
+GUI::GUI() {
     SDL_Init( SDL_INIT_EVERYTHING );
     SDL_Init(SDL_INIT_AUDIO);
     Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 4096);
@@ -314,7 +250,6 @@ void get_coors_road () {
 	Mix_PlayChannel(-1, build_sound, 0);
 	int old_render_type = render_type;
 	render_type = 1;
-
 	SDL_Rect dest;
 	SDL_Event e;
 	clock_t begin_time = clock();
@@ -329,13 +264,10 @@ void get_coors_road () {
 			if (e.type == SDL_QUIT) {
 				quit = true;
 			}
-
 			if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE) {
 				quit = true;
 				break;
 			}
-			
-
 			if( e.type == SDL_MOUSEMOTION ) {  
 		        int x,y;
 		        x = e.motion.x;
@@ -351,7 +283,8 @@ void get_coors_road () {
 					render_type = old_render_type;
 					return;
 				}
-				add_obj(x,y);
+				tmp_ = chek(std::make_pair(x, y));
+				if (tmp_ != -1) return;
 			}
 		}
 	}
@@ -380,9 +313,6 @@ void get_coors_building () {
 				quit = true;
 				break;
 			}
-			
-			
-
 			if( e.type == SDL_MOUSEMOTION ) {  
 		        int x,y;
 		        x = e.motion.x;
@@ -404,8 +334,7 @@ void get_coors_building () {
 	}
 }
 
-
-void main_menu () {
+std::pair<int, int> main_menu () {
 	SDL_Rect dest;
 	SDL_Event e;
 	render_type = 0;
@@ -423,20 +352,150 @@ void main_menu () {
 			if (e.type == SDL_MOUSEBUTTONDOWN) {
 				Mix_PlayChannel(-1, button_sound, 0);
 				int x, y;
-		    	SDL_GetMouseState(&x, &y); // Получить координаты мыши
+		    	SDL_GetMouseState(&x, &y); 
 				if (x > 200 && x < 480 && y > 98 && y < 280) get_coors_road();
 				if (x > 200 && x < 480 && y > 300 && y < 482) get_coors_building();
-
-
 	     	}
 		}
 	}
-
-
 }
 
+enum Colour {
+	YELLLOW,
+	BLACK,
+	WHITE,
+	BLUE,
+	RED,
+	PINK,
+	ORANGE,
+	GREEN
+};
 
-void end_gui() {
+class Obj {
+public:
+	Obj(double x1, double y1, double x2, 
+		double y2, int x, int y, 
+		SDL_Texture *_texture, SDL_Rect _dest):
+		gui_x1(x1), gui_x2(x2), gui_y1(y1), 
+		gui_y2(y2), model_x(x), model_y(y),
+		texture(_texture), dest(_dest);
+		
+
+
+    double gui_x1, gui_y1, gui_x2, gui_y2;
+
+    int model_x, model_y;
+
+    SDL_Texture *texture;
+    SDL_Rect dest;
+
+    bool builded = false;
+    Colour colour;
+
+    std::pair<int, int> get_model_coors();
+};
+
+bool Obj::is(int x, int y) {
+    return x <= gui_x1 && x >= gui_x2 && y <= gui_y1 && y >= gui_y2;
+}
+
+std::pair<int, int> Obj::get_model_coors() {
+    return std::make_pair(model_x, model_y);
+}
+
+class Road_arr {
+public:
+    Road_arr();
+    ~Road_arr();
+    std::vector<Obj> vec;
+    SDL_Texture *get_road(int x);
+	void add_road(std::pair<int, int> tmp);
+};
+
+enum Rode {
+	X1_V = 517, 
+	X2_V = 545, 
+	Y1_V = 199,
+	Y2_V = 294,
+	X1_G = 529, 
+	X2_G = 600, 
+	Y1_G = 160,
+	Y2_G = 195,
+	DX = (int)(double)50*sqrt(3)*100000,
+	DY = 3*50,
+	SCALE = 100000
+};
+
+SDL_Texture *get_road(int x) {
+	if (x%2==0) return snd_road;
+	return thrd_road;
+}
+
+void add_road(std::pair<int, int> tmp) {
+	for (auto e:vec) {
+		if (tmp.first == e.model_x && tmp.second == e.model_y)
+			e.builded = true;
+	}
+}
+
+int chek(std::pair<int, int> tmp) {
+	for (auto e:vec) {
+		if (tmp.first < e.gui_x1 && tmp.first > e.gui_x2 &&
+			tmp.second < e.gui_y1 && tmp.second > e.gui_y2)
+			return i;
+	}
+	return -1;
+}
+
+Road_arr::Road_arr() {
+    SDL_Rect dest;
+    for (int i = 0; i < 5; ++i){
+        int a = 0;
+        int b = 11;
+        if (i == 0) {a = 1; b = 10;}
+        if (i == 4) {a = 1; b = 10;}
+        for (int j = a; j < b; ++j){
+            if ((i+j) % 2 != 0) continue;
+            dest.x = 470 + 20 + j*50*sqrt(3);
+            dest.y = 150 + 50 + 3*i*50;
+            dest.w = 80;
+            dest.h = 100;
+            Obj tmp(X1 + j*DX/SCALE, Y1 + i*DY,
+            					X2 + j*DX/SCALE, Y2 + i*DY, 
+				            	i * 2 + 1, j * 2,
+				            	dest, fst_road);
+            vec.push_back(tmp);
+            break;
+        }
+    }
+    for (int i = 0; i < 6; ++i) {
+        int a = 0;
+        int b = 10;
+        if (i == 0) {a = 2; b = 8;}
+        if (i == 1) {a = 1; b = 9;}
+        if (i == 5) {a = 2; b = 8;}
+        if (i == 4) {a = 1; b = 9;}
+        for (int j = a; j < b; ++j) {
+            dest.x = 510 + 20  + j*50*sqrt(3);
+            dest.y = 140 + 3*i*50;
+            dest.w = 50*sqrt(3);
+            dest.h = 80;
+            SDL_Texture cur_texture = get_road(i+j);
+        	Obj tmp = new Obj(X1_G + j*DX/SCALE, Y1_G + i*DY,
+        					X2_G + j*DX/SCALE, Y2_G + i*DY, 
+			            	i * 2, 	j * 2 + 1,
+			            	dest, cur_texture);
+            vec.push_back(tmp);
+        }
+    }
+}
+
+class Building_arr {
+    Building_arr();
+    ~Building_arr();
+};
+
+GUI::~GUI() {
 	destroy_textures();
 	SDL_DestroyRenderer(ren);
 	SDL_DestroyWindow(win);
