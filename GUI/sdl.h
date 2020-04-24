@@ -10,6 +10,10 @@
 #include <iostream>
 #include <random>
 #include <time.h>
+#include <mutex>
+
+
+class GUI;
 
 enum Colour {
     BLACK,
@@ -48,14 +52,14 @@ public:
 
 class Building_arr {
 public:
-    Building_arr();
+    explicit Building_arr(GUI& gui);
     ~Building_arr();
     std::vector<Obj> vec;
 };
 
 class Road_arr {
 public:
-    Road_arr();
+    explicit Road_arr(GUI& gui);
     ~Road_arr();
     std::vector<Obj> vec;
 };
@@ -82,53 +86,57 @@ enum Rode {
     SCALE_X = 100000
 };
 
-void load_textures();
 
 class GUI {
 public:
+    std::mutex mu {};
+
     Road_arr *roads = nullptr;
     Building_arr *buildings = nullptr;
     std::pair<int, int> tmp_road;
-    static Mix_Chunk *sfx, *button_sound, *build_sound;
+    Mix_Chunk *sfx, *button_sound, *build_sound;
     std::pair<int, int> tmp_house;
     std::pair<SDL_Texture*, int> cur_table;
-    static SDL_Texture *back, *back_ground, *road, *road1,
+    SDL_Texture *back, *back_ground, *road, *road1,
             *road2, *oct, *cur_road, *cur_road1,
             *cur_road2, *table, *table_1, *table_2,
             *table_time, *house, *house1, *house2,
             *house_cur, *house1_cur, *house2_cur;
-    static SDL_Texture* arr[6];
-    static SDL_Texture* build_texture_arr[3];
-    static SDL_Texture* cur_build_texture_arr[3];
+    SDL_Texture* arr[6];
+    SDL_Texture* build_texture_arr[3];
+    SDL_Texture* cur_build_texture_arr[3];
     bool quit = false;
     int field_arr[19]{};
     int tmp_sound = 0;
     int render_type{};
-    static SDL_Renderer *ren;
+    SDL_Renderer *ren;
     SDL_DisplayMode displayMode{};
     SDL_Window *win;
 
+    void load_textures();
+
     int tmp_coors{};
+
+
 
     GUI();
     ~GUI();
-    void play_music();
-    static void destroy_textures();
+    void destroy_textures();
     void render_background() const;
     void render_tables() const;
     void render_field();
-    void render_roads() const;
-    void render_buildings() const;
+    void render_roads();
+    void render_buildings();
     void render_tables_time() const;
     void make_render();
-    void upgrade();
+    //void upgrade();
     void get_coors_road();
     void get_coors_building();
     std::pair<int, int> main_menu();
 
-    void add_road(std::pair<int, int> tmp);
+    void add_road(std::pair<int, int> tmp, int player);
 
-    void add_building(std::pair<int, int> tmp);
+    void add_building(std::pair<int, int> tmp, int player);
 
     int return_road(int x, int y) const;
 
@@ -136,11 +144,11 @@ public:
 
     std::pair<int, int> tmp_building;
 
-    static SDL_Texture *get_building(int i, int type);
+    SDL_Texture *get_building(int i, int type);
 
-    static SDL_Texture *get_road(int x, int type);
+    SDL_Texture *get_road(int x, int type);
 
-    static SDL_Texture *get_vert_road(int type);
+    SDL_Texture *get_vert_road(int type);
 };
 
 

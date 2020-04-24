@@ -6,6 +6,7 @@
 
 #include "GameController.h"
 #include "EventQueue.h"
+#include "sdl.h"
 
 using game::EventType;
 using game::Void;

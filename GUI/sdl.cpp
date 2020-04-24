@@ -4,57 +4,59 @@
 #include <iostream>
 #include <thread>
 #include <ctime>
+#include <cassert>
 #include "sdl.h"
 
 
-void GUI::play_music(){
-    std::thread t([this]() {});
-    t.detach();
-    while (!quit){
+void play_music(GUI* gui) {
+    while (!gui->quit){
         std::cout << 1;
-        Mix_PlayChannel(-1, sfx, 0);
+        Mix_PlayChannel(-1, gui->sfx, 0);
         for (int i = 0; i < 18000; ++i) {
-            if (quit) return;
+            if (gui->quit) return;
             SDL_Delay(10);
         }
     }
 }
 
-void load_textures() {
+void GUI::load_textures() {
+    for (int i = 0; i < 19; ++i) {
+        field_arr[i] = rand()%6;
+    }
     std::string s = "image/oct .bmp";
     for (int i = 0; i < 6; ++i) {
         s[9] = i + '0';
-        GUI::arr[i] = IMG_LoadTexture(GUI::ren, s.c_str());
+        arr[i] = IMG_LoadTexture(ren, s.c_str());
     }
-    GUI::back_ground = IMG_LoadTexture(GUI::ren, "image/back_ground.bmp");
-    GUI::back = IMG_LoadTexture(GUI::ren, "image/back.bmp");
-    GUI::road = IMG_LoadTexture(GUI::ren, "image/road.bmp");
-    GUI::road1 = IMG_LoadTexture(GUI::ren, "image/road1.bmp");
-    GUI::road2 = IMG_LoadTexture(GUI::ren, "image/road2.bmp");
-    GUI::cur_road = IMG_LoadTexture(GUI::ren, "image/cur_road.bmp");
-    GUI::cur_road1 = IMG_LoadTexture(GUI::ren, "image/cur_road1.bmp");
-    GUI::cur_road2 = IMG_LoadTexture(GUI::ren, "image/cur_road2.bmp");
-    GUI::table = IMG_LoadTexture(GUI::ren, "image/table.bmp");
-    GUI::table_1 = IMG_LoadTexture(GUI::ren, "image/table_1.bmp");
-    GUI::table_2 = IMG_LoadTexture(GUI::ren, "image/table_1.bmp");
-    GUI::table_time = IMG_LoadTexture(GUI::ren, "image/table_time.bmp");
-    GUI::house = IMG_LoadTexture(GUI::ren, "image/house.bmp");
-    GUI::house_cur = IMG_LoadTexture(GUI::ren, "image/house_cur.bmp");
-    GUI::house1_cur = IMG_LoadTexture(GUI::ren, "image/house_cur.bmp");
-    GUI::house2_cur = IMG_LoadTexture(GUI::ren, "image/house_cur.bmp");
-    GUI::house1 = IMG_LoadTexture(GUI::ren, "image/house1.bmp");
-    GUI::house2 = IMG_LoadTexture(GUI::ren, "image/house2.bmp");
-    GUI::build_texture_arr[0] = GUI::house;
-    GUI::cur_build_texture_arr[0] = GUI::house_cur;
-    GUI::build_texture_arr[1] = GUI::house1;
-    GUI::cur_build_texture_arr[1] = GUI::house1_cur;
-    GUI::build_texture_arr[2] = GUI::house2;
-    GUI::cur_build_texture_arr[2] = GUI::house2_cur;
-    GUI::sfx = nullptr;
-    GUI::sfx = Mix_LoadWAV("image/music.wav");
-    GUI::button_sound = Mix_LoadWAV("image/button_sound.wav");
-    GUI::build_sound = Mix_LoadWAV("image/build_sound.wav");
-    if (GUI::sfx == nullptr)  std::cout << "HUY";
+    back_ground = IMG_LoadTexture(ren, "image/back_ground.bmp");
+    back = IMG_LoadTexture(ren, "image/back.bmp");
+    road = IMG_LoadTexture(ren, "image/road.bmp");
+    road1 = IMG_LoadTexture(ren, "image/road1.bmp");
+    road2 = IMG_LoadTexture(ren, "image/road2.bmp");
+    cur_road = IMG_LoadTexture(ren, "image/cur_road.bmp");
+    cur_road1 = IMG_LoadTexture(ren, "image/cur_road1.bmp");
+    cur_road2 = IMG_LoadTexture(ren, "image/cur_road2.bmp");
+    table = IMG_LoadTexture(ren, "image/table.bmp");
+    table_1 = IMG_LoadTexture(ren, "image/table_1.bmp");
+    table_2 = IMG_LoadTexture(ren, "image/table_1.bmp");
+    table_time = IMG_LoadTexture(ren, "image/table_time.bmp");
+    house = IMG_LoadTexture(ren, "image/house.bmp");
+    house_cur = IMG_LoadTexture(ren, "image/house_cur.bmp");
+    house1_cur = IMG_LoadTexture(ren, "image/house_cur.bmp");
+    house2_cur = IMG_LoadTexture(ren, "image/house_cur.bmp");
+    house1 = IMG_LoadTexture(ren, "image/house1.bmp");
+    house2 = IMG_LoadTexture(ren, "image/house2.bmp");
+    build_texture_arr[0] = house;
+    cur_build_texture_arr[0] = house_cur;
+    build_texture_arr[1] = house1;
+    cur_build_texture_arr[1] = house1_cur;
+    build_texture_arr[2] = house2;
+    cur_build_texture_arr[2] = house2_cur;
+    sfx = nullptr;
+    sfx = Mix_LoadWAV("image/music.wav");
+    button_sound = Mix_LoadWAV("image/button_sound.wav");
+    build_sound = Mix_LoadWAV("image/build_sound.wav");
+    if (sfx == nullptr)  std::cout << "HUY";
 }
 
 void GUI::destroy_textures() {
@@ -75,6 +77,7 @@ void GUI::render_background() const {
     dest1.y = 0;
     dest1.w = displayMode.w;
     dest1.h = displayMode.h;
+    assert(ren != nullptr);
     SDL_RenderCopy(ren,back_ground,nullptr,&dest1); //Копируем в рендер фон
     SDL_RenderCopy(ren,back,nullptr,&dest1); //Копируем в рендер фон
 }
@@ -108,7 +111,7 @@ void GUI::render_field() {
     int it = 0;
     for (int i = 0; i < 5; ++i){
         dest.y += 150;
-        for (int i = 0; i < k; ++i){
+        for (int q = 0; q < k; ++q){
             dest.x += 100*sqrt(3);
             SDL_RenderCopy(ren, arr[field_arr[it++]], nullptr, &dest); //Копируем в рендер персонажа
         }
@@ -119,7 +122,8 @@ void GUI::render_field() {
 
 }
 
-void GUI::render_roads() const {
+void GUI::render_roads() {
+    std::lock_guard<std::mutex> lock(mu);
     for (auto e: roads->vec) {
         if (e.built)
             SDL_RenderCopy(ren, e.texture, nullptr, &e.dest);
@@ -132,7 +136,8 @@ void GUI::render_roads() const {
 }
 
 
-void GUI::render_buildings() const {
+void GUI::render_buildings() {
+    std::lock_guard<std::mutex> lock(mu);
     for (auto e: buildings->vec) {
         if (e.built)
             SDL_RenderCopy(ren, e.texture, nullptr, &e.dest);
@@ -166,15 +171,13 @@ void GUI::make_render() {
 
 }
 
-void GUI::upgrade() {
-    std::thread t([this]() {});
-    t.detach();
-    pop:
-    SDL_Delay(20);
-    make_render();
-    SDL_RenderPresent(ren);
-    if (quit) return;
-    goto pop;
+void upgrade(GUI* g) {
+    while (true) {
+        SDL_Delay(20);
+        g->make_render();
+        SDL_RenderPresent(g->ren);
+        if (g->quit) return;
+    }
 }
 
 
@@ -185,8 +188,6 @@ GUI::GUI() {
     SDL_GetDesktopDisplayMode(0,&displayMode);
     win = SDL_CreateWindow("Hello World!", 0, 0, displayMode.w, displayMode.h, SDL_WINDOW_FULLSCREEN);
     ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    roads = new Road_arr();
-    buildings = new Building_arr();
 }
 
 
@@ -296,11 +297,11 @@ std::pair<int, int> GUI::main_menu () {
                 Mix_PlayChannel(-1, button_sound, 0);
                 int x, y;
                 SDL_GetMouseState(&x, &y);
-                if (x > 200 && x < 480 && y > 98 && y < 280) {
+                if (x > 200 && x < 480 && y > 98 && y < 280) { // дорога
                     get_coors_road();
                     return roads->vec[tmp_coors].get_model_coors();
                 }
-                if (x > 200 && x < 480 && y > 300 && y < 482) {
+                if (x > 200 && x < 480 && y > 300 && y < 482) { // деревня
                     get_coors_building();
                     return buildings->vec[tmp_coors].get_model_coors();
                 }
@@ -325,10 +326,14 @@ SDL_Texture *GUI::get_vert_road(int type) {
     return type ? road : cur_road;
 }
 
-void GUI::add_road(std::pair<int, int> tmp) {
+void GUI::add_road(std::pair<int, int> tmp, int player) {
+    static_cast<void>(player);
+    std::lock_guard<std::mutex> lock(mu);
     for (auto e:roads->vec) {
-        if (tmp.first == e.model_x && tmp.second == e.model_y)
+        if (tmp.first == e.model_x && tmp.second == e.model_y) {
             e.built++;
+            return;
+        }
     }
 }
 
@@ -344,7 +349,7 @@ int GUI::return_building(int x, int y) const {
     return -1;
 }
 
-Road_arr::Road_arr() {
+Road_arr::Road_arr(GUI& gui) {
     SDL_Rect dest;
     for (int i = 0; i < 5; ++i){
         int a = 0;
@@ -357,8 +362,8 @@ Road_arr::Road_arr() {
             dest.y = 150 + 50 + 3*i*50;
             dest.w = 80;
             dest.h = 100;
-            SDL_Texture *texture = GUI::get_vert_road(0);
-            SDL_Texture *cur_texture = GUI::get_vert_road(1);
+            SDL_Texture *texture = gui.get_vert_road(0);
+            SDL_Texture *cur_texture = gui.get_vert_road(1);
             Obj tmp(X1_V + j * DX / SCALE_X, Y1_V + i * DY,
                     X2_V + j * DX / SCALE_X, Y2_V + i * DY,
                     i * 2 + 1, j * 2,
@@ -379,8 +384,8 @@ Road_arr::Road_arr() {
             dest.y = 140 + 3*i*50;
             dest.w = 50*sqrt(3);
             dest.h = 80;
-            SDL_Texture *texture = GUI::get_road(i+j, 0);
-            SDL_Texture *cur_texture = GUI::get_road(i+j, 1);
+            SDL_Texture *texture = gui.get_road(i+j, 0);
+            SDL_Texture *cur_texture = gui.get_road(i+j, 1);
             Obj tmp(X1_G + j * DX / SCALE_X, Y1_G + i * DY,
                     X2_G + j * DX / SCALE_X, Y2_G + i * DY,
                     i * 2, 	j * 2 + 1,
@@ -393,6 +398,7 @@ Road_arr::Road_arr() {
 Road_arr::~Road_arr() = default;
 
 GUI::~GUI() {
+    quit = true;
     destroy_textures();
     SDL_DestroyRenderer(ren);
     SDL_DestroyWindow(win);
@@ -405,19 +411,20 @@ SDL_Texture *GUI::get_building(int i, int type) {
     if (i == 2) return type ? house2 : house2_cur;
 }
 
-void GUI::add_building(std::pair<int, int> tmp) {
+void GUI::add_building(std::pair<int, int> tmp, int player) {
+    std::lock_guard<std::mutex> lock(mu);
     for (auto e:buildings->vec) {
         if (tmp.first == e.model_x && tmp.second == e.model_y) {
             e.built++;
-            e.texture = build_texture_arr[e.built - 1];
-            e.cur_texture = cur_build_texture_arr[e.built - 1];
+            e.texture = build_texture_arr[player];
+            e.cur_texture = cur_build_texture_arr[player];
+            return;
         }
     }
 }
 
 
-
-Building_arr::Building_arr() {
+Building_arr::Building_arr(GUI& gui) {
     SDL_Rect dest;
     for (int i = 0; i < 17; ++i) {
         int a = 0;
@@ -437,8 +444,8 @@ Building_arr::Building_arr() {
             dest.y = 130 - 40 + i * DY / SCALE_Y;
             dest.w = 100;
             dest.h = 100;
-            SDL_Texture *texture = GUI::get_building(0, 0);
-            SDL_Texture *cur_texture = GUI::get_building(0, 1);
+            SDL_Texture *texture = gui.get_building(0, 0);
+            SDL_Texture *cur_texture = gui.get_building(0, 1);
             Obj tmp(X1 + j * DX / SCALE_X, Y1 + i * DY / SCALE_Y,
                     X2 + j * DX / SCALE_X, Y2 + i * DY / SCALE_Y,
                     i * 2, 	j * 2 + 1,
@@ -450,11 +457,17 @@ Building_arr::Building_arr() {
 
 Building_arr::~Building_arr() = default;
 
-int main (int argc, char ** args) {
-    load_textures();
+int main () {
     GUI *a = new GUI();
-    a->upgrade();
-    a->play_music();
+    a->load_textures();
+    a->roads = new Road_arr(*a);
+    a->buildings = new Building_arr(*a);
+    std::thread update(upgrade, a);
+    std::thread music(play_music, a);
+
     a->main_menu();
+
+    music.join();
+    update.join();
     return 0;
 };
