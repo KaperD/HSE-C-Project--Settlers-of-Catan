@@ -64,7 +64,7 @@ set(
 # Building project
 add_executable(project
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
-    GUI/sdl.cpp
+    #GUI/sdl.cpp
     ${PROTO_SRCS}
     ${GRPC_SRCS}    
     ${model}

@@ -22,6 +22,15 @@ using game::Network;
 
 using utility::Random;
 
+
+namespace {
+
+bool roadIsSet = false;
+bool villageIsSet = false;
+
+} // namespace
+
+
 namespace Controller {
 
 //===============Handler===============
@@ -128,7 +137,7 @@ void MarketHandler::processEvent(Event& event, bool needSend) {
     } else {
         // сказать о том, что не достаточно ресурсов
     }
-    
+
 
 }
 
@@ -159,16 +168,18 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
         sendEvent(event);
     }
 
-    //auto type = static_cast<Board::BuildingType>(buildingType_);
+//    auto type = static_cast<Board::BuildingType>(buildingType_);
+//
+//     if (gameModel_.canBuild(type, x_, y_)) {
+//         gameModel_.settle(type, x_, y_);
+//         if (type == Board::BuildingType::ROAD) roadIsSet = true;
+//         if (type == Board::BuildingType::VILLAGE) roadIsSet = true;
+         displayEvent(event);
+         if (needSend) {
+             sendEvent(event);
+         }
+//     }
 
-    // if (gameModel_.canBuild(type, x_, y_)) {
-    //     gameModel_.settle(type, x_, y_);
-    //     displayEvent(event);
-    //     if (needSend) {
-    //         sendEvent(event);
-    //     }
-    // }
-    
 }
 
 void BuildHandler::displayEvent(Event& event) {
@@ -261,22 +272,26 @@ GameController::GameController(Board::Catan& model, GameClient& client, View& vi
     game::OrderInfo info = gameClient_.Register();
     myTurn_ = info.id();
     myTurn_ %= 2;
+    numberOfPlayers_ = info.numberofplayers();
 
     for (int k = 0; k < 7; ++k) {
         handlers_.push_back(nullptr);
     }
-    handlers_[0] = std::make_unique<CardHandler>(gameModel_, gameView_, gameClient_);
-    handlers_[1] = std::make_unique<DiceHandler>(gameModel_, gameView_, gameClient_);
-    handlers_[2] = std::make_unique<MarketHandler>(gameModel_, gameView_, gameClient_);
-    handlers_[3] = std::make_unique<BuildHandler>(gameModel_, gameView_, gameClient_);
-    handlers_[4] = std::make_unique<EndTurnHandler>(gameModel_, gameView_, gameClient_);
+    handlers_[0] = std::make_unique<CardHandler     >(gameModel_, gameView_, gameClient_);
+    handlers_[1] = std::make_unique<DiceHandler     >(gameModel_, gameView_, gameClient_);
+    handlers_[2] = std::make_unique<MarketHandler   >(gameModel_, gameView_, gameClient_);
+    handlers_[3] = std::make_unique<BuildHandler    >(gameModel_, gameView_, gameClient_);
+    handlers_[4] = std::make_unique<EndTurnHandler  >(gameModel_, gameView_, gameClient_);
     handlers_[5] = std::make_unique<NextPhaseHandler>(gameModel_, gameView_, gameClient_);
-    handlers_[6] = std::make_unique<EndGameHandler>(gameModel_, gameView_, gameClient_);
+    handlers_[6] = std::make_unique<EndGameHandler  >(gameModel_, gameView_, gameClient_);
 }
+
 
 void GameController::RunGame() {
     std::cout << myTurn_ << std::endl;
     std::thread serverEvents(getEventsFromServer, &gameClient_);
+
+//    BeginGame();
 
     bool quit = false;
     while (!quit) {
@@ -325,5 +340,53 @@ void GameController::RunGame() {
     }
     serverEvents.join();
 }
+
+
+void GameController::BeginGame() {
+    for (int turn = 0; turn < numberOfPlayers_ * 2; ++turn) {
+        if (turn >= numberOfPlayers_) {
+            currentTurn_ = 2 * numberOfPlayers_ - turn - 1;
+        } else {
+            currentTurn_ = turn;
+        }
+
+        if (currentTurn_ == myTurn_) {
+            while (true) {
+                // start() Засекается время начала
+                Event event = gameView_.getTurn();
+                int x = event.type();
+                if (x == EventType::BUILD) {
+                    handlers_[x]->processEvent(event, true);
+                } else if (x == EventType::ENDTURN) {
+                    if (roadIsSet && villageIsSet) {
+                        handlers_[x]->processEvent(event, true);
+                        break;
+                    }
+                }
+                // update() // вывести текущее состояние
+                // delay() // подождать, если действия выполнелись слишком быстро
+            }
+        } else {
+            while (!roadIsSet || !villageIsSet) {
+                // start() Засекается время начала
+                if (!events_.empty()) {
+                    Event event = events_.front();
+                    int x = event.type();
+                    if (x == EventType::BUILD) {
+                        handlers_[x]->processEvent(event, true);
+                    } else if (x == EventType::ENDTURN) {
+                        if (roadIsSet && villageIsSet) {
+                            handlers_[x]->processEvent(event, true);
+                            break;
+                        }
+                    }
+                }
+                // update() // вывести текущее состояние
+                // delay() // подождать, если действия выполнелись слишком быстро
+            }
+        }
+    }
+}
+
 
 } // namespace Controller

@@ -125,6 +125,7 @@ public:
 
 
 private:
+    void BeginGame();
     std::vector<std::unique_ptr<Handler>> handlers_;
     Board::Catan& gameModel_;
     View& gameView_;
@@ -133,6 +134,7 @@ private:
 
     int myTurn_;
     int currentTurn_ = 0;
+    int numberOfPlayers_ = 3;
 };
 
 } // namespace Controller

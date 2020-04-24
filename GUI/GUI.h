@@ -163,7 +163,7 @@ inline ::game::Event View::getTurn() {
 		{
 			if (e.type == SDL_QUIT)
 			{
-				::game::Event ret;
+                ::game::Event ret;
                 ret.set_type(::game::EventType::ENDGAME);
                 return ret;
 			}
