@@ -7,7 +7,8 @@ add_compile_options(-std=c++17)
 list(APPEND CMAKE_PREFIX_PATH "/usr/local")
 
 # Cmake find modules
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/Network/cmake")
+#list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/Network/cmake")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/Network/cmake")
 
 find_package(Protobuf REQUIRED)
 find_package(GRPC REQUIRED)
@@ -28,7 +29,9 @@ grpc_generate_cpp(GRPC_SRCS GRPC_HDRS ${PROTO_SRC_DIR} ${PROTOS})
 # sudo apt-get install libsdl-image1.2-dev
 # sudo apt-get install libsdl-dev
 find_package(SDL2 REQUIRED)
-include_directories(${SDL2_INCLUDE_DIRS})
+find_package(SDL2_image REQUIRED)
+find_package(SFML 2 REQUIRED audio)
+include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS} ${SFML_INCLUDE_DIR})
 
 set(
     client
@@ -60,21 +63,30 @@ set(
     Utility/random.h
 )
 
+set(
+    gui
+    GUI/sdl.cpp
+    GUI/sdl.h
+)
 
 # Building project
 add_executable(project
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
-    #GUI/sdl.cpp
     ${PROTO_SRCS}
-    ${GRPC_SRCS}    
+    ${GRPC_SRCS}
     ${model}
     ${controller}
     ${client}
     ${spinlock}
     ${random}
+    ${gui}
 )
 
 target_link_libraries(project
+    ${EXECUTABLE_NAME}
+    ${SFML_LIBRARIES}
+    ${SFML_DEPENDENCIES}
+    ${SDL2_IMAGE_LIBRARIES}
     ${SDL2_LIBRARIES}
     gRPC::grpc++_reflection
     protobuf::libprotobuf
@@ -85,8 +97,9 @@ include_directories(Model)
 include_directories(Controller)
 include_directories(Network)
 include_directories(GUI)
+include_directories(GUI/Image)
 include_directories(Utility)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
 
-target_compile_options(project PRIVATE -Werror -Wall)
+target_compile_options(project PRIVATE)

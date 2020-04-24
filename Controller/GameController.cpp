@@ -6,7 +6,6 @@
 #include <thread>
 
 #include "GameController.h"
-#include "EventQueue.h"
 #include "random.h"
 
 using game::EventType;
@@ -156,34 +155,37 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
         throw std::logic_error("Wrong type");
     }
 
+
     int Player = event.playerid() + 1;
     auto currentPlayer_ = static_cast<Board::PlayerNum>(Player);
+    gameModel_.changeCurPlayer(currentPlayer_);
+
+
     buildingType_ = event.mutable_buildinfo()->buildingtype();
     x_ = event.mutable_buildinfo()->x();
     y_ = event.mutable_buildinfo()->y();
 
-    gameModel_.changeCurPlayer(currentPlayer_);
-    displayEvent(event);
-    if (needSend) {
-        sendEvent(event);
+    auto type = static_cast<Board::BuildingType>(buildingType_);
+
+    if (gameModel_.canBuild(type, x_, y_)) {
+        gameModel_.settle(type, x_, y_);
+        if (type == Board::BuildingType::ROAD) {
+            roadIsSet = true;
+            gameView_.add_road({x_, y_}, Player);
+        }
+        if (type == Board::BuildingType::VILLAGE) {
+            roadIsSet = true;
+            gameView_.add_building({x_, y_}, Player);
+        }
+        //displayEvent(event);
+        if (needSend) {
+            sendEvent(event);
+        }
     }
-
-//    auto type = static_cast<Board::BuildingType>(buildingType_);
-//
-//     if (gameModel_.canBuild(type, x_, y_)) {
-//         gameModel_.settle(type, x_, y_);
-//         if (type == Board::BuildingType::ROAD) roadIsSet = true;
-//         if (type == Board::BuildingType::VILLAGE) roadIsSet = true;
-         displayEvent(event);
-         if (needSend) {
-             sendEvent(event);
-         }
-//     }
-
 }
 
 void BuildHandler::displayEvent(Event& event) {
-    gameView_.build(x_, y_);
+
     /*
     Построить, обновить очки игрока
     */
@@ -246,25 +248,7 @@ void EndGameHandler::displayEvent(Event& event) {
 //===============GameController===============
 
 
-namespace {
-
-utility::EventQueue events_;
-
-void getEventsFromServer(GameClient* gameClient_) {
-    while (true) {
-        Event event = gameClient_->GetEvent();
-        events_.push(event);
-        if (event.type() == EventType::ENDGAME) {
-            break;
-        }
-    }
-}
-    
-} // namespace
-
-
-
-GameController::GameController(Board::Catan& model, GameClient& client, View& view)
+GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI& view)
     : gameModel_(model)
     , gameView_(view) 
     , gameClient_(client) {
@@ -288,8 +272,8 @@ GameController::GameController(Board::Catan& model, GameClient& client, View& vi
 
 
 void GameController::RunGame() {
-    std::cout << myTurn_ << std::endl;
-    std::thread serverEvents(getEventsFromServer, &gameClient_);
+    //std::cout << myTurn_ << std::endl;
+
 
 //    BeginGame();
 
@@ -300,6 +284,8 @@ void GameController::RunGame() {
                 // start() Засекается время начала
                 Event event = gameView_.getTurn();
                 int x = event.type();
+                std::cout << "gdsgs" << x << std::endl;
+                event.set_playerid(myTurn_);
                 handlers_[x]->processEvent(event, true);
                 if (gameModel_.isFinished()) {
                     Event end;
@@ -319,26 +305,27 @@ void GameController::RunGame() {
             }
         } else {
             while (true) {
-                // start() Засекается время начала
-                if (!events_.empty()) {
-                    Event event = events_.front();
-                    int x = event.type();
-                    handlers_[x]->processEvent(event, false);
-                    if (x == EventType::ENDGAME) {
-                        quit = true;
-                        break;
-                    } else if (x == EventType::ENDTURN) {
-                        break;
-                    }
+                Event event = gameClient_.GetEvent();
+                int x = event.type();
+                handlers_[x]->processEvent(event, false);
+                if (gameModel_.isFinished()) {
+                    Event end;
+                    end.set_type(EventType::ENDGAME);
+                    gameClient_.SendEvent(end);
+                    quit = true;
+                    break;
                 }
-                // update() // вывести текущее состояние
-                // delay() // подождать, если действия выполнелись слишком быстро
+                if (x == EventType::ENDGAME) {
+                    quit = true;
+                    break;
+                } else if (x == EventType::ENDTURN) {
+                    break;
+                }
             }
         }
         ++currentTurn_;
         currentTurn_ %= 2;
     }
-    serverEvents.join();
 }
 
 
@@ -368,21 +355,16 @@ void GameController::BeginGame() {
             }
         } else {
             while (!roadIsSet || !villageIsSet) {
-                // start() Засекается время начала
-                if (!events_.empty()) {
-                    Event event = events_.front();
-                    int x = event.type();
-                    if (x == EventType::BUILD) {
+                Event event = gameClient_.GetEvent();
+                int x = event.type();
+                if (x == EventType::BUILD) {
+                    handlers_[x]->processEvent(event, true);
+                } else if (x == EventType::ENDTURN) {
+                    if (roadIsSet && villageIsSet) {
                         handlers_[x]->processEvent(event, true);
-                    } else if (x == EventType::ENDTURN) {
-                        if (roadIsSet && villageIsSet) {
-                            handlers_[x]->processEvent(event, true);
-                            break;
-                        }
+                        break;
                     }
                 }
-                // update() // вывести текущее состояние
-                // delay() // подождать, если действия выполнелись слишком быстро
             }
         }
     }
