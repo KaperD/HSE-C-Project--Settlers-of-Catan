@@ -34,12 +34,12 @@ void GUI::load_textures() {
     }
     back_ground = IMG_LoadTexture(ren, "image/back_ground.bmp");
     back = IMG_LoadTexture(ren, "image/back.bmp");
-    road = IMG_LoadTexture(ren, "image/road.bmp");
-    road1 = IMG_LoadTexture(ren, "image/road1.bmp");
-    road2 = IMG_LoadTexture(ren, "image/road2.bmp");
-    cur_road = IMG_LoadTexture(ren, "image/cur_road.bmp");
-    cur_road1 = IMG_LoadTexture(ren, "image/cur_road1.bmp");
-    cur_road2 = IMG_LoadTexture(ren, "image/cur_road2.bmp");
+    road = IMG_LoadTexture(ren, "image/cur_road.bmp");
+    road1 = IMG_LoadTexture(ren, "image/cur_road1.bmp");
+    road2 = IMG_LoadTexture(ren, "image/cur_road2.bmp");
+    cur_road = IMG_LoadTexture(ren, "image/road.bmp");
+    cur_road1 = IMG_LoadTexture(ren, "image/road1.bmp");
+    cur_road2 = IMG_LoadTexture(ren, "image/road2.bmp");
     table = IMG_LoadTexture(ren, "image/table.bmp");
     assert(table != nullptr);
     table_1 = IMG_LoadTexture(ren, "image/table_1.bmp");
@@ -130,8 +130,10 @@ void GUI::render_field() {
 void GUI::render_roads() {
     std::lock_guard<std::mutex> lock(mu);
     for (auto e: roads->vec) {
-        if (e.built)
+        if (e.built) {
             SDL_RenderCopy(ren, e.texture, nullptr, &e.dest);
+        }
+
     }
     if (render_type == 1) {
         int e = return_road(tmp_road.first, tmp_road.second);
@@ -229,12 +231,12 @@ void GUI::get_coors_road () {
 //                Mix_PlayChannel(-1, button_sound, 0);
                 int x, y;
                 SDL_GetMouseState(&x, &y); // Получить координаты мыши
-                std::cout << x << ' ' << y << '\n';
                 if (x > 200 && x < 480 && y > 98 && y < 280) {
                     render_type = old_render_type;
                     return;
                 }
                 tmp_coors = return_road(x, y);
+                std::cout << x << ' ' << y << '\n';
                 if (tmp_coors != -1) return;
             }
         }
@@ -309,6 +311,7 @@ Event GUI::getTurn () {
                 SDL_GetMouseState(&x, &y);
                 if (x > 200 && x < 480 && y > 98 && y < 280) { // дорога
                     get_coors_road();
+                    if (render_type == 0) continue;
                     auto p = roads->vec[tmp_coors].get_model_coors();
                     Event event;
                     event.set_type(EventType::BUILD);
@@ -338,7 +341,7 @@ Event GUI::getTurn () {
 }
 
 bool Obj::is(int x, int y) const {
-    return x <= gui_x1 && x >= gui_x2 && y <= gui_y1 && y >= gui_y2;
+    return x <= gui_x2 && x >= gui_x1 && y <= gui_y2 && y >= gui_y1;
 }
 
 std::pair<int, int> Obj::get_model_coors() {
@@ -356,7 +359,7 @@ SDL_Texture *GUI::get_vert_road(int type) {
 void GUI::add_road(std::pair<int, int> tmp, int player) {
     static_cast<void>(player);
     std::lock_guard<std::mutex> lock(mu);
-    for (auto e:roads->vec) {
+    for (auto& e : roads->vec) {
         if (tmp.first == e.model_x && tmp.second == e.model_y) {
             e.built++;
             return;
@@ -396,7 +399,6 @@ Road_arr::Road_arr(GUI& gui) {
                     i * 2 + 1, j * 2,
                     texture, cur_texture, dest);
             vec.push_back(tmp);
-            break;
         }
     }
     for (int i = 0; i < 6; ++i) {
@@ -418,6 +420,7 @@ Road_arr::Road_arr(GUI& gui) {
                     i * 2, 	j * 2 + 1,
                     texture, cur_texture, dest);
             vec.push_back(tmp);
+//            std::cout << i * 2 << ' ' << j * 2 + 1 << std::endl;
         }
     }
 }

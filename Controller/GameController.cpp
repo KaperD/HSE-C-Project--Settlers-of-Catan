@@ -166,8 +166,10 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
     y_ = event.mutable_buildinfo()->y();
 
     auto type = static_cast<Board::BuildingType>(buildingType_);
+    std::cout << x_ << ' ' << y_ << ' ' << static_cast<int>(Board::BuildingType::ROAD) << '\n';
 
-    if (gameModel_.canBuild(type, x_, y_)) {
+    if (true) {
+        std::cout << "YES" << '\n';
         gameModel_.settle(type, x_, y_);
         if (type == Board::BuildingType::ROAD) {
             roadIsSet = true;
@@ -272,7 +274,7 @@ GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI
 
 
 void GameController::RunGame() {
-    //std::cout << myTurn_ << std::endl;
+    std::cout << myTurn_ << std::endl;
 
 
 //    BeginGame();

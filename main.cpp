@@ -32,11 +32,10 @@ int main() {
     view.roads = new GUI::Road_arr(view);
     view.buildings = new GUI::Building_arr(view);
 
+    Controller::GameController gc(wow, gameClient_, view);
     std::thread update(GUI::upgrade, &view);
     //std::thread music(play_music, a);
 
-    view.getTurn();
-    Controller::GameController gc(wow, gameClient_, view);
     gc.RunGame();
 
 //    music.join();
