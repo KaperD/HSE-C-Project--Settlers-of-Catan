@@ -173,11 +173,11 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
         gameModel_.settle(type, x_, y_);
         if (type == Board::BuildingType::ROAD) {
             roadIsSet = true;
-            gameView_.add_road({x_, y_}, Player);
+            gameView_.add_road({x_, y_}, Player - 1);
         }
         if (type == Board::BuildingType::VILLAGE) {
             roadIsSet = true;
-            gameView_.add_building({x_, y_}, Player);
+            gameView_.add_building({x_, y_}, Player - 1);
         }
         //displayEvent(event);
         if (needSend) {
@@ -298,6 +298,7 @@ void GameController::RunGame() {
                 }
                 if (x == EventType::ENDGAME) {
                     quit = true;
+                    gameView_.quit = true;
                     break;
                 } else if (x == EventType::ENDTURN) {
                     break;
@@ -314,11 +315,13 @@ void GameController::RunGame() {
                     Event end;
                     end.set_type(EventType::ENDGAME);
                     gameClient_.SendEvent(end);
+                    gameView_.quit = true;
                     quit = true;
                     break;
                 }
                 if (x == EventType::ENDGAME) {
                     quit = true;
+                    gameView_.quit = true;
                     break;
                 } else if (x == EventType::ENDTURN) {
                     break;
