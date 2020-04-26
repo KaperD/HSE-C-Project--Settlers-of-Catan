@@ -10,20 +10,6 @@ list(APPEND CMAKE_PREFIX_PATH "/usr/local")
 #list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/Network/cmake")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/Network/cmake")
 
-find_package(Protobuf REQUIRED)
-find_package(GRPC REQUIRED)
-
-set(PROTOS
-    ${CMAKE_CURRENT_SOURCE_DIR}/Network/game.proto
-)
-
-set(PROTO_SRC_DIR ${CMAKE_CURRENT_BINARY_DIR}/Network)
-file(MAKE_DIRECTORY ${PROTO_SRC_DIR})
-include_directories(${PROTO_SRC_DIR})
-
-protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_SRC_DIR} ${PROTOS})
-grpc_generate_cpp(GRPC_SRCS GRPC_HDRS ${PROTO_SRC_DIR} ${PROTOS})
-
 # SDL2
 # Могут понадобиться следующие команды
 # sudo apt-get install libsdl-image1.2-dev
@@ -69,11 +55,19 @@ set(
     GUI/sdl.h
 )
 
+set(
+    grpc
+    Network/game.grpc.pb.cc
+    Network/game.grpc.pb.h
+    Network/game.pb.cc
+    Network/game.pb.h
+)
+
+
 # Building project
 add_executable(project
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
-    ${PROTO_SRCS}
-    ${GRPC_SRCS}
+    ${grpc}
     ${model}
     ${controller}
     ${client}
@@ -88,8 +82,8 @@ target_link_libraries(project
     ${SFML_DEPENDENCIES}
     ${SDL2_IMAGE_LIBRARIES}
     ${SDL2_LIBRARIES}
-    gRPC::grpc++_reflection
-    protobuf::libprotobuf
+    ${CMAKE_SOURCE_DIR}/Libs/libgrpc++.so.1
+    ${CMAKE_SOURCE_DIR}/Libs/libprotobuf.so.22
 )
 
 include_directories(Client)
