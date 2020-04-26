@@ -81,6 +81,7 @@ target_link_libraries(project
     ${SDL2_LIBRARIES}
     ${CMAKE_SOURCE_DIR}/Libs/libgrpc++.so.1
     ${CMAKE_SOURCE_DIR}/Libs/libprotobuf.so.22
+    ${CMAKE_SOURCE_DIR}/Libs/libgrpc.so.9
 )
 
 include_directories(Client)
