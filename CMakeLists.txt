@@ -91,6 +91,7 @@ include_directories(Network)
 include_directories(GUI)
 include_directories(GUI/Image)
 include_directories(Utility)
+include_directories(Libs)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
 
