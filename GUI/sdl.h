@@ -6,14 +6,21 @@
 #define UNTITLED3_SDL_H
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <SDL2/SDL_mixer.h>
+//#include <SDL2/SDL_mixer.h>
 #include <iostream>
 #include <random>
 #include <time.h>
 #include <mutex>
 
+#include "game.pb.h"
+
+namespace GUI {
+
 
 class GUI;
+void upgrade(GUI* g);
+
+
 
 enum Colour {
     BLACK,
@@ -28,17 +35,18 @@ enum Colour {
 class Obj {
 public:
     Obj(double x1, double y1, double x2,
-        double y2, int x, int y, SDL_Texture *_texture,
+        double y2, int x, int y, SDL_Texture *_texture, SDL_Texture * texture2_,
         SDL_Texture *_cur_texture, SDL_Rect _dest):
             gui_x1(x1), gui_x2(x2), gui_y1(y1),
             gui_y2(y2), model_x(x), model_y(y),
-            texture(_texture), cur_texture(_cur_texture),
+            texture(_texture), texture2(texture2_), cur_texture(_cur_texture),
             dest(_dest){};
 
     double gui_x1, gui_y1, gui_x2, gui_y2;
     int model_x, model_y;
 
     SDL_Texture *texture;
+    SDL_Texture *texture2;
     SDL_Texture *cur_texture;
 
     SDL_Rect dest;
@@ -94,14 +102,14 @@ public:
     Road_arr *roads = nullptr;
     Building_arr *buildings = nullptr;
     std::pair<int, int> tmp_road;
-    Mix_Chunk *sfx, *button_sound, *build_sound;
+    //Mix_Chunk *sfx, *button_sound, *build_sound;
     std::pair<int, int> tmp_house;
     std::pair<SDL_Texture*, int> cur_table;
     SDL_Texture *back, *back_ground, *road, *road1,
             *road2, *oct, *cur_road, *cur_road1,
             *cur_road2, *table, *table_1, *table_2,
             *table_time, *house, *house1, *house2,
-            *house_cur, *house1_cur, *house2_cur;
+            *house_cur, *house1_cur, *house2_cur, *Vova, *Vova1, *Vova2;
     SDL_Texture* arr[6];
     SDL_Texture* build_texture_arr[3];
     SDL_Texture* cur_build_texture_arr[3];
@@ -112,7 +120,7 @@ public:
     SDL_Renderer *ren;
     SDL_DisplayMode displayMode{};
     SDL_Window *win;
-
+    SDL_Texture *get_roadVova(int x, int type);
     void load_textures();
 
     int tmp_coors{};
@@ -129,10 +137,11 @@ public:
     void render_buildings();
     void render_tables_time() const;
     void make_render();
-    //void upgrade();
     void get_coors_road();
     void get_coors_building();
-    std::pair<int, int> main_menu();
+
+
+    ::game::Event getTurn();
 
     void add_road(std::pair<int, int> tmp, int player);
 
@@ -151,6 +160,8 @@ public:
     SDL_Texture *get_vert_road(int type);
 };
 
+} // namespace GUI
 
 
 #endif //UNTITLED3_SDL_H
+
