@@ -145,12 +145,10 @@ private:
     Status GetEvent(ServerContext* context, const Player* request, Event* response) override { 
         int playerid = request->playerid();
         std::cout << "GetEvent gameid " <<  request->gameid() << std::endl;
+        std::cout << "GetEvent playerid " <<  playerid << std::endl;
         Game& game = games.at(request->gameid());
 
         //std::lock_guard<utility::spinlock> lock(games.at(gameId).spin);
-        if (game.events_[playerid].empty()) {
-            return Status::CANCELLED;
-        }
         Event event = game.events_[playerid].front();
 
         if (event.type() == EventType::ENDGAME) {
@@ -174,7 +172,7 @@ private:
 
  
 void RunServer() {
-    std::string server_address("0.0.0.0:80");
+    std::string server_address("localhost:50051");
     GameServerImpl service;
 
     ServerBuilder builder;
