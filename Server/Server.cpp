@@ -112,6 +112,7 @@ private:
         std::cout << "Active: " << game.activePlayers.load() << std::endl;
 
         response->set_id(game.activePlayers++);
+        response->set_gameid(request->gameid());
         response->set_numberofplayers(game.numberOfPlayers);
 
         return Status::OK;
@@ -121,7 +122,7 @@ private:
     Status SendEvent(::grpc::ServerContext* context, const Event* request, Void* response) override {
         Event event = *request;
         int playerid = event.playerid();
-
+        std::cout << "SendEvent gameid " <<  request->gameid() << std::endl;
         Game& game = games.at(event.gameid());
 
         //std::lock_guard<utility::spinlock> lock(games.at(gameId).spin);
@@ -143,7 +144,7 @@ private:
 
     Status GetEvent(ServerContext* context, const Player* request, Event* response) override { 
         int playerid = request->playerid();
-
+        std::cout << "GetEvent gameid " <<  request->gameid() << std::endl;
         Game& game = games.at(request->gameid());
 
         //std::lock_guard<utility::spinlock> lock(games.at(gameId).spin);

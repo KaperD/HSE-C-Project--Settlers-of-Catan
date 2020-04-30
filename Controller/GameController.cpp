@@ -239,7 +239,9 @@ void EndGameHandler::processEvent(Event& event, bool needSend) {
     if (event.type() != EventType::ENDGAME) {
         throw std::logic_error("Wrong type");
     }
-    sendEvent(event);
+    if (needSend) {
+        sendEvent(event);
+    }
 }
 
 void EndGameHandler::displayEvent(Event& event) {
@@ -324,7 +326,7 @@ void GameController::RunGame() {
             }
         }
         ++currentTurn_;
-        currentTurn_ %= 2;
+        currentTurn_ %= numberOfPlayers_;
     }
 }
 
