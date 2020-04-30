@@ -198,7 +198,7 @@ GUI::GUI() {
     SDL_Init(SDL_INIT_AUDIO);
 //    Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 4096);
     SDL_GetDesktopDisplayMode(0,&displayMode);
-    win = SDL_CreateWindow("Hello World!", 0, 0, displayMode.w, displayMode.h, SDL_WINDOW_FULLSCREEN);
+    win = SDL_CreateWindow("Hello World!", 0, 0, displayMode.w, displayMode.h, SDL_WINDOW_SHOWN);
     ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 }
 

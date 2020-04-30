@@ -100,7 +100,7 @@ private:
         Game& game = games.at(request->gameid());
         std::lock_guard<utility::spinlock> lock(game.spin);
 
-        if (game.activePlayers == game.numberOfPlayers) {
+        if (game.activePlayers == game.numberOfPlayers || game.activePlayers == 0) {
             return Status::CANCELLED;
         }
 
@@ -137,7 +137,9 @@ private:
         Game& game = games.at(request->gameid());
 
         //std::lock_guard<utility::spinlock> lock(games.at(gameId).spin);
-
+        if (game.events_[playerid].empty()) {
+            return Status::CANCELLED;
+        }
         Event event = game.events_[playerid].front();
 
         if (event.type() == EventType::ENDGAME) {
