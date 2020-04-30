@@ -84,14 +84,16 @@ private:
             }
         }
 
-        int newid = *availableIds.erase(availableIds.begin());
+        int newid = *availableIds.begin();
+        availableIds.erase(availableIds.begin());
 
         games[newid].activePlayers.store(1);
-        std::cout << "New game active: " << games[newid].activePlayers.load() << std::endl;
+        std::cout << "New game active: " << games[newid].activePlayers.load() << ' ' << games[newid].activePlayers.load() << std::endl;
         games[newid].numberOfPlayers = request->numberofplayers();
 
         response->set_numberofplayers(request->numberofplayers());
         response->set_id(0);
+        std::cout << "ID " << newid << std::endl;
         response->set_gameid(newid);
 
         return Status::OK;
@@ -129,6 +131,7 @@ private:
             game.events_[k].push(event);
         }
         if (event.type() == EventType::ENDGAME) {
+            std::cout << event.gameid() << std::endl;
             std::cout << "SendEvent ENDGAME " <<  game.activePlayers.load() << ' ';
             --game.activePlayers;
             std::cout << game.activePlayers.load() << std::endl;
@@ -170,7 +173,7 @@ private:
 
  
 void RunServer() {
-    std::string server_address("0.0.0.0:80");
+    std::string server_address("localhost:50051");
     GameServerImpl service;
 
     ServerBuilder builder;

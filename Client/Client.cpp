@@ -34,7 +34,7 @@ GameClient::GameClient(const std::shared_ptr<Channel>& channel)
     : stub_(Network::NewStub(channel)), player_() {
 }
 
-GameClient::GameClient() : stub_(Network::NewStub(grpc::CreateChannel("35.193.120.72:80",
+GameClient::GameClient() : stub_(Network::NewStub(grpc::CreateChannel("localhost:50051",
                           grpc::InsecureChannelCredentials()))), player_() {
 
 }
@@ -79,6 +79,7 @@ void GameClient::SendEvent(Event event) {
     ClientContext context;
     Void empty;
     event.set_playerid(player_.playerid());
+    event.set_gameid(player_.gameid());
 
     Status status = stub_->SendEvent(&context, event, &empty);
     if (!status.ok()) {
