@@ -41,7 +41,6 @@ void GUI::load_textures() {
     cur_road1 = IMG_LoadTexture(ren, "image/road1.bmp");
     cur_road2 = IMG_LoadTexture(ren, "image/road2.bmp");
     table = IMG_LoadTexture(ren, "image/table.bmp");
-    assert(table != nullptr);
     table_1 = IMG_LoadTexture(ren, "image/table_1.bmp");
     table_2 = IMG_LoadTexture(ren, "image/table_1.bmp");
     table_time = IMG_LoadTexture(ren, "image/table_time.bmp");

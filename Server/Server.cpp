@@ -3,6 +3,8 @@
 #include <chrono>
 #include <thread>
 #include <mutex>
+#include <set>
+#include <queue>
 
 #include <grpc/grpc.h>
 #include <grpcpp/server.h>
@@ -27,95 +29,137 @@ using game::Market;
 using game::Build;
 using game::Player;
 using game::Network;
+using game::GameId;
+using game::NumberOfPlayers;
+
+
+namespace {
+
+constexpr int MaximumNumberOfGames = 100;
+constexpr int MaximumNumberOfPlayers = 4;
+
+struct Game {
+    Game() : events_(MaximumNumberOfPlayers) { }
+    Game(const Game&) = delete;
+    Game& operator= (const Game&) = delete;
+
+    void restart() {
+        for (int k = 0; k < MaximumNumberOfPlayers; ++k) {
+            events_[k].clear();
+        }
+        numberOfPlayers = 0;
+        activePlayers.store(0);
+    }
+
+
+    std::vector<utility::EventQueue> events_;
+    int numberOfPlayers = 0;
+    std::atomic_int activePlayers { 0 };
+    utility::spinlock spin;
+};
+
+} // namespace
 
 class GameServerImpl final : public Network::Service {
 public:
-    GameServerImpl() : events_(4), currentPlayerNumber_(0) { }
-
-    bool RefreshGame() {
-        std::lock_guard<utility::spinlock> guard(spin_);
-        if (isRun_.load()) {
-            Event endgame;
-            endgame.set_type(EventType::ENDGAME);
-            for (int k = 0; k < 3; ++k) {
-                endgame.set_playerid(k + 1);
-                events_[k].clear();
-                events_[k].push(endgame);
-            }
-            isRun_.store(false);
-            return true;
+    GameServerImpl() : games(MaximumNumberOfGames) {
+        for (int k = 0; k < MaximumNumberOfGames; ++k) {
+            availableIds.insert(k);
         }
-        return false;
     }
+
 private:
-    Status Register(::grpc::ServerContext* context, const Void* request, OrderInfo* response) override {
-        std::lock_guard<utility::spinlock> guard(spin_);
-        if (!isRun_.load()) {
-            for (int k = 0; k < 3; ++k) {
-                events_[k].clear();
+    Status StartNewGame(::grpc::ServerContext* context, const NumberOfPlayers* request, OrderInfo* response) override {
+        std::lock_guard<utility::spinlock> lock(spin);
+
+        ++numberOfMadeGames;
+        if (numberOfMadeGames >= 90) {
+            numberOfMadeGames = 0;
+            for (int k = 0; k < MaximumNumberOfGames; ++k) {
+                if (games[k].activePlayers.load() == 0) {
+                    games[k].restart();
+                    availableIds.insert(k);
+                }
             }
-            currentPlayerNumber_ = 0;
-            // std::thread ref(refresher, this);
-            // ref.detach();
         }
-        isRun_.store(true);
-        int id = currentPlayerNumber_++;
-        if (id > 2) {
-            id %= 3;
-            currentPlayerNumber_ %= 3;
-            events_[id].clear();
-        }
-        id %= 3;
-        response->set_id(id);
-        response->set_numberofplayers(3);
+
+        int newid = *availableIds.erase(availableIds.begin());
+
+        games[newid].activePlayers = 1;
+        games[newid].numberOfPlayers = request->numberofplayers();
+
+        response->set_numberofplayers(request->numberofplayers());
+        response->set_id(0);
+        response->set_gameid(newid);
 
         return Status::OK;
     }
 
+
+    Status JoinGame(::grpc::ServerContext* context, const GameId* request, OrderInfo* response) override {
+        Game& game = games.at(request->gameid());
+        std::lock_guard<utility::spinlock> lock(game.spin);
+
+        if (game.activePlayers == game.numberOfPlayers) {
+            return Status::CANCELLED;
+        }
+
+        response->set_id(game.activePlayers++);
+        response->set_numberofplayers(game.numberOfPlayers);
+
+        return Status::OK;
+    }
+
+
     Status SendEvent(::grpc::ServerContext* context, const Event* request, Void* response) override {
         Event event = *request;
         int playerid = event.playerid();
+
+        Game& game = games.at(event.gameid());
+
+        //std::lock_guard<utility::spinlock> lock(games.at(gameId).spin);
         
         for (int k = 0; k < 3; ++k) {
             if (k == playerid) continue;
-            events_[k].push(event);
+            game.events_[k].push(event);
         }
         if (event.type() == EventType::ENDGAME) {
-            events_[playerid].push(event);
-            isRun_.store(false);
+            --game.activePlayers;
         }
         std::cout << playerid << ' ' << event.type() << std::endl;
         return Status::OK;
     }
 
+
     Status GetEvent(ServerContext* context, const Player* request, Event* response) override { 
         int playerid = request->playerid();
-        Event event = events_[playerid].front();
+
+        Game& game = games.at(request->gameid());
+
+        //std::lock_guard<utility::spinlock> lock(games.at(gameId).spin);
+
+        Event event = game.events_[playerid].front();
+
+        if (event.type() == EventType::ENDGAME) {
+            --game.activePlayers;
+        }
+
         *response = std::move(event);
 
         return Status::OK;
     }
 
 private:
-    std::vector<utility::EventQueue> events_;
-    int currentPlayerNumber_;
-    std::atomic_bool isRun_ { false };
-    utility::spinlock spin_;
+    std::vector<Game> games;
+
+    utility::spinlock spin;
+    std::set<int> availableIds;
+    int numberOfMadeGames = 0;
 };
-
-
-void refresher(GameServerImpl* server) {
-    while (true) {
-        std::this_thread::sleep_for(std::chrono::seconds(30));
-        if (server->RefreshGame()) {
-            return;
-        }
-    }
-}
 
  
 void RunServer() {
-    std::string server_address("68.183.30.230:50051");
+    std::string server_address("0.0.0.0:80");
     GameServerImpl service;
 
     ServerBuilder builder;

@@ -25,7 +25,9 @@ public:
     GameClient();
     explicit GameClient(const std::shared_ptr<::grpc::Channel>& channel);
 
-    game::OrderInfo Register();
+    game::OrderInfo StartNewGame(int numberOfPlayers);
+
+    game::OrderInfo JoinGame(int gameId);
 
     void SendEvent(::game::Event event);
 

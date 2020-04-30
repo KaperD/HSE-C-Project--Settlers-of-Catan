@@ -123,6 +123,8 @@ public:
 
     void RunGame();
 
+    bool ConnectToGame();
+
 
 private:
     void BeginGame();
@@ -132,7 +134,7 @@ private:
     GameClient& gameClient_;
     
 
-    int myTurn_;
+    int myTurn_ = 0;
     int currentTurn_ = 0;
     int numberOfPlayers_ = 3;
 };

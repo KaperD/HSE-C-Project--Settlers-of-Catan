@@ -33,6 +33,10 @@ int main() {
     view.buildings = new GUI::Building_arr(view);
 
     Controller::GameController gc(wow, gameClient_, view);
+    if (!gc.ConnectToGame()) {
+        return 0;
+    }
+
     std::thread update(GUI::upgrade, &view);
     //std::thread music(play_music, a);
 
