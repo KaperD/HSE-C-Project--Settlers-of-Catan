@@ -70,6 +70,7 @@ public:
 
 private:
     Status StartNewGame(::grpc::ServerContext* context, const NumberOfPlayers* request, OrderInfo* response) override {
+        std::cout << "New game " << request->numberofplayers() << std::endl;
         std::lock_guard<utility::spinlock> lock(spin);
 
         ++numberOfMadeGames;
@@ -127,6 +128,7 @@ private:
             game.events_[k].push(event);
         }
         if (event.type() == EventType::ENDGAME) {
+            std::cout << "SendEvent ENDGAME" << std::endl;
             --game.activePlayers;
         }
         std::cout << playerid << ' ' << event.type() << std::endl;
@@ -147,6 +149,7 @@ private:
 
         if (event.type() == EventType::ENDGAME) {
             --game.activePlayers;
+            std::cout << "GetEvent ENDGAME" << std::endl;
         }
 
         *response = std::move(event);
