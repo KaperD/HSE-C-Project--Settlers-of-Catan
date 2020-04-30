@@ -372,7 +372,7 @@ void GameController::BeginGame() {
 
 bool GameController::ConnectToGame(int type, int val) {
     if (type == 1) {
-        if (val != 3 && val != 4) {
+        if (val != 3 && val != 4 && val != 2) {
             std::cout << "Wrong number." << std::endl;
             return false;
         }
