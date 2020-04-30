@@ -86,7 +86,8 @@ private:
 
         int newid = *availableIds.erase(availableIds.begin());
 
-        games[newid].activePlayers = 1;
+        games[newid].activePlayers.store(1);
+        std::cout << "New game active: " << games[newid].activePlayers.load() << std::endl;
         games[newid].numberOfPlayers = request->numberofplayers();
 
         response->set_numberofplayers(request->numberofplayers());
@@ -102,11 +103,11 @@ private:
         std::lock_guard<utility::spinlock> lock(game.spin);
 
 
-        if (game.activePlayers == game.numberOfPlayers || game.activePlayers == 0) {
+        if (game.activePlayers.load() == game.numberOfPlayers || game.activePlayers.load() == 0) {
             std::cout << "Bad join" << std::endl;
             return Status::CANCELLED;
         }
-        std::cout << "Active: " << game.activePlayers << std::endl;
+        std::cout << "Active: " << game.activePlayers.load() << std::endl;
 
         response->set_id(game.activePlayers++);
         response->set_numberofplayers(game.numberOfPlayers);
@@ -128,8 +129,9 @@ private:
             game.events_[k].push(event);
         }
         if (event.type() == EventType::ENDGAME) {
-            std::cout << "SendEvent ENDGAME" << std::endl;
+            std::cout << "SendEvent ENDGAME " <<  game.activePlayers.load() << ' ';
             --game.activePlayers;
+            std::cout << game.activePlayers.load() << std::endl;
         }
         std::cout << playerid << ' ' << event.type() << std::endl;
         return Status::OK;
@@ -148,8 +150,9 @@ private:
         Event event = game.events_[playerid].front();
 
         if (event.type() == EventType::ENDGAME) {
+            std::cout << "GetEvent ENDGAME " <<  game.activePlayers.load() << ' ';
             --game.activePlayers;
-            std::cout << "GetEvent ENDGAME" << std::endl;
+            std::cout << game.activePlayers.load() << std::endl;
         }
 
         *response = std::move(event);
