@@ -123,7 +123,7 @@ public:
 
     void RunGame();
 
-    bool ConnectToGame();
+    bool ConnectToGame(int type, int val);
 
 
 private:

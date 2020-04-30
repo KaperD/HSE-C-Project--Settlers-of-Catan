@@ -24,6 +24,10 @@ void seedRandom() {
 
 int main() {
     //seedRandom();
+    std::cout << "Write two numbers:\n1) Command. 1 -- new game, 2 -- join game\n"
+                 "2) Value. Number of players for new game and game id for join" << std::endl;
+    int type, val;
+    std::cin >> type >> val;
     GUI::GUI view;
     GameClient gameClient_;
     Board::Catan wow;
@@ -33,11 +37,12 @@ int main() {
     view.buildings = new GUI::Building_arr(view);
 
     Controller::GameController gc(wow, gameClient_, view);
-    if (!gc.ConnectToGame()) {
+
+    if (!gc.ConnectToGame(type, val)) {
         return 0;
     }
-
     std::thread update(GUI::upgrade, &view);
+
     //std::thread music(play_music, a);
 
     gc.RunGame();
