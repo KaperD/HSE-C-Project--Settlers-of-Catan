@@ -100,9 +100,12 @@ private:
         Game& game = games.at(request->gameid());
         std::lock_guard<utility::spinlock> lock(game.spin);
 
+
         if (game.activePlayers == game.numberOfPlayers || game.activePlayers == 0) {
+            std::cout << "Bad join" << std::endl;
             return Status::CANCELLED;
         }
+        std::cout << "Active: " << game.activePlayers << std::endl;
 
         response->set_id(game.activePlayers++);
         response->set_numberofplayers(game.numberOfPlayers);
