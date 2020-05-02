@@ -60,6 +60,8 @@ public:
     BuildingType getType() const;
     void setBuildingType(BuildingType type);
 
+    bool marked = false;
+
 protected:
 
     BuildingType type = BuildingType::NONE;
@@ -131,6 +133,7 @@ public:
     void giveResources(int cubes_num);
     //возвращает true, если торговля прошла успешно, false, если не хватило ресурсов на обмен
     bool trade(Resource re_for_trade, Resource need_re);
+    void updateRoadsRecord(const std::unique_ptr<Cell>& v, int roadsCount = 0);
 
     //возвращает true или false аналогично торговле
     bool buildDevCard();

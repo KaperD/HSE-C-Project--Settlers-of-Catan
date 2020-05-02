@@ -210,7 +210,7 @@ Hexagon::Hexagon(int x, int y) : Cell(BuildingType::NONE) {
     int random_resource = utility::Random::getRandomNumberFromTo(1, TERRITORIESNUM);
     re = static_cast<Resource>(random_resource);
     robbers = false;
-    num = utility::Random::getRandomNumberFromTo(2, 12);;
+    num = utility::Random::getRandomNumberFromTo(2, 12);
     if (num == 7) num++;
 }
 
@@ -393,9 +393,7 @@ void Catan::settle(BuildingType s, int x, int y) {
         players[cur_player]->getResource(Resource::TREE, 1);
         players[cur_player]->getResource(Resource::CLAY, 1);
         players[cur_player]->addRoad();
-        if (players[cur_player]->getRoadsNum() > roads_record) {
-            setRoadsRecord(players[cur_player]->getRoadsNum());
-        }
+        updateRoadsRecord(cell(0, 4));
     }
     cell(x, y)->setPlayer(cur_player);
     //cell(x, y)->setBuildingType(s); чёт я даже не помню, зачем это, когда в конструкторах всё есть
@@ -455,6 +453,37 @@ bool Catan::trade(Resource re_for_trade, Resource need_re) {
     players[cur_player]->getResource(re_for_trade, 4);
     players[cur_player]->giveResource(need_re, 1);
     return true;
+}
+
+void Catan::updateRoadsRecord(const std::unique_ptr<Cell>& v, int roadsCount) {
+    if (v->marked) return;
+    v->marked = true;
+    if (v->getPlayer() != cur_player) {
+        roadsCount = 0;
+    }
+    int numR = v->getRoadsNum();
+    for (int i = 0; i < numR; i++) {
+        int rx = v->getRoad(i).first;
+        int ry = v->getRoad(i).second;
+
+        if (cell(rx, ry)->marked) continue;
+        cell(rx, ry)->marked = true;
+        if (cell(rx, ry)->getPlayer() == cur_player) {
+            roadsCount++;
+            if (roadsCount > roads_record) {
+                setRoadsRecord(roadsCount);
+            }
+        } else {
+            roadsCount = 0;
+        }
+
+        int vx = cell(rx, ry)->getVertex(1).first;
+        int vy = cell(rx, ry)->getVertex(1).second;
+        updateRoadsRecord(cell(vx, vy), roadsCount);
+        vx = cell(rx, ry)->getVertex(2).first;
+        vy = cell(rx, ry)->getVertex(2).second;
+        updateRoadsRecord(cell(vx, vy), roadsCount);
+    }
 }
 
 bool Catan::buildDevCard() {
