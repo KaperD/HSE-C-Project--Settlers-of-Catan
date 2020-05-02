@@ -6,7 +6,6 @@
 #include <thread>
 
 #include "GameController.h"
-#include "EventQueue.h"
 #include "random.h"
 
 using game::EventType;
@@ -21,6 +20,15 @@ using game::Player;
 using game::Network;
 
 using utility::Random;
+
+
+namespace {
+
+bool roadIsSet = false;
+bool villageIsSet = false;
+
+} // namespace
+
 
 namespace Controller {
 
@@ -65,6 +73,10 @@ void DiceHandler::processEvent(Event& event, bool needSend) {
         throw std::logic_error("Wrong type");
     }
 
+    int Player = event.playerid() + 1;
+    auto currentPlayer_ = static_cast<Board::PlayerNum>(Player);
+    gameModel_.changeCurPlayer(currentPlayer_);
+
     auto diceInfo = event.mutable_diceinfo();
     number_ = diceInfo->number();
 
@@ -77,7 +89,14 @@ void DiceHandler::processEvent(Event& event, bool needSend) {
         throw std::logic_error("Wrong dice number");
     }
 
-    gameModel_.giveResources(number_);
+    if (number_ == 7) {
+        int hexNum = 0;
+        // hexNum = запросить у View
+        gameModel_.setRobbers(hexNum);
+        // изменить hexNum у View
+    } else {
+        gameModel_.giveResources(number_);
+    }
     displayEvent(event);
     if (needSend) {
         sendEvent(event);
@@ -117,7 +136,7 @@ void MarketHandler::processEvent(Event& event, bool needSend) {
     } else {
         // сказать о том, что не достаточно ресурсов
     }
-    
+
 
 }
 
@@ -136,32 +155,39 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
         throw std::logic_error("Wrong type");
     }
 
+
     int Player = event.playerid() + 1;
     auto currentPlayer_ = static_cast<Board::PlayerNum>(Player);
+    gameModel_.changeCurPlayer(currentPlayer_);
+
+
     buildingType_ = event.mutable_buildinfo()->buildingtype();
     x_ = event.mutable_buildinfo()->x();
     y_ = event.mutable_buildinfo()->y();
 
-    gameModel_.changeCurPlayer(currentPlayer_);
-    displayEvent(event);
-    if (needSend) {
-        sendEvent(event);
+    auto type = static_cast<Board::BuildingType>(buildingType_);
+    std::cout << x_ << ' ' << y_ << ' ' << static_cast<int>(Board::BuildingType::ROAD) << '\n';
+
+    if (true) {
+        std::cout << "YES" << '\n';
+        gameModel_.settle(type, x_, y_);
+        if (type == Board::BuildingType::ROAD) {
+            roadIsSet = true;
+            gameView_.add_road({x_, y_}, Player - 1);
+        }
+        if (type == Board::BuildingType::VILLAGE) {
+            roadIsSet = true;
+            gameView_.add_building({x_, y_}, Player - 1);
+        }
+        //displayEvent(event);
+        if (needSend) {
+            sendEvent(event);
+        }
     }
-
-    //auto type = static_cast<Board::BuildingType>(buildingType_);
-
-    // if (gameModel_.canBuild(type, x_, y_)) {
-    //     gameModel_.settle(type, x_, y_);
-    //     displayEvent(event);
-    //     if (needSend) {
-    //         sendEvent(event);
-    //     }
-    // }
-    
 }
 
 void BuildHandler::displayEvent(Event& event) {
-    gameView_.build(x_, y_);
+
     /*
     Построить, обновить очки игрока
     */
@@ -213,7 +239,9 @@ void EndGameHandler::processEvent(Event& event, bool needSend) {
     if (event.type() != EventType::ENDGAME) {
         throw std::logic_error("Wrong type");
     }
-    sendEvent(event);
+    if (needSend) {
+        sendEvent(event);
+    }
 }
 
 void EndGameHandler::displayEvent(Event& event) {
@@ -224,48 +252,29 @@ void EndGameHandler::displayEvent(Event& event) {
 //===============GameController===============
 
 
-namespace {
-
-utility::EventQueue events_;
-
-void getEventsFromServer(GameClient* gameClient_) {
-    while (true) {
-        Event event = gameClient_->GetEvent();
-        events_.push(event);
-        if (event.type() == EventType::ENDGAME) {
-            break;
-        }
-    }
-}
-    
-} // namespace
-
-
-
-GameController::GameController(Board::Catan& model, GameClient& client, View& view)
+GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI& view)
     : gameModel_(model)
     , gameView_(view) 
     , gameClient_(client) {
 
-    game::OrderInfo info = gameClient_.Register();
-    myTurn_ = info.id();
-    myTurn_ %= 2;
-
     for (int k = 0; k < 7; ++k) {
         handlers_.push_back(nullptr);
     }
-    handlers_[0] = std::make_unique<CardHandler>(gameModel_, gameView_, gameClient_);
-    handlers_[1] = std::make_unique<DiceHandler>(gameModel_, gameView_, gameClient_);
-    handlers_[2] = std::make_unique<MarketHandler>(gameModel_, gameView_, gameClient_);
-    handlers_[3] = std::make_unique<BuildHandler>(gameModel_, gameView_, gameClient_);
-    handlers_[4] = std::make_unique<EndTurnHandler>(gameModel_, gameView_, gameClient_);
+    handlers_[0] = std::make_unique<CardHandler     >(gameModel_, gameView_, gameClient_);
+    handlers_[1] = std::make_unique<DiceHandler     >(gameModel_, gameView_, gameClient_);
+    handlers_[2] = std::make_unique<MarketHandler   >(gameModel_, gameView_, gameClient_);
+    handlers_[3] = std::make_unique<BuildHandler    >(gameModel_, gameView_, gameClient_);
+    handlers_[4] = std::make_unique<EndTurnHandler  >(gameModel_, gameView_, gameClient_);
     handlers_[5] = std::make_unique<NextPhaseHandler>(gameModel_, gameView_, gameClient_);
-    handlers_[6] = std::make_unique<EndGameHandler>(gameModel_, gameView_, gameClient_);
+    handlers_[6] = std::make_unique<EndGameHandler  >(gameModel_, gameView_, gameClient_);
 }
+
 
 void GameController::RunGame() {
     std::cout << myTurn_ << std::endl;
-    std::thread serverEvents(getEventsFromServer, &gameClient_);
+
+
+//    BeginGame();
 
     bool quit = false;
     while (!quit) {
@@ -274,6 +283,8 @@ void GameController::RunGame() {
                 // start() Засекается время начала
                 Event event = gameView_.getTurn();
                 int x = event.type();
+                std::cout << "gdsgs" << x << std::endl;
+                event.set_playerid(myTurn_);
                 handlers_[x]->processEvent(event, true);
                 if (gameModel_.isFinished()) {
                     Event end;
@@ -284,6 +295,7 @@ void GameController::RunGame() {
                 }
                 if (x == EventType::ENDGAME) {
                     quit = true;
+                    gameView_.quit = true;
                     break;
                 } else if (x == EventType::ENDTURN) {
                     break;
@@ -293,26 +305,127 @@ void GameController::RunGame() {
             }
         } else {
             while (true) {
+                Event event = gameClient_.GetEvent();
+                int x = event.type();
+                handlers_[x]->processEvent(event, false);
+                if (gameModel_.isFinished()) {
+                    Event end;
+                    end.set_type(EventType::ENDGAME);
+                    gameClient_.SendEvent(end);
+                    gameView_.quit = true;
+                    quit = true;
+                    break;
+                }
+                if (x == EventType::ENDGAME) {
+                    quit = true;
+                    gameView_.quit = true;
+                    break;
+                } else if (x == EventType::ENDTURN) {
+                    break;
+                }
+            }
+        }
+        ++currentTurn_;
+        currentTurn_ %= numberOfPlayers_;
+    }
+}
+
+
+void GameController::BeginGame() {
+    for (int turn = 0; turn < numberOfPlayers_ * 2; ++turn) {
+        if (turn >= numberOfPlayers_) {
+            currentTurn_ = 2 * numberOfPlayers_ - turn - 1;
+        } else {
+            currentTurn_ = turn;
+        }
+
+        if (currentTurn_ == myTurn_) {
+            while (true) {
                 // start() Засекается время начала
-                if (!events_.empty()) {
-                    Event event = events_.front();
-                    int x = event.type();
-                    handlers_[x]->processEvent(event, false);
-                    if (x == EventType::ENDGAME) {
-                        quit = true;
-                        break;
-                    } else if (x == EventType::ENDTURN) {
+                Event event = gameView_.getTurn();
+                int x = event.type();
+                if (x == EventType::BUILD) {
+                    handlers_[x]->processEvent(event, true);
+                } else if (x == EventType::ENDTURN) {
+                    if (roadIsSet && villageIsSet) {
+                        handlers_[x]->processEvent(event, true);
                         break;
                     }
                 }
                 // update() // вывести текущее состояние
                 // delay() // подождать, если действия выполнелись слишком быстро
             }
+        } else {
+            while (!roadIsSet || !villageIsSet) {
+                Event event = gameClient_.GetEvent();
+                int x = event.type();
+                if (x == EventType::BUILD) {
+                    handlers_[x]->processEvent(event, true);
+                } else if (x == EventType::ENDTURN) {
+                    if (roadIsSet && villageIsSet) {
+                        handlers_[x]->processEvent(event, true);
+                        break;
+                    }
+                }
+            }
         }
-        ++currentTurn_;
-        currentTurn_ %= 2;
     }
-    serverEvents.join();
 }
+
+bool GameController::ConnectToGame(int type, int val) {
+    if (type == 1) {
+        if (val != 3 && val != 4 && val != 2) {
+            std::cout << "Wrong number." << std::endl;
+            return false;
+        }
+        OrderInfo info = gameClient_.StartNewGame(val);
+        myTurn_ = info.id();
+        numberOfPlayers_ = info.numberofplayers();
+        std::cout << "Game was created. Game id is: " << info.gameid() << std::endl;
+        return true;
+    } else if (type == 2) {
+        OrderInfo info = gameClient_.JoinGame(val);
+        myTurn_ = info.id();
+        numberOfPlayers_ = info.numberofplayers();
+        std::cout << "Your turn is: " << (myTurn_ + 1) << std::endl;
+        return true;
+    } else {
+        return false;
+    }
+//    int action;
+
+//    while (true) {
+//        std::cout << "1 --- start new game" << std::endl << "2 --- join game" << std::endl << "3 --- exit" << std::endl;
+//        std::cin >> action;
+//        if (action == 1) {
+//            std::cout << "How many people will play? 3 or 4?" << std::endl;
+//            int players;
+//            std::cin >> players;
+//            if (players != 3 && players != 4) {
+//                std::cout << "Wrong number. Try again:" << std::endl;
+//                continue;
+//            }
+//            OrderInfo info = gameClient_.StartNewGame(players);
+//            myTurn_ = info.id();
+//            numberOfPlayers_ = info.numberofplayers();
+//            std::cout << "Game was created. Game id is: " << info.gameid() << std::endl;
+//            return true;
+//        } else if (action == 2) {
+//            std::cout << "Type game id to join" << std::endl;
+//            int gameId;
+//            std::cin >> gameId;
+//            OrderInfo info = gameClient_.JoinGame(gameId);
+//            myTurn_ = info.id();
+//            numberOfPlayers_ = info.numberofplayers();
+//            std::cout << "Your turn is: " << (myTurn_ + 1) << std::endl;
+//            return true;
+//        } else if (action == 3) {
+//            return false;
+//        } else {
+//            std::cout << "Wrong command. Try again:" << std::endl;
+//        }
+//    }
+}
+
 
 } // namespace Controller
