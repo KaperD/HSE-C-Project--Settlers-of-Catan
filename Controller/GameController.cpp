@@ -239,9 +239,7 @@ void EndGameHandler::processEvent(Event& event, bool needSend) {
     if (event.type() != EventType::ENDGAME) {
         throw std::logic_error("Wrong type");
     }
-    if (needSend) {
-        sendEvent(event);
-    }
+    sendEvent(event);
 }
 
 void EndGameHandler::displayEvent(Event& event) {
@@ -256,7 +254,6 @@ GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI
     : gameModel_(model)
     , gameView_(view) 
     , gameClient_(client) {
-
     for (int k = 0; k < 7; ++k) {
         handlers_.push_back(nullptr);
     }
@@ -429,3 +426,4 @@ bool GameController::ConnectToGame(int type, int val) {
 
 
 } // namespace Controller
+
