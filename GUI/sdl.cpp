@@ -41,7 +41,6 @@ void GUI::load_textures() {
     cur_road1 = IMG_LoadTexture(ren, "image/road1.bmp");
     cur_road2 = IMG_LoadTexture(ren, "image/road2.bmp");
     table = IMG_LoadTexture(ren, "image/table.bmp");
-    assert(table != nullptr);
     table_1 = IMG_LoadTexture(ren, "image/table_1.bmp");
     table_2 = IMG_LoadTexture(ren, "image/table_1.bmp");
     table_time = IMG_LoadTexture(ren, "image/table_time.bmp");
@@ -199,7 +198,7 @@ GUI::GUI() {
     SDL_Init(SDL_INIT_AUDIO);
 //    Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 4096);
     SDL_GetDesktopDisplayMode(0,&displayMode);
-    win = SDL_CreateWindow("Hello World!", 0, 0, displayMode.w, displayMode.h, SDL_WINDOW_FULLSCREEN);
+    win = SDL_CreateWindow("Hello World!", 0, 0, displayMode.w, displayMode.h, SDL_WINDOW_SHOWN);
     ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 }
 
@@ -498,3 +497,4 @@ Building_arr::~Building_arr() = default;
 
 
 } // namespace GUI
+

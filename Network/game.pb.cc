@@ -23,6 +23,14 @@ class VoidDefaultTypeInternal {
  public:
   ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<Void> _instance;
 } _Void_default_instance_;
+class NumberOfPlayersDefaultTypeInternal {
+ public:
+  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<NumberOfPlayers> _instance;
+} _NumberOfPlayers_default_instance_;
+class GameIdDefaultTypeInternal {
+ public:
+  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<GameId> _instance;
+} _GameId_default_instance_;
 class OrderInfoDefaultTypeInternal {
  public:
   ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<OrderInfo> _instance;
@@ -116,6 +124,20 @@ static void InitDefaultsscc_info_Event_game_2eproto() {
       &scc_info_Market_game_2eproto.base,
       &scc_info_Build_game_2eproto.base,}};
 
+static void InitDefaultsscc_info_GameId_game_2eproto() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::game::_GameId_default_instance_;
+    new (ptr) ::game::GameId();
+    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
+  }
+  ::game::GameId::InitAsDefaultInstance();
+}
+
+::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_GameId_game_2eproto =
+    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_GameId_game_2eproto}, {}};
+
 static void InitDefaultsscc_info_Market_game_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
@@ -129,6 +151,20 @@ static void InitDefaultsscc_info_Market_game_2eproto() {
 
 ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_Market_game_2eproto =
     {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_Market_game_2eproto}, {}};
+
+static void InitDefaultsscc_info_NumberOfPlayers_game_2eproto() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::game::_NumberOfPlayers_default_instance_;
+    new (ptr) ::game::NumberOfPlayers();
+    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
+  }
+  ::game::NumberOfPlayers::InitAsDefaultInstance();
+}
+
+::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_NumberOfPlayers_game_2eproto =
+    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_NumberOfPlayers_game_2eproto}, {}};
 
 static void InitDefaultsscc_info_OrderInfo_game_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -172,7 +208,7 @@ static void InitDefaultsscc_info_Void_game_2eproto() {
 ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_Void_game_2eproto =
     {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_Void_game_2eproto}, {}};
 
-static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_game_2eproto[8];
+static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_game_2eproto[10];
 static const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* file_level_enum_descriptors_game_2eproto[1];
 static constexpr ::PROTOBUF_NAMESPACE_ID::ServiceDescriptor const** file_level_service_descriptors_game_2eproto = nullptr;
 
@@ -183,18 +219,32 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_game_2eproto::offsets[] PROTOB
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::game::NumberOfPlayers, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  PROTOBUF_FIELD_OFFSET(::game::NumberOfPlayers, numberofplayers_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::game::GameId, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  PROTOBUF_FIELD_OFFSET(::game::GameId, gameid_),
+  ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::game::OrderInfo, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::game::OrderInfo, id_),
   PROTOBUF_FIELD_OFFSET(::game::OrderInfo, numberofplayers_),
+  PROTOBUF_FIELD_OFFSET(::game::OrderInfo, gameid_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::game::Player, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::game::Player, playerid_),
+  PROTOBUF_FIELD_OFFSET(::game::Player, gameid_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::game::Event, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -202,6 +252,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_game_2eproto::offsets[] PROTOB
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::game::Event, type_),
   PROTOBUF_FIELD_OFFSET(::game::Event, playerid_),
+  PROTOBUF_FIELD_OFFSET(::game::Event, gameid_),
   offsetof(::game::EventDefaultTypeInternal, cardinfo_),
   offsetof(::game::EventDefaultTypeInternal, diceinfo_),
   offsetof(::game::EventDefaultTypeInternal, marketinfo_),
@@ -237,17 +288,21 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_game_2eproto::offsets[] PROTOB
 };
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, sizeof(::game::Void)},
-  { 5, -1, sizeof(::game::OrderInfo)},
-  { 12, -1, sizeof(::game::Player)},
-  { 18, -1, sizeof(::game::Event)},
-  { 30, -1, sizeof(::game::Card)},
-  { 36, -1, sizeof(::game::Dice)},
-  { 42, -1, sizeof(::game::Market)},
-  { 49, -1, sizeof(::game::Build)},
+  { 5, -1, sizeof(::game::NumberOfPlayers)},
+  { 11, -1, sizeof(::game::GameId)},
+  { 17, -1, sizeof(::game::OrderInfo)},
+  { 25, -1, sizeof(::game::Player)},
+  { 32, -1, sizeof(::game::Event)},
+  { 45, -1, sizeof(::game::Card)},
+  { 51, -1, sizeof(::game::Dice)},
+  { 57, -1, sizeof(::game::Market)},
+  { 64, -1, sizeof(::game::Build)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::game::_Void_default_instance_),
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::game::_NumberOfPlayers_default_instance_),
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::game::_GameId_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::game::_OrderInfo_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::game::_Player_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::game::_Event_default_instance_),
@@ -258,33 +313,40 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
 };
 
 const char descriptor_table_protodef_game_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\ngame.proto\022\004game\"\006\n\004Void\"0\n\tOrderInfo\022"
-  "\n\n\002id\030\001 \001(\005\022\027\n\017numberOfPlayers\030\002 \001(\005\"\032\n\006"
-  "Player\022\020\n\010playerId\030\001 \001(\005\"\313\001\n\005Event\022\035\n\004ty"
-  "pe\030\001 \001(\0162\017.game.EventType\022\020\n\010playerId\030\002 "
-  "\001(\005\022\036\n\010cardInfo\030\003 \001(\0132\n.game.CardH\000\022\036\n\010d"
-  "iceInfo\030\004 \001(\0132\n.game.DiceH\000\022\"\n\nmarketInf"
-  "o\030\005 \001(\0132\014.game.MarketH\000\022 \n\tbuildInfo\030\006 \001"
-  "(\0132\013.game.BuildH\000B\013\n\tEventInfo\"\030\n\004Card\022\020"
-  "\n\010cardType\030\001 \001(\005\"\026\n\004Dice\022\016\n\006number\030\001 \001(\005"
-  "\"9\n\006Market\022\030\n\020requiredResource\030\001 \001(\005\022\025\n\r"
-  "ownedResource\030\002 \001(\005\"3\n\005Build\022\024\n\014building"
-  "Type\030\001 \001(\005\022\t\n\001x\030\002 \001(\005\022\t\n\001y\030\003 \001(\005*_\n\tEven"
-  "tType\022\010\n\004CARD\020\000\022\010\n\004DICE\020\001\022\n\n\006MARKET\020\002\022\t\n"
-  "\005BUILD\020\003\022\013\n\007ENDTURN\020\004\022\r\n\tNEXTPHASE\020\005\022\013\n\007"
-  "ENDGAME\020\0062\205\001\n\007Network\022)\n\010Register\022\n.game"
-  ".Void\032\017.game.OrderInfo\"\000\022&\n\tSendEvent\022\013."
-  "game.Event\032\n.game.Void\"\000\022\'\n\010GetEvent\022\014.g"
-  "ame.Player\032\013.game.Event\"\000b\006proto3"
+  "\n\ngame.proto\022\004game\"\006\n\004Void\"*\n\017NumberOfPl"
+  "ayers\022\027\n\017numberOfPlayers\030\001 \001(\005\"\030\n\006GameId"
+  "\022\016\n\006gameId\030\001 \001(\005\"@\n\tOrderInfo\022\n\n\002id\030\001 \001("
+  "\005\022\027\n\017numberOfPlayers\030\002 \001(\005\022\016\n\006gameId\030\003 \001"
+  "(\005\"*\n\006Player\022\020\n\010playerId\030\001 \001(\005\022\016\n\006gameId"
+  "\030\002 \001(\005\"\333\001\n\005Event\022\035\n\004type\030\001 \001(\0162\017.game.Ev"
+  "entType\022\020\n\010playerId\030\002 \001(\005\022\016\n\006gameId\030\003 \001("
+  "\005\022\036\n\010cardInfo\030\004 \001(\0132\n.game.CardH\000\022\036\n\010dic"
+  "eInfo\030\005 \001(\0132\n.game.DiceH\000\022\"\n\nmarketInfo\030"
+  "\006 \001(\0132\014.game.MarketH\000\022 \n\tbuildInfo\030\007 \001(\013"
+  "2\013.game.BuildH\000B\013\n\tEventInfo\"\030\n\004Card\022\020\n\010"
+  "cardType\030\001 \001(\005\"\026\n\004Dice\022\016\n\006number\030\001 \001(\005\"9"
+  "\n\006Market\022\030\n\020requiredResource\030\001 \001(\005\022\025\n\row"
+  "nedResource\030\002 \001(\005\"3\n\005Build\022\024\n\014buildingTy"
+  "pe\030\001 \001(\005\022\t\n\001x\030\002 \001(\005\022\t\n\001y\030\003 \001(\005*_\n\tEventT"
+  "ype\022\010\n\004CARD\020\000\022\010\n\004DICE\020\001\022\n\n\006MARKET\020\002\022\t\n\005B"
+  "UILD\020\003\022\013\n\007ENDTURN\020\004\022\r\n\tNEXTPHASE\020\005\022\013\n\007EN"
+  "DGAME\020\0062\301\001\n\007Network\0228\n\014StartNewGame\022\025.ga"
+  "me.NumberOfPlayers\032\017.game.OrderInfo\"\000\022+\n"
+  "\010JoinGame\022\014.game.GameId\032\017.game.OrderInfo"
+  "\"\000\022&\n\tSendEvent\022\013.game.Event\032\n.game.Void"
+  "\"\000\022\'\n\010GetEvent\022\014.game.Player\032\013.game.Even"
+  "t\"\000b\006proto3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_game_2eproto_deps[1] = {
 };
-static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_game_2eproto_sccs[8] = {
+static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_game_2eproto_sccs[10] = {
   &scc_info_Build_game_2eproto.base,
   &scc_info_Card_game_2eproto.base,
   &scc_info_Dice_game_2eproto.base,
   &scc_info_Event_game_2eproto.base,
+  &scc_info_GameId_game_2eproto.base,
   &scc_info_Market_game_2eproto.base,
+  &scc_info_NumberOfPlayers_game_2eproto.base,
   &scc_info_OrderInfo_game_2eproto.base,
   &scc_info_Player_game_2eproto.base,
   &scc_info_Void_game_2eproto.base,
@@ -292,10 +354,10 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_gam
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_game_2eproto_once;
 static bool descriptor_table_game_2eproto_initialized = false;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_game_2eproto = {
-  &descriptor_table_game_2eproto_initialized, descriptor_table_protodef_game_2eproto, "game.proto", 713,
-  &descriptor_table_game_2eproto_once, descriptor_table_game_2eproto_sccs, descriptor_table_game_2eproto_deps, 8, 0,
+  &descriptor_table_game_2eproto_initialized, descriptor_table_protodef_game_2eproto, "game.proto", 891,
+  &descriptor_table_game_2eproto_once, descriptor_table_game_2eproto_sccs, descriptor_table_game_2eproto_deps, 10, 0,
   schemas, file_default_instances, TableStruct_game_2eproto::offsets,
-  file_level_metadata_game_2eproto, 8, file_level_enum_descriptors_game_2eproto, file_level_service_descriptors_game_2eproto,
+  file_level_metadata_game_2eproto, 10, file_level_enum_descriptors_game_2eproto, file_level_service_descriptors_game_2eproto,
 };
 
 // Force running AddDescriptors() at dynamic initialization time.
@@ -477,6 +539,378 @@ void Void::InternalSwap(Void* other) {
 
 // ===================================================================
 
+void NumberOfPlayers::InitAsDefaultInstance() {
+}
+class NumberOfPlayers::_Internal {
+ public:
+};
+
+NumberOfPlayers::NumberOfPlayers()
+  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:game.NumberOfPlayers)
+}
+NumberOfPlayers::NumberOfPlayers(const NumberOfPlayers& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message(),
+      _internal_metadata_(nullptr) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  numberofplayers_ = from.numberofplayers_;
+  // @@protoc_insertion_point(copy_constructor:game.NumberOfPlayers)
+}
+
+void NumberOfPlayers::SharedCtor() {
+  numberofplayers_ = 0;
+}
+
+NumberOfPlayers::~NumberOfPlayers() {
+  // @@protoc_insertion_point(destructor:game.NumberOfPlayers)
+  SharedDtor();
+}
+
+void NumberOfPlayers::SharedDtor() {
+}
+
+void NumberOfPlayers::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+const NumberOfPlayers& NumberOfPlayers::default_instance() {
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_NumberOfPlayers_game_2eproto.base);
+  return *internal_default_instance();
+}
+
+
+void NumberOfPlayers::Clear() {
+// @@protoc_insertion_point(message_clear_start:game.NumberOfPlayers)
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  numberofplayers_ = 0;
+  _internal_metadata_.Clear();
+}
+
+const char* NumberOfPlayers::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
+    switch (tag >> 3) {
+      // int32 numberOfPlayers = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 8)) {
+          numberofplayers_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      default: {
+      handle_unusual:
+        if ((tag & 7) == 4 || tag == 0) {
+          ctx->SetLastTag(tag);
+          goto success;
+        }
+        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        CHK_(ptr != nullptr);
+        continue;
+      }
+    }  // switch
+  }  // while
+success:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto success;
+#undef CHK_
+}
+
+::PROTOBUF_NAMESPACE_ID::uint8* NumberOfPlayers::_InternalSerialize(
+    ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:game.NumberOfPlayers)
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // int32 numberOfPlayers = 1;
+  if (this->numberofplayers() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(1, this->_internal_numberofplayers(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields(), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:game.NumberOfPlayers)
+  return target;
+}
+
+size_t NumberOfPlayers::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:game.NumberOfPlayers)
+  size_t total_size = 0;
+
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // int32 numberOfPlayers = 1;
+  if (this->numberofplayers() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
+        this->_internal_numberofplayers());
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
+        _internal_metadata_, total_size, &_cached_size_);
+  }
+  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
+  SetCachedSize(cached_size);
+  return total_size;
+}
+
+void NumberOfPlayers::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:game.NumberOfPlayers)
+  GOOGLE_DCHECK_NE(&from, this);
+  const NumberOfPlayers* source =
+      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<NumberOfPlayers>(
+          &from);
+  if (source == nullptr) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:game.NumberOfPlayers)
+    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:game.NumberOfPlayers)
+    MergeFrom(*source);
+  }
+}
+
+void NumberOfPlayers::MergeFrom(const NumberOfPlayers& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:game.NumberOfPlayers)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from.numberofplayers() != 0) {
+    _internal_set_numberofplayers(from._internal_numberofplayers());
+  }
+}
+
+void NumberOfPlayers::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:game.NumberOfPlayers)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void NumberOfPlayers::CopyFrom(const NumberOfPlayers& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:game.NumberOfPlayers)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool NumberOfPlayers::IsInitialized() const {
+  return true;
+}
+
+void NumberOfPlayers::InternalSwap(NumberOfPlayers* other) {
+  using std::swap;
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  swap(numberofplayers_, other->numberofplayers_);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata NumberOfPlayers::GetMetadata() const {
+  return GetMetadataStatic();
+}
+
+
+// ===================================================================
+
+void GameId::InitAsDefaultInstance() {
+}
+class GameId::_Internal {
+ public:
+};
+
+GameId::GameId()
+  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:game.GameId)
+}
+GameId::GameId(const GameId& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message(),
+      _internal_metadata_(nullptr) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  gameid_ = from.gameid_;
+  // @@protoc_insertion_point(copy_constructor:game.GameId)
+}
+
+void GameId::SharedCtor() {
+  gameid_ = 0;
+}
+
+GameId::~GameId() {
+  // @@protoc_insertion_point(destructor:game.GameId)
+  SharedDtor();
+}
+
+void GameId::SharedDtor() {
+}
+
+void GameId::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+const GameId& GameId::default_instance() {
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_GameId_game_2eproto.base);
+  return *internal_default_instance();
+}
+
+
+void GameId::Clear() {
+// @@protoc_insertion_point(message_clear_start:game.GameId)
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  gameid_ = 0;
+  _internal_metadata_.Clear();
+}
+
+const char* GameId::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
+    switch (tag >> 3) {
+      // int32 gameId = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 8)) {
+          gameid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      default: {
+      handle_unusual:
+        if ((tag & 7) == 4 || tag == 0) {
+          ctx->SetLastTag(tag);
+          goto success;
+        }
+        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        CHK_(ptr != nullptr);
+        continue;
+      }
+    }  // switch
+  }  // while
+success:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto success;
+#undef CHK_
+}
+
+::PROTOBUF_NAMESPACE_ID::uint8* GameId::_InternalSerialize(
+    ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:game.GameId)
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // int32 gameId = 1;
+  if (this->gameid() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(1, this->_internal_gameid(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields(), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:game.GameId)
+  return target;
+}
+
+size_t GameId::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:game.GameId)
+  size_t total_size = 0;
+
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // int32 gameId = 1;
+  if (this->gameid() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
+        this->_internal_gameid());
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
+        _internal_metadata_, total_size, &_cached_size_);
+  }
+  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
+  SetCachedSize(cached_size);
+  return total_size;
+}
+
+void GameId::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:game.GameId)
+  GOOGLE_DCHECK_NE(&from, this);
+  const GameId* source =
+      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<GameId>(
+          &from);
+  if (source == nullptr) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:game.GameId)
+    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:game.GameId)
+    MergeFrom(*source);
+  }
+}
+
+void GameId::MergeFrom(const GameId& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:game.GameId)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from.gameid() != 0) {
+    _internal_set_gameid(from._internal_gameid());
+  }
+}
+
+void GameId::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:game.GameId)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void GameId::CopyFrom(const GameId& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:game.GameId)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool GameId::IsInitialized() const {
+  return true;
+}
+
+void GameId::InternalSwap(GameId* other) {
+  using std::swap;
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  swap(gameid_, other->gameid_);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata GameId::GetMetadata() const {
+  return GetMetadataStatic();
+}
+
+
+// ===================================================================
+
 void OrderInfo::InitAsDefaultInstance() {
 }
 class OrderInfo::_Internal {
@@ -493,15 +927,15 @@ OrderInfo::OrderInfo(const OrderInfo& from)
       _internal_metadata_(nullptr) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::memcpy(&id_, &from.id_,
-    static_cast<size_t>(reinterpret_cast<char*>(&numberofplayers_) -
-    reinterpret_cast<char*>(&id_)) + sizeof(numberofplayers_));
+    static_cast<size_t>(reinterpret_cast<char*>(&gameid_) -
+    reinterpret_cast<char*>(&id_)) + sizeof(gameid_));
   // @@protoc_insertion_point(copy_constructor:game.OrderInfo)
 }
 
 void OrderInfo::SharedCtor() {
   ::memset(&id_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&numberofplayers_) -
-      reinterpret_cast<char*>(&id_)) + sizeof(numberofplayers_));
+      reinterpret_cast<char*>(&gameid_) -
+      reinterpret_cast<char*>(&id_)) + sizeof(gameid_));
 }
 
 OrderInfo::~OrderInfo() {
@@ -528,8 +962,8 @@ void OrderInfo::Clear() {
   (void) cached_has_bits;
 
   ::memset(&id_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&numberofplayers_) -
-      reinterpret_cast<char*>(&id_)) + sizeof(numberofplayers_));
+      reinterpret_cast<char*>(&gameid_) -
+      reinterpret_cast<char*>(&id_)) + sizeof(gameid_));
   _internal_metadata_.Clear();
 }
 
@@ -551,6 +985,13 @@ const char* OrderInfo::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
           numberofplayers_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // int32 gameId = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 24)) {
+          gameid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -592,6 +1033,12 @@ failure:
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(2, this->_internal_numberofplayers(), target);
   }
 
+  // int32 gameId = 3;
+  if (this->gameid() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(3, this->_internal_gameid(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields(), target, stream);
@@ -620,6 +1067,13 @@ size_t OrderInfo::ByteSizeLong() const {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
         this->_internal_numberofplayers());
+  }
+
+  // int32 gameId = 3;
+  if (this->gameid() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
+        this->_internal_gameid());
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -659,6 +1113,9 @@ void OrderInfo::MergeFrom(const OrderInfo& from) {
   if (from.numberofplayers() != 0) {
     _internal_set_numberofplayers(from._internal_numberofplayers());
   }
+  if (from.gameid() != 0) {
+    _internal_set_gameid(from._internal_gameid());
+  }
 }
 
 void OrderInfo::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
@@ -684,6 +1141,7 @@ void OrderInfo::InternalSwap(OrderInfo* other) {
   _internal_metadata_.Swap(&other->_internal_metadata_);
   swap(id_, other->id_);
   swap(numberofplayers_, other->numberofplayers_);
+  swap(gameid_, other->gameid_);
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata OrderInfo::GetMetadata() const {
@@ -708,12 +1166,16 @@ Player::Player(const Player& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
       _internal_metadata_(nullptr) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  playerid_ = from.playerid_;
+  ::memcpy(&playerid_, &from.playerid_,
+    static_cast<size_t>(reinterpret_cast<char*>(&gameid_) -
+    reinterpret_cast<char*>(&playerid_)) + sizeof(gameid_));
   // @@protoc_insertion_point(copy_constructor:game.Player)
 }
 
 void Player::SharedCtor() {
-  playerid_ = 0;
+  ::memset(&playerid_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&gameid_) -
+      reinterpret_cast<char*>(&playerid_)) + sizeof(gameid_));
 }
 
 Player::~Player() {
@@ -739,7 +1201,9 @@ void Player::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  playerid_ = 0;
+  ::memset(&playerid_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&gameid_) -
+      reinterpret_cast<char*>(&playerid_)) + sizeof(gameid_));
   _internal_metadata_.Clear();
 }
 
@@ -754,6 +1218,13 @@ const char* Player::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::int
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 8)) {
           playerid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // int32 gameId = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
+          gameid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -789,6 +1260,12 @@ failure:
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(1, this->_internal_playerid(), target);
   }
 
+  // int32 gameId = 2;
+  if (this->gameid() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(2, this->_internal_gameid(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields(), target, stream);
@@ -810,6 +1287,13 @@ size_t Player::ByteSizeLong() const {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
         this->_internal_playerid());
+  }
+
+  // int32 gameId = 2;
+  if (this->gameid() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
+        this->_internal_gameid());
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -846,6 +1330,9 @@ void Player::MergeFrom(const Player& from) {
   if (from.playerid() != 0) {
     _internal_set_playerid(from._internal_playerid());
   }
+  if (from.gameid() != 0) {
+    _internal_set_gameid(from._internal_gameid());
+  }
 }
 
 void Player::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
@@ -870,6 +1357,7 @@ void Player::InternalSwap(Player* other) {
   using std::swap;
   _internal_metadata_.Swap(&other->_internal_metadata_);
   swap(playerid_, other->playerid_);
+  swap(gameid_, other->gameid_);
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata Player::GetMetadata() const {
@@ -979,8 +1467,8 @@ Event::Event(const Event& from)
       _internal_metadata_(nullptr) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::memcpy(&type_, &from.type_,
-    static_cast<size_t>(reinterpret_cast<char*>(&playerid_) -
-    reinterpret_cast<char*>(&type_)) + sizeof(playerid_));
+    static_cast<size_t>(reinterpret_cast<char*>(&gameid_) -
+    reinterpret_cast<char*>(&type_)) + sizeof(gameid_));
   clear_has_EventInfo();
   switch (from.EventInfo_case()) {
     case kCardInfo: {
@@ -1009,8 +1497,8 @@ Event::Event(const Event& from)
 void Event::SharedCtor() {
   ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_Event_game_2eproto.base);
   ::memset(&type_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&playerid_) -
-      reinterpret_cast<char*>(&type_)) + sizeof(playerid_));
+      reinterpret_cast<char*>(&gameid_) -
+      reinterpret_cast<char*>(&type_)) + sizeof(gameid_));
   clear_has_EventInfo();
 }
 
@@ -1068,8 +1556,8 @@ void Event::Clear() {
   (void) cached_has_bits;
 
   ::memset(&type_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&playerid_) -
-      reinterpret_cast<char*>(&type_)) + sizeof(playerid_));
+      reinterpret_cast<char*>(&gameid_) -
+      reinterpret_cast<char*>(&type_)) + sizeof(gameid_));
   clear_EventInfo();
   _internal_metadata_.Clear();
 }
@@ -1096,30 +1584,37 @@ const char* Event::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::inte
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // .game.Card cardInfo = 3;
+      // int32 gameId = 3;
       case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 26)) {
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 24)) {
+          gameid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // .game.Card cardInfo = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 34)) {
           ptr = ctx->ParseMessage(_internal_mutable_cardinfo(), ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // .game.Dice diceInfo = 4;
-      case 4:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 34)) {
+      // .game.Dice diceInfo = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 42)) {
           ptr = ctx->ParseMessage(_internal_mutable_diceinfo(), ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // .game.Market marketInfo = 5;
-      case 5:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 42)) {
+      // .game.Market marketInfo = 6;
+      case 6:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 50)) {
           ptr = ctx->ParseMessage(_internal_mutable_marketinfo(), ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // .game.Build buildInfo = 6;
-      case 6:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 50)) {
+      // .game.Build buildInfo = 7;
+      case 7:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 58)) {
           ptr = ctx->ParseMessage(_internal_mutable_buildinfo(), ptr);
           CHK_(ptr);
         } else goto handle_unusual;
@@ -1163,36 +1658,42 @@ failure:
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(2, this->_internal_playerid(), target);
   }
 
-  // .game.Card cardInfo = 3;
+  // int32 gameId = 3;
+  if (this->gameid() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(3, this->_internal_gameid(), target);
+  }
+
+  // .game.Card cardInfo = 4;
   if (_internal_has_cardinfo()) {
     target = stream->EnsureSpace(target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(
-        3, _Internal::cardinfo(this), target, stream);
+        4, _Internal::cardinfo(this), target, stream);
   }
 
-  // .game.Dice diceInfo = 4;
+  // .game.Dice diceInfo = 5;
   if (_internal_has_diceinfo()) {
     target = stream->EnsureSpace(target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(
-        4, _Internal::diceinfo(this), target, stream);
+        5, _Internal::diceinfo(this), target, stream);
   }
 
-  // .game.Market marketInfo = 5;
+  // .game.Market marketInfo = 6;
   if (_internal_has_marketinfo()) {
     target = stream->EnsureSpace(target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(
-        5, _Internal::marketinfo(this), target, stream);
+        6, _Internal::marketinfo(this), target, stream);
   }
 
-  // .game.Build buildInfo = 6;
+  // .game.Build buildInfo = 7;
   if (_internal_has_buildinfo()) {
     target = stream->EnsureSpace(target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(
-        6, _Internal::buildinfo(this), target, stream);
+        7, _Internal::buildinfo(this), target, stream);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1224,29 +1725,36 @@ size_t Event::ByteSizeLong() const {
         this->_internal_playerid());
   }
 
+  // int32 gameId = 3;
+  if (this->gameid() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
+        this->_internal_gameid());
+  }
+
   switch (EventInfo_case()) {
-    // .game.Card cardInfo = 3;
+    // .game.Card cardInfo = 4;
     case kCardInfo: {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *EventInfo_.cardinfo_);
       break;
     }
-    // .game.Dice diceInfo = 4;
+    // .game.Dice diceInfo = 5;
     case kDiceInfo: {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *EventInfo_.diceinfo_);
       break;
     }
-    // .game.Market marketInfo = 5;
+    // .game.Market marketInfo = 6;
     case kMarketInfo: {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *EventInfo_.marketinfo_);
       break;
     }
-    // .game.Build buildInfo = 6;
+    // .game.Build buildInfo = 7;
     case kBuildInfo: {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -1294,6 +1802,9 @@ void Event::MergeFrom(const Event& from) {
   if (from.playerid() != 0) {
     _internal_set_playerid(from._internal_playerid());
   }
+  if (from.gameid() != 0) {
+    _internal_set_gameid(from._internal_gameid());
+  }
   switch (from.EventInfo_case()) {
     case kCardInfo: {
       _internal_mutable_cardinfo()->::game::Card::MergeFrom(from._internal_cardinfo());
@@ -1340,6 +1851,7 @@ void Event::InternalSwap(Event* other) {
   _internal_metadata_.Swap(&other->_internal_metadata_);
   swap(type_, other->type_);
   swap(playerid_, other->playerid_);
+  swap(gameid_, other->gameid_);
   swap(EventInfo_, other->EventInfo_);
   swap(_oneof_case_[0], other->_oneof_case_[0]);
 }
@@ -2182,6 +2694,12 @@ void Build::InternalSwap(Build* other) {
 PROTOBUF_NAMESPACE_OPEN
 template<> PROTOBUF_NOINLINE ::game::Void* Arena::CreateMaybeMessage< ::game::Void >(Arena* arena) {
   return Arena::CreateInternal< ::game::Void >(arena);
+}
+template<> PROTOBUF_NOINLINE ::game::NumberOfPlayers* Arena::CreateMaybeMessage< ::game::NumberOfPlayers >(Arena* arena) {
+  return Arena::CreateInternal< ::game::NumberOfPlayers >(arena);
+}
+template<> PROTOBUF_NOINLINE ::game::GameId* Arena::CreateMaybeMessage< ::game::GameId >(Arena* arena) {
+  return Arena::CreateInternal< ::game::GameId >(arena);
 }
 template<> PROTOBUF_NOINLINE ::game::OrderInfo* Arena::CreateMaybeMessage< ::game::OrderInfo >(Arena* arena) {
   return Arena::CreateInternal< ::game::OrderInfo >(arena);

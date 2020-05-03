@@ -164,4 +164,3 @@ public:
 
 
 #endif //UNTITLED3_SDL_H
-
