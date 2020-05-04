@@ -27,33 +27,33 @@ void GUI::load_textures() {
     for (int i = 0; i < 19; ++i) {
         field_arr[i] = rand()%6;
     }
-    std::string s = "image/oct .bmp";
+    std::string s = "/usr/share/CatanImages/oct .bmp";
     for (int i = 0; i < 6; ++i) {
-        s[9] = i + '0';
+        s[26] = i + '0';
         arr[i] = IMG_LoadTexture(ren, s.c_str());
     }
-    back_ground = IMG_LoadTexture(ren, "image/back_ground.bmp");
-    back = IMG_LoadTexture(ren, "image/back.bmp");
-    road = IMG_LoadTexture(ren, "image/cur_road.bmp");
-    road1 = IMG_LoadTexture(ren, "image/cur_road1.bmp");
-    road2 = IMG_LoadTexture(ren, "image/cur_road2.bmp");
-    cur_road = IMG_LoadTexture(ren, "image/road.bmp");
-    cur_road1 = IMG_LoadTexture(ren, "image/road1.bmp");
-    cur_road2 = IMG_LoadTexture(ren, "image/road2.bmp");
-    table = IMG_LoadTexture(ren, "image/table.bmp");
-    table_1 = IMG_LoadTexture(ren, "image/table_1.bmp");
-    table_2 = IMG_LoadTexture(ren, "image/table_1.bmp");
-    table_time = IMG_LoadTexture(ren, "image/table_time.bmp");
-    house = IMG_LoadTexture(ren, "image/house.bmp");
-    house_cur = IMG_LoadTexture(ren, "image/house_cur.bmp");
-    house1_cur = IMG_LoadTexture(ren, "image/house_cur.bmp");
-    house2_cur = IMG_LoadTexture(ren, "image/house_cur.bmp");
-    house1 = IMG_LoadTexture(ren, "image/house1.bmp");
-    house2 = IMG_LoadTexture(ren, "image/house2.bmp");
+    back_ground = IMG_LoadTexture(ren, "/usr/share/CatanImages/back_ground.bmp");
+    back = IMG_LoadTexture(ren, "/usr/share/CatanImages/back.bmp");
+    road = IMG_LoadTexture(ren, "/usr/share/CatanImages/cur_road.bmp");
+    road1 = IMG_LoadTexture(ren, "/usr/share/CatanImages/cur_road1.bmp");
+    road2 = IMG_LoadTexture(ren, "/usr/share/CatanImages/cur_road2.bmp");
+    cur_road = IMG_LoadTexture(ren, "/usr/share/CatanImages/road.bmp");
+    cur_road1 = IMG_LoadTexture(ren, "/usr/share/CatanImages/road1.bmp");
+    cur_road2 = IMG_LoadTexture(ren, "/usr/share/CatanImages/road2.bmp");
+    table = IMG_LoadTexture(ren, "/usr/share/CatanImages/table.bmp");
+    table_1 = IMG_LoadTexture(ren, "/usr/share/CatanImages/table_1.bmp");
+    table_2 = IMG_LoadTexture(ren, "/usr/share/CatanImages/table_1.bmp");
+    table_time = IMG_LoadTexture(ren, "/usr/share/CatanImages/table_time.bmp");
+    house = IMG_LoadTexture(ren, "/usr/share/CatanImages/house.bmp");
+    house_cur = IMG_LoadTexture(ren, "/usr/share/CatanImages/house_cur.bmp");
+    house1_cur = IMG_LoadTexture(ren, "/usr/share/CatanImages/house_cur.bmp");
+    house2_cur = IMG_LoadTexture(ren, "/usr/share/CatanImages/house_cur.bmp");
+    house1 = IMG_LoadTexture(ren, "/usr/share/CatanImages/house1.bmp");
+    house2 = IMG_LoadTexture(ren, "/usr/share/CatanImages/house2.bmp");
 
-    Vova = IMG_LoadTexture(ren, "image/road_green.bmp");
-    Vova1 = IMG_LoadTexture(ren, "image/road1_green.bmp");
-    Vova2 = IMG_LoadTexture(ren, "image/road2_green.bmp");
+    Vova = IMG_LoadTexture(ren, "/usr/share/CatanImages/road_green.bmp");
+    Vova1 = IMG_LoadTexture(ren, "/usr/share/CatanImages/road1_green.bmp");
+    Vova2 = IMG_LoadTexture(ren, "/usr/share/CatanImages/road2_green.bmp");
 
     build_texture_arr[0] = house;
     cur_build_texture_arr[0] = house_cur;
@@ -62,9 +62,9 @@ void GUI::load_textures() {
     build_texture_arr[2] = house2;
     cur_build_texture_arr[2] = house2_cur;
 //    sfx = nullptr;
-//    sfx = Mix_LoadWAV("image/music.wav");
-//    button_sound = Mix_LoadWAV("image/button_sound.wav");
-//    build_sound = Mix_LoadWAV("image/build_sound.wav");
+//    sfx = Mix_LoadWAV("/usr/share/CatanImages/music.wav");
+//    button_sound = Mix_LoadWAV("/usr/share/CatanImages/button_sound.wav");
+//    build_sound = Mix_LoadWAV("/usr/share/CatanImages/build_sound.wav");
 //    if (sfx == nullptr)  std::cout << "HUY";
 }
 
@@ -199,7 +199,9 @@ GUI::GUI() {
 //    Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 4096);
     SDL_GetDesktopDisplayMode(0,&displayMode);
     win = SDL_CreateWindow("Hello World!", 0, 0, displayMode.w, displayMode.h, SDL_WINDOW_SHOWN);
+    assert(win != nullptr);
     ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    assert(ren != nullptr);
 }
 
 
