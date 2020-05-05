@@ -53,6 +53,17 @@ TEST(CatanGraph, ShowGraph) {
         }
     }
 
+    std::cout << "\nCheck Hexes Vertices\n";
+    for (int i = 0; i < HEXESNUM; i++) {
+        std::cout << i << ": ";
+        int lenV = board.getHex(i)->getVertexNum();
+        for (int v = 0; v < lenV; v++) {
+            std::cout << '(' << board.getHex(i)->getVertex(v).first << ", ";
+            std::cout << board.getHex(i)->getVertex(v).second << ") ";
+        }
+        std::cout << '\n';
+    }
+
     std::cout << '\n';
     std::cout << "Check Hexes Resources\n";
     for (int i = 0; i < HEXESNUM; i++) {

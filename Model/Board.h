@@ -131,6 +131,7 @@ public:
 
     void settle(BuildingType s, int x, int y);
     void giveResources(int cubes_num);
+
     //возвращает true, если торговля прошла успешно, false, если не хватило ресурсов на обмен
     bool trade(Resource re_for_trade, Resource need_re);
     void updateRoadsRecord(const std::unique_ptr<Cell>& v, int roadsCount = 0);
@@ -143,11 +144,10 @@ public:
     bool checkCards(BuildingType building);
 
     const std::unique_ptr<Cell>& getFieldCell(int x, int y) const;
+    const std::unique_ptr<Hexagon>& getHex(int indx) const;
     void changeCurPlayer(PlayerNum new_player);
     PlayerNum getCurPlayer() const;
     void setRobbers(int hex_num);
-    Hexagon* getHex(int indx) const;
-    bool isBeginning() const;
 
     int getRoadsRecord() const;
     PlayerNum getRoadsRecordHolder() const;
@@ -157,11 +157,12 @@ public:
     void setKnightRecord(int new_record);
 
     void gotoNextGamePhase();
-    bool isFinished();
+    bool isBeginning() const;
+    bool isFinished() const;
 
 private:
     std::vector<std::vector<std::unique_ptr<Cell>>> field;
-    std::vector<Hexagon*> hexes;
+    std::vector<std::unique_ptr<Hexagon>> hexes;
     std::unordered_map<PlayerNum, std::unique_ptr<Player>> players;
     int robbers_hex;
     PlayerNum cur_player;

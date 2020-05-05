@@ -252,12 +252,8 @@ Catan::Catan() : field(FIELDHEIGHT), players(4) {
                 cell(i, j) = std::make_unique<Road>(i, j, false, false);
                 cell(10 - i, j) = std::make_unique<Road>(10 - i, j, false, false);
             } else if (j % 2 == 0) {
-                Hexagon* hex_ptr1 = new Hexagon(i, j);
-                Hexagon* hex_ptr2 = new Hexagon(10 - i, j);
-                hexes.push_back(hex_ptr1);
-                cell(i, j) = std::unique_ptr<Hexagon>(hex_ptr1);
-                hexes.push_back(hex_ptr2);
-                cell(10 - i, j) = std::unique_ptr<Hexagon>(hex_ptr2);
+                hexes.push_back(std::make_unique<Hexagon>(i, j));
+                hexes.push_back(std::make_unique<Hexagon>(10 - i, j));
             }
         }
     }
@@ -280,9 +276,7 @@ Catan::Catan() : field(FIELDHEIGHT), players(4) {
         if (j % 4 == 0) {
             cell(5, j) = std::make_unique<Road>(5, j, false, false);
         } else if (j % 2 == 0) {
-            Hexagon* hex_ptr = new Hexagon(5, j);
-            hexes.push_back(hex_ptr);
-            cell(5, j) = std::unique_ptr<Hexagon>(hex_ptr);
+            hexes.push_back(std::make_unique<Hexagon>(5, j));
         }
     }
 
@@ -295,8 +289,7 @@ const std::unique_ptr<Cell>& Catan::getFieldCell(int x, int y) const {
     return cell(x, y);
 }
 
-Hexagon* Catan::getHex(int indx) const {
-    if (indx > HEXESNUM || indx < 0) return nullptr;
+const std::unique_ptr<Hexagon>& Catan::getHex(int indx) const {
     return hexes[indx];
 }
 
@@ -445,17 +438,17 @@ PlayerNum Catan::getCurPlayer() const {
 }
 
 void Catan::giveResources(int cubes_num) {
-    for (auto h : hexes) {
-        if (cubes_num != h->getNum() || h->robbersIsHere()) continue;
+    for (int i = 0; i < HEXESNUM; i++) {
+        if (cubes_num != hexes[i]->getNum() || hexes[i]->robbersIsHere()) continue;
         for (int i = 0; i < 7; i++) {
-            int vx = h->getVertex(i).first;
-            int vy = h->getVertex(i).second;
+            int vx = hexes[i]->getVertex(i).first;
+            int vy = hexes[i]->getVertex(i).second;
             if (cell(vx, vy)->getPlayer() != PlayerNum::NONE) {
                 int re_num = 1;
                 if (cell(vx, vy)->getType() == BuildingType::CITY) {
                     re_num = 2;
                 }
-                players[cell(vx, vy)->getPlayer()]->giveResource(h->getResource(), re_num);
+                players[cell(vx, vy)->getPlayer()]->giveResource(hexes[i]->getResource(), re_num);
             }
         }
     }
@@ -586,7 +579,7 @@ void Catan::setKnightRecord(int new_record) {
     knights_record = new_record;
 }
 
-bool Catan::isFinished() {
+bool Catan::isFinished() const {
     return players[PlayerNum::GAMER1]->getVictoryPoints() == 10 ||
            players[PlayerNum::GAMER2]->getVictoryPoints() == 10 ||
            players[PlayerNum::GAMER3]->getVictoryPoints() == 10;

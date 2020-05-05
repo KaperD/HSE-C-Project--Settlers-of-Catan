@@ -54,7 +54,7 @@ TEST(canBuildTest, simpleRoadCase) {
 TEST(canBuildTest, fromRulesRoadCase) {
     Catan board;
     board.settle(BuildingType::VILLAGE, 8, 6);
-    board.settle(BuildingType::ROAD, 9, 6);
+    board.settle(BuildingType::ROAD, 7, 6);
     board.changeCurPlayer(PlayerNum::GAMER2);
     board.settle(BuildingType::VILLAGE, 8, 10);
     board.settle(BuildingType::ROAD, 8, 9);
