@@ -36,12 +36,19 @@ class Network final {
   class StubInterface {
    public:
     virtual ~StubInterface() {}
-    virtual ::grpc::Status Register(::grpc::ClientContext* context, const ::game::Void& request, ::game::OrderInfo* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::game::OrderInfo>> AsyncRegister(::grpc::ClientContext* context, const ::game::Void& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::game::OrderInfo>>(AsyncRegisterRaw(context, request, cq));
+    virtual ::grpc::Status StartNewGame(::grpc::ClientContext* context, const ::game::NumberOfPlayers& request, ::game::OrderInfo* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::game::OrderInfo>> AsyncStartNewGame(::grpc::ClientContext* context, const ::game::NumberOfPlayers& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::game::OrderInfo>>(AsyncStartNewGameRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::game::OrderInfo>> PrepareAsyncRegister(::grpc::ClientContext* context, const ::game::Void& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::game::OrderInfo>>(PrepareAsyncRegisterRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::game::OrderInfo>> PrepareAsyncStartNewGame(::grpc::ClientContext* context, const ::game::NumberOfPlayers& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::game::OrderInfo>>(PrepareAsyncStartNewGameRaw(context, request, cq));
+    }
+    virtual ::grpc::Status JoinGame(::grpc::ClientContext* context, const ::game::GameId& request, ::game::OrderInfo* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::game::OrderInfo>> AsyncJoinGame(::grpc::ClientContext* context, const ::game::GameId& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::game::OrderInfo>>(AsyncJoinGameRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::game::OrderInfo>> PrepareAsyncJoinGame(::grpc::ClientContext* context, const ::game::GameId& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::game::OrderInfo>>(PrepareAsyncJoinGameRaw(context, request, cq));
     }
     virtual ::grpc::Status SendEvent(::grpc::ClientContext* context, const ::game::Event& request, ::game::Void* response) = 0;
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::game::Void>> AsyncSendEvent(::grpc::ClientContext* context, const ::game::Event& request, ::grpc::CompletionQueue* cq) {
@@ -60,17 +67,29 @@ class Network final {
     class experimental_async_interface {
      public:
       virtual ~experimental_async_interface() {}
-      virtual void Register(::grpc::ClientContext* context, const ::game::Void* request, ::game::OrderInfo* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void Register(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::OrderInfo* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void StartNewGame(::grpc::ClientContext* context, const ::game::NumberOfPlayers* request, ::game::OrderInfo* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void StartNewGame(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::OrderInfo* response, std::function<void(::grpc::Status)>) = 0;
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      virtual void Register(::grpc::ClientContext* context, const ::game::Void* request, ::game::OrderInfo* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void StartNewGame(::grpc::ClientContext* context, const ::game::NumberOfPlayers* request, ::game::OrderInfo* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       #else
-      virtual void Register(::grpc::ClientContext* context, const ::game::Void* request, ::game::OrderInfo* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      virtual void StartNewGame(::grpc::ClientContext* context, const ::game::NumberOfPlayers* request, ::game::OrderInfo* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
       #endif
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      virtual void Register(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::OrderInfo* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void StartNewGame(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::OrderInfo* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       #else
-      virtual void Register(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::OrderInfo* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      virtual void StartNewGame(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::OrderInfo* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      virtual void JoinGame(::grpc::ClientContext* context, const ::game::GameId* request, ::game::OrderInfo* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void JoinGame(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::OrderInfo* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void JoinGame(::grpc::ClientContext* context, const ::game::GameId* request, ::game::OrderInfo* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void JoinGame(::grpc::ClientContext* context, const ::game::GameId* request, ::game::OrderInfo* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void JoinGame(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::OrderInfo* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void JoinGame(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::OrderInfo* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
       #endif
       virtual void SendEvent(::grpc::ClientContext* context, const ::game::Event* request, ::game::Void* response, std::function<void(::grpc::Status)>) = 0;
       virtual void SendEvent(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::Void* response, std::function<void(::grpc::Status)>) = 0;
@@ -105,8 +124,10 @@ class Network final {
     #endif
     virtual class experimental_async_interface* experimental_async() { return nullptr; }
   private:
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::game::OrderInfo>* AsyncRegisterRaw(::grpc::ClientContext* context, const ::game::Void& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::game::OrderInfo>* PrepareAsyncRegisterRaw(::grpc::ClientContext* context, const ::game::Void& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::game::OrderInfo>* AsyncStartNewGameRaw(::grpc::ClientContext* context, const ::game::NumberOfPlayers& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::game::OrderInfo>* PrepareAsyncStartNewGameRaw(::grpc::ClientContext* context, const ::game::NumberOfPlayers& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::game::OrderInfo>* AsyncJoinGameRaw(::grpc::ClientContext* context, const ::game::GameId& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::game::OrderInfo>* PrepareAsyncJoinGameRaw(::grpc::ClientContext* context, const ::game::GameId& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::game::Void>* AsyncSendEventRaw(::grpc::ClientContext* context, const ::game::Event& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::game::Void>* PrepareAsyncSendEventRaw(::grpc::ClientContext* context, const ::game::Event& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::game::Event>* AsyncGetEventRaw(::grpc::ClientContext* context, const ::game::Player& request, ::grpc::CompletionQueue* cq) = 0;
@@ -115,12 +136,19 @@ class Network final {
   class Stub final : public StubInterface {
    public:
     Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel);
-    ::grpc::Status Register(::grpc::ClientContext* context, const ::game::Void& request, ::game::OrderInfo* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::game::OrderInfo>> AsyncRegister(::grpc::ClientContext* context, const ::game::Void& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::game::OrderInfo>>(AsyncRegisterRaw(context, request, cq));
+    ::grpc::Status StartNewGame(::grpc::ClientContext* context, const ::game::NumberOfPlayers& request, ::game::OrderInfo* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::game::OrderInfo>> AsyncStartNewGame(::grpc::ClientContext* context, const ::game::NumberOfPlayers& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::game::OrderInfo>>(AsyncStartNewGameRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::game::OrderInfo>> PrepareAsyncRegister(::grpc::ClientContext* context, const ::game::Void& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::game::OrderInfo>>(PrepareAsyncRegisterRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::game::OrderInfo>> PrepareAsyncStartNewGame(::grpc::ClientContext* context, const ::game::NumberOfPlayers& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::game::OrderInfo>>(PrepareAsyncStartNewGameRaw(context, request, cq));
+    }
+    ::grpc::Status JoinGame(::grpc::ClientContext* context, const ::game::GameId& request, ::game::OrderInfo* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::game::OrderInfo>> AsyncJoinGame(::grpc::ClientContext* context, const ::game::GameId& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::game::OrderInfo>>(AsyncJoinGameRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::game::OrderInfo>> PrepareAsyncJoinGame(::grpc::ClientContext* context, const ::game::GameId& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::game::OrderInfo>>(PrepareAsyncJoinGameRaw(context, request, cq));
     }
     ::grpc::Status SendEvent(::grpc::ClientContext* context, const ::game::Event& request, ::game::Void* response) override;
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::game::Void>> AsyncSendEvent(::grpc::ClientContext* context, const ::game::Event& request, ::grpc::CompletionQueue* cq) {
@@ -139,17 +167,29 @@ class Network final {
     class experimental_async final :
       public StubInterface::experimental_async_interface {
      public:
-      void Register(::grpc::ClientContext* context, const ::game::Void* request, ::game::OrderInfo* response, std::function<void(::grpc::Status)>) override;
-      void Register(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::OrderInfo* response, std::function<void(::grpc::Status)>) override;
+      void StartNewGame(::grpc::ClientContext* context, const ::game::NumberOfPlayers* request, ::game::OrderInfo* response, std::function<void(::grpc::Status)>) override;
+      void StartNewGame(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::OrderInfo* response, std::function<void(::grpc::Status)>) override;
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      void Register(::grpc::ClientContext* context, const ::game::Void* request, ::game::OrderInfo* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void StartNewGame(::grpc::ClientContext* context, const ::game::NumberOfPlayers* request, ::game::OrderInfo* response, ::grpc::ClientUnaryReactor* reactor) override;
       #else
-      void Register(::grpc::ClientContext* context, const ::game::Void* request, ::game::OrderInfo* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      void StartNewGame(::grpc::ClientContext* context, const ::game::NumberOfPlayers* request, ::game::OrderInfo* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
       #endif
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      void Register(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::OrderInfo* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void StartNewGame(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::OrderInfo* response, ::grpc::ClientUnaryReactor* reactor) override;
       #else
-      void Register(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::OrderInfo* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      void StartNewGame(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::OrderInfo* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      void JoinGame(::grpc::ClientContext* context, const ::game::GameId* request, ::game::OrderInfo* response, std::function<void(::grpc::Status)>) override;
+      void JoinGame(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::OrderInfo* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void JoinGame(::grpc::ClientContext* context, const ::game::GameId* request, ::game::OrderInfo* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void JoinGame(::grpc::ClientContext* context, const ::game::GameId* request, ::game::OrderInfo* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void JoinGame(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::OrderInfo* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void JoinGame(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::OrderInfo* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
       #endif
       void SendEvent(::grpc::ClientContext* context, const ::game::Event* request, ::game::Void* response, std::function<void(::grpc::Status)>) override;
       void SendEvent(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::Void* response, std::function<void(::grpc::Status)>) override;
@@ -186,13 +226,16 @@ class Network final {
    private:
     std::shared_ptr< ::grpc::ChannelInterface> channel_;
     class experimental_async async_stub_{this};
-    ::grpc::ClientAsyncResponseReader< ::game::OrderInfo>* AsyncRegisterRaw(::grpc::ClientContext* context, const ::game::Void& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::game::OrderInfo>* PrepareAsyncRegisterRaw(::grpc::ClientContext* context, const ::game::Void& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::game::OrderInfo>* AsyncStartNewGameRaw(::grpc::ClientContext* context, const ::game::NumberOfPlayers& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::game::OrderInfo>* PrepareAsyncStartNewGameRaw(::grpc::ClientContext* context, const ::game::NumberOfPlayers& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::game::OrderInfo>* AsyncJoinGameRaw(::grpc::ClientContext* context, const ::game::GameId& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::game::OrderInfo>* PrepareAsyncJoinGameRaw(::grpc::ClientContext* context, const ::game::GameId& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::game::Void>* AsyncSendEventRaw(::grpc::ClientContext* context, const ::game::Event& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::game::Void>* PrepareAsyncSendEventRaw(::grpc::ClientContext* context, const ::game::Event& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::game::Event>* AsyncGetEventRaw(::grpc::ClientContext* context, const ::game::Player& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::game::Event>* PrepareAsyncGetEventRaw(::grpc::ClientContext* context, const ::game::Player& request, ::grpc::CompletionQueue* cq) override;
-    const ::grpc::internal::RpcMethod rpcmethod_Register_;
+    const ::grpc::internal::RpcMethod rpcmethod_StartNewGame_;
+    const ::grpc::internal::RpcMethod rpcmethod_JoinGame_;
     const ::grpc::internal::RpcMethod rpcmethod_SendEvent_;
     const ::grpc::internal::RpcMethod rpcmethod_GetEvent_;
   };
@@ -202,28 +245,49 @@ class Network final {
    public:
     Service();
     virtual ~Service();
-    virtual ::grpc::Status Register(::grpc::ServerContext* context, const ::game::Void* request, ::game::OrderInfo* response);
+    virtual ::grpc::Status StartNewGame(::grpc::ServerContext* context, const ::game::NumberOfPlayers* request, ::game::OrderInfo* response);
+    virtual ::grpc::Status JoinGame(::grpc::ServerContext* context, const ::game::GameId* request, ::game::OrderInfo* response);
     virtual ::grpc::Status SendEvent(::grpc::ServerContext* context, const ::game::Event* request, ::game::Void* response);
     virtual ::grpc::Status GetEvent(::grpc::ServerContext* context, const ::game::Player* request, ::game::Event* response);
   };
   template <class BaseClass>
-  class WithAsyncMethod_Register : public BaseClass {
+  class WithAsyncMethod_StartNewGame : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithAsyncMethod_Register() {
+    WithAsyncMethod_StartNewGame() {
       ::grpc::Service::MarkMethodAsync(0);
     }
-    ~WithAsyncMethod_Register() override {
+    ~WithAsyncMethod_StartNewGame() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Register(::grpc::ServerContext* /*context*/, const ::game::Void* /*request*/, ::game::OrderInfo* /*response*/) override {
+    ::grpc::Status StartNewGame(::grpc::ServerContext* /*context*/, const ::game::NumberOfPlayers* /*request*/, ::game::OrderInfo* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestRegister(::grpc::ServerContext* context, ::game::Void* request, ::grpc::ServerAsyncResponseWriter< ::game::OrderInfo>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestStartNewGame(::grpc::ServerContext* context, ::game::NumberOfPlayers* request, ::grpc::ServerAsyncResponseWriter< ::game::OrderInfo>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_JoinGame : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_JoinGame() {
+      ::grpc::Service::MarkMethodAsync(1);
+    }
+    ~WithAsyncMethod_JoinGame() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status JoinGame(::grpc::ServerContext* /*context*/, const ::game::GameId* /*request*/, ::game::OrderInfo* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestJoinGame(::grpc::ServerContext* context, ::game::GameId* request, ::grpc::ServerAsyncResponseWriter< ::game::OrderInfo>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -232,7 +296,7 @@ class Network final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_SendEvent() {
-      ::grpc::Service::MarkMethodAsync(1);
+      ::grpc::Service::MarkMethodAsync(2);
     }
     ~WithAsyncMethod_SendEvent() override {
       BaseClassMustBeDerivedFromService(this);
@@ -243,7 +307,7 @@ class Network final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestSendEvent(::grpc::ServerContext* context, ::game::Event* request, ::grpc::ServerAsyncResponseWriter< ::game::Void>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -252,7 +316,7 @@ class Network final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_GetEvent() {
-      ::grpc::Service::MarkMethodAsync(2);
+      ::grpc::Service::MarkMethodAsync(3);
     }
     ~WithAsyncMethod_GetEvent() override {
       BaseClassMustBeDerivedFromService(this);
@@ -263,54 +327,101 @@ class Network final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestGetEvent(::grpc::ServerContext* context, ::game::Player* request, ::grpc::ServerAsyncResponseWriter< ::game::Event>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_Register<WithAsyncMethod_SendEvent<WithAsyncMethod_GetEvent<Service > > > AsyncService;
+  typedef WithAsyncMethod_StartNewGame<WithAsyncMethod_JoinGame<WithAsyncMethod_SendEvent<WithAsyncMethod_GetEvent<Service > > > > AsyncService;
   template <class BaseClass>
-  class ExperimentalWithCallbackMethod_Register : public BaseClass {
+  class ExperimentalWithCallbackMethod_StartNewGame : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    ExperimentalWithCallbackMethod_Register() {
+    ExperimentalWithCallbackMethod_StartNewGame() {
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
       ::grpc::Service::
     #else
       ::grpc::Service::experimental().
     #endif
         MarkMethodCallback(0,
-          new ::grpc_impl::internal::CallbackUnaryHandler< ::game::Void, ::game::OrderInfo>(
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::game::NumberOfPlayers, ::game::OrderInfo>(
             [this](
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
                    ::grpc::CallbackServerContext*
     #else
                    ::grpc::experimental::CallbackServerContext*
     #endif
-                     context, const ::game::Void* request, ::game::OrderInfo* response) { return this->Register(context, request, response); }));}
-    void SetMessageAllocatorFor_Register(
-        ::grpc::experimental::MessageAllocator< ::game::Void, ::game::OrderInfo>* allocator) {
+                     context, const ::game::NumberOfPlayers* request, ::game::OrderInfo* response) { return this->StartNewGame(context, request, response); }));}
+    void SetMessageAllocatorFor_StartNewGame(
+        ::grpc::experimental::MessageAllocator< ::game::NumberOfPlayers, ::game::OrderInfo>* allocator) {
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(0);
     #else
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(0);
     #endif
-      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::game::Void, ::game::OrderInfo>*>(handler)
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::game::NumberOfPlayers, ::game::OrderInfo>*>(handler)
               ->SetMessageAllocator(allocator);
     }
-    ~ExperimentalWithCallbackMethod_Register() override {
+    ~ExperimentalWithCallbackMethod_StartNewGame() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Register(::grpc::ServerContext* /*context*/, const ::game::Void* /*request*/, ::game::OrderInfo* /*response*/) override {
+    ::grpc::Status StartNewGame(::grpc::ServerContext* /*context*/, const ::game::NumberOfPlayers* /*request*/, ::game::OrderInfo* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-    virtual ::grpc::ServerUnaryReactor* Register(
-      ::grpc::CallbackServerContext* /*context*/, const ::game::Void* /*request*/, ::game::OrderInfo* /*response*/)
+    virtual ::grpc::ServerUnaryReactor* StartNewGame(
+      ::grpc::CallbackServerContext* /*context*/, const ::game::NumberOfPlayers* /*request*/, ::game::OrderInfo* /*response*/)
     #else
-    virtual ::grpc::experimental::ServerUnaryReactor* Register(
-      ::grpc::experimental::CallbackServerContext* /*context*/, const ::game::Void* /*request*/, ::game::OrderInfo* /*response*/)
+    virtual ::grpc::experimental::ServerUnaryReactor* StartNewGame(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::game::NumberOfPlayers* /*request*/, ::game::OrderInfo* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_JoinGame : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_JoinGame() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(1,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::game::GameId, ::game::OrderInfo>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::game::GameId* request, ::game::OrderInfo* response) { return this->JoinGame(context, request, response); }));}
+    void SetMessageAllocatorFor_JoinGame(
+        ::grpc::experimental::MessageAllocator< ::game::GameId, ::game::OrderInfo>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(1);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(1);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::game::GameId, ::game::OrderInfo>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_JoinGame() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status JoinGame(::grpc::ServerContext* /*context*/, const ::game::GameId* /*request*/, ::game::OrderInfo* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* JoinGame(
+      ::grpc::CallbackServerContext* /*context*/, const ::game::GameId* /*request*/, ::game::OrderInfo* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* JoinGame(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::game::GameId* /*request*/, ::game::OrderInfo* /*response*/)
     #endif
       { return nullptr; }
   };
@@ -325,7 +436,7 @@ class Network final {
     #else
       ::grpc::Service::experimental().
     #endif
-        MarkMethodCallback(1,
+        MarkMethodCallback(2,
           new ::grpc_impl::internal::CallbackUnaryHandler< ::game::Event, ::game::Void>(
             [this](
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
@@ -337,9 +448,9 @@ class Network final {
     void SetMessageAllocatorFor_SendEvent(
         ::grpc::experimental::MessageAllocator< ::game::Event, ::game::Void>* allocator) {
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(1);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(2);
     #else
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(1);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(2);
     #endif
       static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::game::Event, ::game::Void>*>(handler)
               ->SetMessageAllocator(allocator);
@@ -372,7 +483,7 @@ class Network final {
     #else
       ::grpc::Service::experimental().
     #endif
-        MarkMethodCallback(2,
+        MarkMethodCallback(3,
           new ::grpc_impl::internal::CallbackUnaryHandler< ::game::Player, ::game::Event>(
             [this](
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
@@ -384,9 +495,9 @@ class Network final {
     void SetMessageAllocatorFor_GetEvent(
         ::grpc::experimental::MessageAllocator< ::game::Player, ::game::Event>* allocator) {
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(2);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(3);
     #else
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(2);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(3);
     #endif
       static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::game::Player, ::game::Event>*>(handler)
               ->SetMessageAllocator(allocator);
@@ -409,23 +520,40 @@ class Network final {
       { return nullptr; }
   };
   #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-  typedef ExperimentalWithCallbackMethod_Register<ExperimentalWithCallbackMethod_SendEvent<ExperimentalWithCallbackMethod_GetEvent<Service > > > CallbackService;
+  typedef ExperimentalWithCallbackMethod_StartNewGame<ExperimentalWithCallbackMethod_JoinGame<ExperimentalWithCallbackMethod_SendEvent<ExperimentalWithCallbackMethod_GetEvent<Service > > > > CallbackService;
   #endif
 
-  typedef ExperimentalWithCallbackMethod_Register<ExperimentalWithCallbackMethod_SendEvent<ExperimentalWithCallbackMethod_GetEvent<Service > > > ExperimentalCallbackService;
+  typedef ExperimentalWithCallbackMethod_StartNewGame<ExperimentalWithCallbackMethod_JoinGame<ExperimentalWithCallbackMethod_SendEvent<ExperimentalWithCallbackMethod_GetEvent<Service > > > > ExperimentalCallbackService;
   template <class BaseClass>
-  class WithGenericMethod_Register : public BaseClass {
+  class WithGenericMethod_StartNewGame : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithGenericMethod_Register() {
+    WithGenericMethod_StartNewGame() {
       ::grpc::Service::MarkMethodGeneric(0);
     }
-    ~WithGenericMethod_Register() override {
+    ~WithGenericMethod_StartNewGame() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Register(::grpc::ServerContext* /*context*/, const ::game::Void* /*request*/, ::game::OrderInfo* /*response*/) override {
+    ::grpc::Status StartNewGame(::grpc::ServerContext* /*context*/, const ::game::NumberOfPlayers* /*request*/, ::game::OrderInfo* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_JoinGame : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_JoinGame() {
+      ::grpc::Service::MarkMethodGeneric(1);
+    }
+    ~WithGenericMethod_JoinGame() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status JoinGame(::grpc::ServerContext* /*context*/, const ::game::GameId* /*request*/, ::game::OrderInfo* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -436,7 +564,7 @@ class Network final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_SendEvent() {
-      ::grpc::Service::MarkMethodGeneric(1);
+      ::grpc::Service::MarkMethodGeneric(2);
     }
     ~WithGenericMethod_SendEvent() override {
       BaseClassMustBeDerivedFromService(this);
@@ -453,7 +581,7 @@ class Network final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_GetEvent() {
-      ::grpc::Service::MarkMethodGeneric(2);
+      ::grpc::Service::MarkMethodGeneric(3);
     }
     ~WithGenericMethod_GetEvent() override {
       BaseClassMustBeDerivedFromService(this);
@@ -465,23 +593,43 @@ class Network final {
     }
   };
   template <class BaseClass>
-  class WithRawMethod_Register : public BaseClass {
+  class WithRawMethod_StartNewGame : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawMethod_Register() {
+    WithRawMethod_StartNewGame() {
       ::grpc::Service::MarkMethodRaw(0);
     }
-    ~WithRawMethod_Register() override {
+    ~WithRawMethod_StartNewGame() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Register(::grpc::ServerContext* /*context*/, const ::game::Void* /*request*/, ::game::OrderInfo* /*response*/) override {
+    ::grpc::Status StartNewGame(::grpc::ServerContext* /*context*/, const ::game::NumberOfPlayers* /*request*/, ::game::OrderInfo* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestRegister(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestStartNewGame(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_JoinGame : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_JoinGame() {
+      ::grpc::Service::MarkMethodRaw(1);
+    }
+    ~WithRawMethod_JoinGame() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status JoinGame(::grpc::ServerContext* /*context*/, const ::game::GameId* /*request*/, ::game::OrderInfo* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestJoinGame(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -490,7 +638,7 @@ class Network final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_SendEvent() {
-      ::grpc::Service::MarkMethodRaw(1);
+      ::grpc::Service::MarkMethodRaw(2);
     }
     ~WithRawMethod_SendEvent() override {
       BaseClassMustBeDerivedFromService(this);
@@ -501,7 +649,7 @@ class Network final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestSendEvent(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -510,7 +658,7 @@ class Network final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_GetEvent() {
-      ::grpc::Service::MarkMethodRaw(2);
+      ::grpc::Service::MarkMethodRaw(3);
     }
     ~WithRawMethod_GetEvent() override {
       BaseClassMustBeDerivedFromService(this);
@@ -521,15 +669,15 @@ class Network final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestGetEvent(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class ExperimentalWithRawCallbackMethod_Register : public BaseClass {
+  class ExperimentalWithRawCallbackMethod_StartNewGame : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    ExperimentalWithRawCallbackMethod_Register() {
+    ExperimentalWithRawCallbackMethod_StartNewGame() {
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
       ::grpc::Service::
     #else
@@ -543,21 +691,59 @@ class Network final {
     #else
                    ::grpc::experimental::CallbackServerContext*
     #endif
-                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->Register(context, request, response); }));
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->StartNewGame(context, request, response); }));
     }
-    ~ExperimentalWithRawCallbackMethod_Register() override {
+    ~ExperimentalWithRawCallbackMethod_StartNewGame() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Register(::grpc::ServerContext* /*context*/, const ::game::Void* /*request*/, ::game::OrderInfo* /*response*/) override {
+    ::grpc::Status StartNewGame(::grpc::ServerContext* /*context*/, const ::game::NumberOfPlayers* /*request*/, ::game::OrderInfo* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-    virtual ::grpc::ServerUnaryReactor* Register(
+    virtual ::grpc::ServerUnaryReactor* StartNewGame(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
     #else
-    virtual ::grpc::experimental::ServerUnaryReactor* Register(
+    virtual ::grpc::experimental::ServerUnaryReactor* StartNewGame(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_JoinGame : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_JoinGame() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(1,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->JoinGame(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_JoinGame() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status JoinGame(::grpc::ServerContext* /*context*/, const ::game::GameId* /*request*/, ::game::OrderInfo* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* JoinGame(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* JoinGame(
       ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
     #endif
       { return nullptr; }
@@ -573,7 +759,7 @@ class Network final {
     #else
       ::grpc::Service::experimental().
     #endif
-        MarkMethodRawCallback(1,
+        MarkMethodRawCallback(2,
           new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
@@ -611,7 +797,7 @@ class Network final {
     #else
       ::grpc::Service::experimental().
     #endif
-        MarkMethodRawCallback(2,
+        MarkMethodRawCallback(3,
           new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
@@ -639,24 +825,44 @@ class Network final {
       { return nullptr; }
   };
   template <class BaseClass>
-  class WithStreamedUnaryMethod_Register : public BaseClass {
+  class WithStreamedUnaryMethod_StartNewGame : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithStreamedUnaryMethod_Register() {
+    WithStreamedUnaryMethod_StartNewGame() {
       ::grpc::Service::MarkMethodStreamed(0,
-        new ::grpc::internal::StreamedUnaryHandler< ::game::Void, ::game::OrderInfo>(std::bind(&WithStreamedUnaryMethod_Register<BaseClass>::StreamedRegister, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler< ::game::NumberOfPlayers, ::game::OrderInfo>(std::bind(&WithStreamedUnaryMethod_StartNewGame<BaseClass>::StreamedStartNewGame, this, std::placeholders::_1, std::placeholders::_2)));
     }
-    ~WithStreamedUnaryMethod_Register() override {
+    ~WithStreamedUnaryMethod_StartNewGame() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status Register(::grpc::ServerContext* /*context*/, const ::game::Void* /*request*/, ::game::OrderInfo* /*response*/) override {
+    ::grpc::Status StartNewGame(::grpc::ServerContext* /*context*/, const ::game::NumberOfPlayers* /*request*/, ::game::OrderInfo* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedRegister(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::game::Void,::game::OrderInfo>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedStartNewGame(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::game::NumberOfPlayers,::game::OrderInfo>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_JoinGame : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_JoinGame() {
+      ::grpc::Service::MarkMethodStreamed(1,
+        new ::grpc::internal::StreamedUnaryHandler< ::game::GameId, ::game::OrderInfo>(std::bind(&WithStreamedUnaryMethod_JoinGame<BaseClass>::StreamedJoinGame, this, std::placeholders::_1, std::placeholders::_2)));
+    }
+    ~WithStreamedUnaryMethod_JoinGame() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status JoinGame(::grpc::ServerContext* /*context*/, const ::game::GameId* /*request*/, ::game::OrderInfo* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedJoinGame(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::game::GameId,::game::OrderInfo>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_SendEvent : public BaseClass {
@@ -664,7 +870,7 @@ class Network final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_SendEvent() {
-      ::grpc::Service::MarkMethodStreamed(1,
+      ::grpc::Service::MarkMethodStreamed(2,
         new ::grpc::internal::StreamedUnaryHandler< ::game::Event, ::game::Void>(std::bind(&WithStreamedUnaryMethod_SendEvent<BaseClass>::StreamedSendEvent, this, std::placeholders::_1, std::placeholders::_2)));
     }
     ~WithStreamedUnaryMethod_SendEvent() override {
@@ -684,7 +890,7 @@ class Network final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_GetEvent() {
-      ::grpc::Service::MarkMethodStreamed(2,
+      ::grpc::Service::MarkMethodStreamed(3,
         new ::grpc::internal::StreamedUnaryHandler< ::game::Player, ::game::Event>(std::bind(&WithStreamedUnaryMethod_GetEvent<BaseClass>::StreamedGetEvent, this, std::placeholders::_1, std::placeholders::_2)));
     }
     ~WithStreamedUnaryMethod_GetEvent() override {
@@ -698,9 +904,9 @@ class Network final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedGetEvent(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::game::Player,::game::Event>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_Register<WithStreamedUnaryMethod_SendEvent<WithStreamedUnaryMethod_GetEvent<Service > > > StreamedUnaryService;
+  typedef WithStreamedUnaryMethod_StartNewGame<WithStreamedUnaryMethod_JoinGame<WithStreamedUnaryMethod_SendEvent<WithStreamedUnaryMethod_GetEvent<Service > > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_Register<WithStreamedUnaryMethod_SendEvent<WithStreamedUnaryMethod_GetEvent<Service > > > StreamedService;
+  typedef WithStreamedUnaryMethod_StartNewGame<WithStreamedUnaryMethod_JoinGame<WithStreamedUnaryMethod_SendEvent<WithStreamedUnaryMethod_GetEvent<Service > > > > StreamedService;
 };
 
 }  // namespace game

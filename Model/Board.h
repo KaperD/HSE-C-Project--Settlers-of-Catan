@@ -7,17 +7,18 @@
 
 namespace Board {
 
-const int TERRITORIESNUM = 5;
-const int VERTEXNUM = 54;
-const int FIELDHEIGHT = 11;
-const int FIELDWIDTH = 21;
-const int HEXESNUM = 19;
+constexpr int TERRITORIESNUM = 5;
+constexpr int VERTEXNUM = 54;
+constexpr int FIELDHEIGHT = 11;
+constexpr int FIELDWIDTH = 21;
+constexpr int HEXESNUM = 19;
 
 enum class PlayerNum {
     NONE,
     GAMER1,
     GAMER2,
-    GAMER3
+    GAMER3,
+    GAMER4
 };
 
 enum class Resource {
@@ -42,7 +43,8 @@ enum class BuildingType {
     NONE,
     VILLAGE,
     CITY,
-    ROAD
+    ROAD,
+    DevCard
 };
 
 class Cell {
@@ -58,6 +60,8 @@ public:
     std::pair<int, int> getVertex(int i) const;
     BuildingType getType() const;
     void setBuildingType(BuildingType type);
+
+    bool marked = false;
 
 protected:
 
@@ -124,41 +128,56 @@ private:
 
 class Catan {
 public:
+    //TODO: Gamers Number in constructor
     Catan();
 
     void settle(BuildingType s, int x, int y);
     void giveResources(int cubes_num);
+    void setRobbers(int hex_num);
+
     //возвращает true, если торговля прошла успешно, false, если не хватило ресурсов на обмен
     bool trade(Resource re_for_trade, Resource need_re);
+    //TODO: bool tradeWith(PlayerNum, Resource, Resource, int) function
+
+
+    //возвращает true или false аналогично торговле
+    bool buildDevCard();
+    void playDevCard(DevelopmentCard card, int extraData);
 
     bool canBuild(BuildingType mod, int x, int y) const;
     bool checkCards(BuildingType building);
 
     const std::unique_ptr<Cell>& getFieldCell(int x, int y) const;
+    const std::unique_ptr<Hexagon>& getHex(int indx) const;
     void changeCurPlayer(PlayerNum new_player);
-    void setRobbers(int hex_num);
-    Hexagon* getHex(int indx) const;
+    PlayerNum getCurPlayer() const;
 
     int getRoadsRecord() const;
+    PlayerNum getRoadsRecordHolder() const;
     int getKnightRecord() const;
+    PlayerNum getKnightRecordHolder() const;
     void setRoadsRecord(int new_record);
     void setKnightRecord(int new_record);
 
+    void gotoNextGamePhase();
+    bool isBeginning() const;
     bool isFinished();
 
 private:
     std::vector<std::vector<std::unique_ptr<Cell>>> field;
-    std::vector<Hexagon*> hexes;
+    std::vector<std::unique_ptr<Hexagon>> hexes;
     std::unordered_map<PlayerNum, std::unique_ptr<Player>> players;
     int robbers_hex;
     PlayerNum cur_player;
-    /*Если у кого-то из игроков значения больше, то рекорды обновляются.
-     *Реализуется в контроллере с помощью геттеров и сеттеров модели.
-     *После этого на экране должна обновиться информация об очках победы*/
+    bool is_beginning = true;
+
     PlayerNum last_roads_record_holder = PlayerNum::NONE;
     int roads_record = 4;
     PlayerNum last_knights_record_holder = PlayerNum::NONE;
     int knights_record = 2;
+
+    void updateRoadsRecord(const std::unique_ptr<Cell>& v, int roadsCount = 0);
+    void clearMarks();
 };
 
 } // namespace Board
