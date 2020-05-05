@@ -22,7 +22,8 @@
 namespace game {
 
 static const char* Network_method_names[] = {
-  "/game.Network/Register",
+  "/game.Network/StartNewGame",
+  "/game.Network/JoinGame",
   "/game.Network/SendEvent",
   "/game.Network/GetEvent",
 };
@@ -34,37 +35,66 @@ std::unique_ptr< Network::Stub> Network::NewStub(const std::shared_ptr< ::grpc::
 }
 
 Network::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
-  : channel_(channel), rpcmethod_Register_(Network_method_names[0], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_SendEvent_(Network_method_names[1], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_GetEvent_(Network_method_names[2], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  : channel_(channel), rpcmethod_StartNewGame_(Network_method_names[0], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_JoinGame_(Network_method_names[1], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_SendEvent_(Network_method_names[2], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_GetEvent_(Network_method_names[3], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
-::grpc::Status Network::Stub::Register(::grpc::ClientContext* context, const ::game::Void& request, ::game::OrderInfo* response) {
-  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_Register_, context, request, response);
+::grpc::Status Network::Stub::StartNewGame(::grpc::ClientContext* context, const ::game::NumberOfPlayers& request, ::game::OrderInfo* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_StartNewGame_, context, request, response);
 }
 
-void Network::Stub::experimental_async::Register(::grpc::ClientContext* context, const ::game::Void* request, ::game::OrderInfo* response, std::function<void(::grpc::Status)> f) {
-  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_Register_, context, request, response, std::move(f));
+void Network::Stub::experimental_async::StartNewGame(::grpc::ClientContext* context, const ::game::NumberOfPlayers* request, ::game::OrderInfo* response, std::function<void(::grpc::Status)> f) {
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_StartNewGame_, context, request, response, std::move(f));
 }
 
-void Network::Stub::experimental_async::Register(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::OrderInfo* response, std::function<void(::grpc::Status)> f) {
-  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_Register_, context, request, response, std::move(f));
+void Network::Stub::experimental_async::StartNewGame(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::OrderInfo* response, std::function<void(::grpc::Status)> f) {
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_StartNewGame_, context, request, response, std::move(f));
 }
 
-void Network::Stub::experimental_async::Register(::grpc::ClientContext* context, const ::game::Void* request, ::game::OrderInfo* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
-  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_Register_, context, request, response, reactor);
+void Network::Stub::experimental_async::StartNewGame(::grpc::ClientContext* context, const ::game::NumberOfPlayers* request, ::game::OrderInfo* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_StartNewGame_, context, request, response, reactor);
 }
 
-void Network::Stub::experimental_async::Register(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::OrderInfo* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
-  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_Register_, context, request, response, reactor);
+void Network::Stub::experimental_async::StartNewGame(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::OrderInfo* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_StartNewGame_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::game::OrderInfo>* Network::Stub::AsyncRegisterRaw(::grpc::ClientContext* context, const ::game::Void& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::game::OrderInfo>::Create(channel_.get(), cq, rpcmethod_Register_, context, request, true);
+::grpc::ClientAsyncResponseReader< ::game::OrderInfo>* Network::Stub::AsyncStartNewGameRaw(::grpc::ClientContext* context, const ::game::NumberOfPlayers& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::game::OrderInfo>::Create(channel_.get(), cq, rpcmethod_StartNewGame_, context, request, true);
 }
 
-::grpc::ClientAsyncResponseReader< ::game::OrderInfo>* Network::Stub::PrepareAsyncRegisterRaw(::grpc::ClientContext* context, const ::game::Void& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::game::OrderInfo>::Create(channel_.get(), cq, rpcmethod_Register_, context, request, false);
+::grpc::ClientAsyncResponseReader< ::game::OrderInfo>* Network::Stub::PrepareAsyncStartNewGameRaw(::grpc::ClientContext* context, const ::game::NumberOfPlayers& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::game::OrderInfo>::Create(channel_.get(), cq, rpcmethod_StartNewGame_, context, request, false);
+}
+
+::grpc::Status Network::Stub::JoinGame(::grpc::ClientContext* context, const ::game::GameId& request, ::game::OrderInfo* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_JoinGame_, context, request, response);
+}
+
+void Network::Stub::experimental_async::JoinGame(::grpc::ClientContext* context, const ::game::GameId* request, ::game::OrderInfo* response, std::function<void(::grpc::Status)> f) {
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_JoinGame_, context, request, response, std::move(f));
+}
+
+void Network::Stub::experimental_async::JoinGame(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::OrderInfo* response, std::function<void(::grpc::Status)> f) {
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_JoinGame_, context, request, response, std::move(f));
+}
+
+void Network::Stub::experimental_async::JoinGame(::grpc::ClientContext* context, const ::game::GameId* request, ::game::OrderInfo* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_JoinGame_, context, request, response, reactor);
+}
+
+void Network::Stub::experimental_async::JoinGame(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::OrderInfo* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_JoinGame_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::game::OrderInfo>* Network::Stub::AsyncJoinGameRaw(::grpc::ClientContext* context, const ::game::GameId& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::game::OrderInfo>::Create(channel_.get(), cq, rpcmethod_JoinGame_, context, request, true);
+}
+
+::grpc::ClientAsyncResponseReader< ::game::OrderInfo>* Network::Stub::PrepareAsyncJoinGameRaw(::grpc::ClientContext* context, const ::game::GameId& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::game::OrderInfo>::Create(channel_.get(), cq, rpcmethod_JoinGame_, context, request, false);
 }
 
 ::grpc::Status Network::Stub::SendEvent(::grpc::ClientContext* context, const ::game::Event& request, ::game::Void* response) {
@@ -127,15 +157,20 @@ Network::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       Network_method_names[0],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< Network::Service, ::game::Void, ::game::OrderInfo>(
-          std::mem_fn(&Network::Service::Register), this)));
+      new ::grpc::internal::RpcMethodHandler< Network::Service, ::game::NumberOfPlayers, ::game::OrderInfo>(
+          std::mem_fn(&Network::Service::StartNewGame), this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       Network_method_names[1],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Network::Service, ::game::GameId, ::game::OrderInfo>(
+          std::mem_fn(&Network::Service::JoinGame), this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Network_method_names[2],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< Network::Service, ::game::Event, ::game::Void>(
           std::mem_fn(&Network::Service::SendEvent), this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      Network_method_names[2],
+      Network_method_names[3],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< Network::Service, ::game::Player, ::game::Event>(
           std::mem_fn(&Network::Service::GetEvent), this)));
@@ -144,7 +179,14 @@ Network::Service::Service() {
 Network::Service::~Service() {
 }
 
-::grpc::Status Network::Service::Register(::grpc::ServerContext* context, const ::game::Void* request, ::game::OrderInfo* response) {
+::grpc::Status Network::Service::StartNewGame(::grpc::ServerContext* context, const ::game::NumberOfPlayers* request, ::game::OrderInfo* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Network::Service::JoinGame(::grpc::ServerContext* context, const ::game::GameId* request, ::game::OrderInfo* response) {
   (void) context;
   (void) request;
   (void) response;

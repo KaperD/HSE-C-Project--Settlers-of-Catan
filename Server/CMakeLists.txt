@@ -23,13 +23,22 @@ include_directories(${PROTO_SRC_DIR})
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_SRC_DIR} ${PROTOS})
 grpc_generate_cpp(GRPC_SRCS GRPC_HDRS ${PROTO_SRC_DIR} ${PROTOS})
 
+set(
+    spinlock
+    ../Utility/spinlock.cpp
+    ../Utility/spinlock.h
+)
+
 add_executable(server
     ${CMAKE_CURRENT_SOURCE_DIR}/Server.cpp
     ${PROTO_SRCS}
     ${GRPC_SRCS}
+    ${spinlock}
 )
 target_link_libraries(server
     gRPC::grpc++_reflection
     protobuf::libprotobuf
 )
 
+include_directories(../Utility)
+include_directories(Protos)
