@@ -176,7 +176,8 @@ private:
     PlayerNum last_knights_record_holder = PlayerNum::NONE;
     int knights_record = 2;
 
-    void updateRoadsRecord(const std::unique_ptr<Cell>& v, int roadsCount = 0);
+    int findRoadsRecord(const std::unique_ptr<Cell>& v);
+    void updateRoadsRecord();
     void clearMarks();
 };
 
