@@ -178,6 +178,7 @@ private:
 
     int findRoadsRecord(const std::unique_ptr<Cell>& v);
     void updateRoadsRecord();
+    const std::unique_ptr<Cell>& getStart(const std::unique_ptr<Cell>& v, int x, int y);
     void clearMarks();
 };
 
