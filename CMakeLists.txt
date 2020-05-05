@@ -30,8 +30,7 @@ grpc_generate_cpp(GRPC_SRCS GRPC_HDRS ${PROTO_SRC_DIR} ${PROTOS})
 # sudo apt-get install libsdl-dev
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
-find_package(SFML 2 REQUIRED audio)
-include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS} ${SFML_INCLUDE_DIR})
+include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
 
 set(
     client
@@ -84,8 +83,6 @@ add_executable(project
 
 target_link_libraries(project
     ${EXECUTABLE_NAME}
-    ${SFML_LIBRARIES}
-    ${SFML_DEPENDENCIES}
     ${SDL2_IMAGE_LIBRARIES}
     ${SDL2_LIBRARIES}
     gRPC::grpc++_reflection

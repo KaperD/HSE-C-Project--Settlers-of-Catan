@@ -176,7 +176,7 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
             gameView_.add_road({x_, y_}, Player - 1);
         }
         if (type == Board::BuildingType::VILLAGE) {
-            roadIsSet = true;
+            villageIsSet = true;
             gameView_.add_building({x_, y_}, Player - 1);
         }
         //displayEvent(event);
