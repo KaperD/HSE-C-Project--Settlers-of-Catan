@@ -394,6 +394,7 @@ void Catan::settle(BuildingType s, int x, int y) {
         players[cur_player]->getResource(Resource::CLAY, 1);
         players[cur_player]->addRoad();
         updateRoadsRecord(cell(0, 4));
+        clearMarks();
     }
     cell(x, y)->setPlayer(cur_player);
     //cell(x, y)->setBuildingType(s); чёт я даже не помню, зачем это, когда в конструкторах всё есть
@@ -456,7 +457,7 @@ bool Catan::trade(Resource re_for_trade, Resource need_re) {
 }
 
 void Catan::updateRoadsRecord(const std::unique_ptr<Cell>& v, int roadsCount) {
-    if (v->marked) return;
+    if (v->marked || v->getPlayer() != cur_player) return;
     v->marked = true;
     if (v->getPlayer() != cur_player) {
         roadsCount = 0;
@@ -466,15 +467,11 @@ void Catan::updateRoadsRecord(const std::unique_ptr<Cell>& v, int roadsCount) {
         int rx = v->getRoad(i).first;
         int ry = v->getRoad(i).second;
 
-        if (cell(rx, ry)->marked) continue;
+        if (cell(rx, ry)->marked || cell(rx, ry)->getPlayer() != cur_player) continue;
         cell(rx, ry)->marked = true;
-        if (cell(rx, ry)->getPlayer() == cur_player) {
-            roadsCount++;
-            if (roadsCount > roads_record) {
-                setRoadsRecord(roadsCount);
-            }
-        } else {
-            roadsCount = 0;
+        roadsCount++;
+        if (roadsCount > roads_record) {
+            setRoadsRecord(roadsCount);
         }
 
         int vx = cell(rx, ry)->getVertex(1).first;
@@ -483,6 +480,16 @@ void Catan::updateRoadsRecord(const std::unique_ptr<Cell>& v, int roadsCount) {
         vx = cell(rx, ry)->getVertex(2).first;
         vy = cell(rx, ry)->getVertex(2).second;
         updateRoadsRecord(cell(vx, vy), roadsCount);
+    }
+}
+
+void Catan::clearMarks() {
+    for (int x = 0; x < FIELDHEIGHT; x++) {
+        for (int y = 0; y < FIELDWIDTH; y++) {
+            if (cell(x, y) != nullptr) {
+                cell(x, y)->marked = false;
+            }
+        }
     }
 }
 
@@ -512,8 +519,8 @@ void Catan::playDevCard(DevelopmentCard card, int extraData) {
         return;
     }
     if (card == DevelopmentCard::INVENTION) {
-        Resource re1 = static_cast<Resource >(utility::Random::getRandomNumberFromTo(1, TERRITORIESNUM));
-        Resource re2 = static_cast<Resource >(utility::Random::getRandomNumberFromTo(1, TERRITORIESNUM));
+        Resource re1 = static_cast<Resource>(utility::Random::getRandomNumberFromTo(1, TERRITORIESNUM));
+        Resource re2 = static_cast<Resource>(utility::Random::getRandomNumberFromTo(1, TERRITORIESNUM));
         players[cur_player]->giveResource(re1, 1);
         players[cur_player]->giveResource(re2, 1);
         return;

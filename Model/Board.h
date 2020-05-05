@@ -168,6 +168,8 @@ private:
     int roads_record = 4;
     PlayerNum last_knights_record_holder = PlayerNum::NONE;
     int knights_record = 2;
+
+    void clearMarks();
 };
 
 } // namespace Board

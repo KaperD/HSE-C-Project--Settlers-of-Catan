@@ -9,7 +9,10 @@ find_package(GTest REQUIRED)
 add_executable(
         ModelTest
         Test/run_tests.cpp
-        Test/test.cpp
+        Test/testGraph.cpp
+        Test/testCanBuild.cpp
+        Test/testHexes.cpp
+        Test/testRoadsRecord.cpp
         ../Utility/random.cpp
         ../Utility/random.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Board.cpp
