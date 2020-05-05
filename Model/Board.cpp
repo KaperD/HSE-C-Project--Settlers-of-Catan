@@ -440,9 +440,9 @@ PlayerNum Catan::getCurPlayer() const {
 void Catan::giveResources(int cubes_num) {
     for (int i = 0; i < HEXESNUM; i++) {
         if (cubes_num != hexes[i]->getNum() || hexes[i]->robbersIsHere()) continue;
-        for (int i = 0; i < 7; i++) {
-            int vx = hexes[i]->getVertex(i).first;
-            int vy = hexes[i]->getVertex(i).second;
+        for (int j = 0; j < 7; j++) {
+            int vx = hexes[i]->getVertex(j).first;
+            int vy = hexes[i]->getVertex(j).second;
             if (cell(vx, vy)->getPlayer() != PlayerNum::NONE) {
                 int re_num = 1;
                 if (cell(vx, vy)->getType() == BuildingType::CITY) {
@@ -579,7 +579,7 @@ void Catan::setKnightRecord(int new_record) {
     knights_record = new_record;
 }
 
-bool Catan::isFinished() const {
+bool Catan::isFinished() {
     return players[PlayerNum::GAMER1]->getVictoryPoints() == 10 ||
            players[PlayerNum::GAMER2]->getVictoryPoints() == 10 ||
            players[PlayerNum::GAMER3]->getVictoryPoints() == 10;

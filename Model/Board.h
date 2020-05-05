@@ -158,7 +158,7 @@ public:
 
     void gotoNextGamePhase();
     bool isBeginning() const;
-    bool isFinished() const;
+    bool isFinished();
 
 private:
     std::vector<std::vector<std::unique_ptr<Cell>>> field;
