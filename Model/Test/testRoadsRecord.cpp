@@ -81,3 +81,25 @@ TEST(RoadsRecord, from_rules) {
     ASSERT_EQ(board.getRoadsRecordHolder(), PlayerNum::GAMER2);
     ASSERT_EQ(board.getRoadsRecord(), 6);
 }
+
+TEST(RoadsRecord, dynamic_begins) {
+    Catan board;
+    board.settle(BuildingType::VILLAGE, 0, 4);
+    board.settle(BuildingType::ROAD, 1, 4);
+    board.settle(BuildingType::ROAD, 2, 5);
+    board.settle(BuildingType::ROAD, 2, 7);
+    board.settle(BuildingType::ROAD, 2, 9);
+    board.settle(BuildingType::ROAD, 3, 10);
+
+    board.changeCurPlayer(PlayerNum::GAMER2);
+    board.settle(BuildingType::VILLAGE, 4, 10);
+    board.settle(BuildingType::ROAD, 4, 9);
+    board.settle(BuildingType::ROAD, 4, 7);
+    board.settle(BuildingType::ROAD, 4, 5);
+    board.settle(BuildingType::ROAD, 4, 3);
+    board.settle(BuildingType::ROAD, 4, 11);
+    board.settle(BuildingType::ROAD, 4, 13);
+
+    //ASSERT_EQ(board.getRoadsRecordHolder(), PlayerNum::GAMER2);
+    //ASSERT_EQ(board.getRoadsRecord(), 6);
+}
