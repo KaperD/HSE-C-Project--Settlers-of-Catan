@@ -26,36 +26,62 @@ using game::Market;
 using game::Build;
 using game::Player;
 using game::Network;
+using game::NumberOfPlayers;
+using game::GameId;
 
 
-GameClient::GameClient(std::shared_ptr<Channel> channel)
+GameClient::GameClient(const std::shared_ptr<Channel>& channel)
     : stub_(Network::NewStub(channel)), player_() {
 }
 
-GameClient::GameClient() : stub_(Network::NewStub(grpc::CreateChannel("68.183.30.230:50051",
+//35.193.120.72:80
+
+GameClient::GameClient() : stub_(Network::NewStub(grpc::CreateChannel("35.193.120.72:80",
                           grpc::InsecureChannelCredentials()))), player_() {
 
 }
 
-OrderInfo GameClient::Register() {
+OrderInfo GameClient::StartNewGame(int numberOfPlayers) {
     ClientContext context;
-    Void empty;
+    NumberOfPlayers players;
+    players.set_numberofplayers(numberOfPlayers);
     OrderInfo info;
 
-    Status status = stub_->Register(&context, empty, &info);
+    Status status = stub_->StartNewGame(&context, players, &info);
     if (!status.ok()) {
-        throw NetworkException("Can't Register");
+        throw NetworkException("Can't start new game");
     }
 
     player_.set_playerid(info.id());
+    player_.set_gameid(info.gameid());
 
     return info;
 }
+
+
+game::OrderInfo GameClient::JoinGame(int gameId) {
+    ClientContext context;
+    GameId id;
+    id.set_gameid(gameId);
+    OrderInfo info;
+
+    Status status = stub_->JoinGame(&context, id, &info);
+    if (!status.ok()) {
+        throw NetworkException("Can't join game");
+    }
+
+    player_.set_playerid(info.id());
+    player_.set_gameid(info.gameid());
+
+    return info;
+}
+
 
 void GameClient::SendEvent(Event event) {
     ClientContext context;
     Void empty;
     event.set_playerid(player_.playerid());
+    event.set_gameid(player_.gameid());
 
     Status status = stub_->SendEvent(&context, event, &empty);
     if (!status.ok()) {
@@ -75,3 +101,4 @@ Event GameClient::GetEvent() {
 
     return event;
 }
+

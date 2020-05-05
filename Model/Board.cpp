@@ -1,7 +1,6 @@
 #include <cstdlib>
 #include <ctime>
 #include <memory>
-
 #include "Board.h"
 
 namespace Board {
