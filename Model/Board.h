@@ -144,12 +144,15 @@ public:
 
     const std::unique_ptr<Cell>& getFieldCell(int x, int y) const;
     void changeCurPlayer(PlayerNum new_player);
+    PlayerNum getCurPlayer() const;
     void setRobbers(int hex_num);
     Hexagon* getHex(int indx) const;
     bool isBeginning() const;
 
     int getRoadsRecord() const;
+    PlayerNum getRoadsRecordHolder() const;
     int getKnightRecord() const;
+    PlayerNum getKnightRecordHolder() const;
     void setRoadsRecord(int new_record);
     void setKnightRecord(int new_record);
 

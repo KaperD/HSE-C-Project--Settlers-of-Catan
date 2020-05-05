@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "Board.h"
-#include "../Utility/random.h"
+#include "random.h"
 
 namespace Board {
 
@@ -240,6 +240,7 @@ Catan::Catan() : field(FIELDHEIGHT), players(4) {
         }
     }
 
+    players[PlayerNum::NONE] = std::make_unique<Player>(PlayerNum::NONE); //fiction
     players[PlayerNum::GAMER1] = std::make_unique<Player>(PlayerNum::GAMER1);
     players[PlayerNum::GAMER2] = std::make_unique<Player>(PlayerNum::GAMER2);
     players[PlayerNum::GAMER3] = std::make_unique<Player>(PlayerNum::GAMER3);
@@ -386,6 +387,7 @@ void Catan::settle(BuildingType s, int x, int y) {
         players[cur_player]->getResource(Resource::WOOL, 1);
         players[cur_player]->getResource(Resource::WHEAT, 1);
         cell(x, y)->setBuildingType(BuildingType::CITY);
+        cell(x, y)->setPlayer(cur_player);
     } else if (s == BuildingType::CITY) {
         players[cur_player]->getResource(Resource::ORE, 3);
         players[cur_player]->getResource(Resource::WHEAT, 2);
@@ -393,11 +395,19 @@ void Catan::settle(BuildingType s, int x, int y) {
         players[cur_player]->getResource(Resource::TREE, 1);
         players[cur_player]->getResource(Resource::CLAY, 1);
         players[cur_player]->addRoad();
-        updateRoadsRecord(cell(0, 4));
+
+        cell(x, y)->setPlayer(cur_player);
+
+        for (int vx = 0; vx < FIELDHEIGHT; vx += 2) {
+            for (int vy = 0; vy < FIELDWIDTH; vy += 2) {
+                if (cell(vx, vy) == nullptr || cell(vx, vy)->marked ||
+                    cell(vx, vy)->getPlayer() != cur_player) continue;
+                updateRoadsRecord(cell(vx, vy));
+            }
+        }
+
         clearMarks();
     }
-    cell(x, y)->setPlayer(cur_player);
-    //cell(x, y)->setBuildingType(s); чёт я даже не помню, зачем это, когда в конструкторах всё есть
 }
 
 void Catan::setRobbers(int hex_num) {
@@ -430,6 +440,10 @@ void Catan::changeCurPlayer(PlayerNum new_player) {
     cur_player = new_player;
 }
 
+PlayerNum Catan::getCurPlayer() const {
+    return cur_player;
+}
+
 void Catan::giveResources(int cubes_num) {
     for (auto h : hexes) {
         if (cubes_num != h->getNum() || h->robbersIsHere()) continue;
@@ -457,29 +471,29 @@ bool Catan::trade(Resource re_for_trade, Resource need_re) {
 }
 
 void Catan::updateRoadsRecord(const std::unique_ptr<Cell>& v, int roadsCount) {
-    if (v->marked || v->getPlayer() != cur_player) return;
+    if (v == nullptr || v->marked) return;
+    if (v->getPlayer() != cur_player && v->getPlayer() != PlayerNum::NONE) return;
+
     v->marked = true;
-    if (v->getPlayer() != cur_player) {
-        roadsCount = 0;
-    }
     int numR = v->getRoadsNum();
     for (int i = 0; i < numR; i++) {
         int rx = v->getRoad(i).first;
         int ry = v->getRoad(i).second;
 
-        if (cell(rx, ry)->marked || cell(rx, ry)->getPlayer() != cur_player) continue;
+        if (cell(rx, ry) == nullptr || cell(rx, ry)->marked || cell(rx, ry)->getPlayer() != cur_player) continue;
         cell(rx, ry)->marked = true;
         roadsCount++;
         if (roadsCount > roads_record) {
             setRoadsRecord(roadsCount);
         }
 
-        int vx = cell(rx, ry)->getVertex(1).first;
-        int vy = cell(rx, ry)->getVertex(1).second;
+        int vx = cell(rx, ry)->getVertex(0).first;
+        int vy = cell(rx, ry)->getVertex(0).second;
         updateRoadsRecord(cell(vx, vy), roadsCount);
-        vx = cell(rx, ry)->getVertex(2).first;
-        vy = cell(rx, ry)->getVertex(2).second;
+        vx = cell(rx, ry)->getVertex(1).first;
+        vy = cell(rx, ry)->getVertex(1).second;
         updateRoadsRecord(cell(vx, vy), roadsCount);
+        roadsCount--;
     }
 }
 
@@ -546,8 +560,16 @@ int Catan::getRoadsRecord() const {
     return roads_record;
 }
 
+PlayerNum Catan::getRoadsRecordHolder() const {
+    return last_roads_record_holder;
+}
+
 int Catan::getKnightRecord() const {
     return knights_record;
+}
+
+PlayerNum Catan::getKnightRecordHolder() const {
+    return last_knights_record_holder;
 }
 
 void Catan::setRoadsRecord(int new_record) {
