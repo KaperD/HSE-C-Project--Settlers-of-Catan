@@ -57,20 +57,12 @@ void Player::decrVictoryPoints(int vp) {
     victory_points -= vp;
 }
 
-int Player::getRoadsNum() const {
-    return roads;
-}
-
 int Player::getKnightsNum() const {
     return knights;
 }
 
 void Player::incrArmy() {
     knights++;
-}
-
-void Player::addRoad() {
-    roads++;
 }
 
 void Player::giveDevCard(DevelopmentCard dev_card) {
@@ -245,6 +237,7 @@ Catan::Catan() : field(FIELDHEIGHT), players(4) {
     players[PlayerNum::GAMER1] = std::make_unique<Player>(PlayerNum::GAMER1);
     players[PlayerNum::GAMER2] = std::make_unique<Player>(PlayerNum::GAMER2);
     players[PlayerNum::GAMER3] = std::make_unique<Player>(PlayerNum::GAMER3);
+    players[PlayerNum::GAMER3] = std::make_unique<Player>(PlayerNum::GAMER4);
     cur_player = PlayerNum::GAMER1;
 
     for (int i = 1; i < 4; i += 2) {
@@ -388,7 +381,6 @@ void Catan::settle(BuildingType s, int x, int y) {
     } else {
         players[cur_player]->getResource(Resource::TREE, 1);
         players[cur_player]->getResource(Resource::CLAY, 1);
-        players[cur_player]->addRoad();
 
         cell(x, y)->setPlayer(cur_player);
 
@@ -537,33 +529,6 @@ bool Catan::trade(Resource re_for_trade, Resource need_re) {
     players[cur_player]->giveResource(need_re, 1);
     return true;
 }
-
-/*void Catan::updateRoadsRecord(const std::unique_ptr<Cell>& v, int roadsCount) {
-    if (v == nullptr || v->marked) return;
-    if (v->getPlayer() != cur_player && v->getPlayer() != PlayerNum::NONE) return;
-
-    v->marked = true;
-    int numR = v->getRoadsNum();
-    for (int i = 0; i < numR; i++) {
-        int rx = v->getRoad(i).first;
-        int ry = v->getRoad(i).second;
-
-        if (cell(rx, ry) == nullptr || cell(rx, ry)->marked || cell(rx, ry)->getPlayer() != cur_player) continue;
-        cell(rx, ry)->marked = true;
-        roadsCount++;
-        if (roadsCount > roads_record) {
-            setRoadsRecord(roadsCount);
-        }
-
-        int vx = cell(rx, ry)->getVertex(0).first;
-        int vy = cell(rx, ry)->getVertex(0).second;
-        updateRoadsRecord(cell(vx, vy), roadsCount);
-        vx = cell(rx, ry)->getVertex(1).first;
-        vy = cell(rx, ry)->getVertex(1).second;
-        updateRoadsRecord(cell(vx, vy), roadsCount);
-        roadsCount--;
-    }
-}*/
 
 bool Catan::buildDevCard() {
     if (getPlayerCardNum(Resource::ORE) < 1 ||

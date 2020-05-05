@@ -190,7 +190,7 @@ TEST(RoadsRecord, cycle_level3_boss) {
     ASSERT_EQ(board.getRoadsRecord(), 16);
 }
 
-TEST(RoadsRecord, dynamic_begins) {
+TEST(RoadsRecord, dynamic) {
     Catan board;
 
     board.settle(BuildingType::VILLAGE, 0, 4);
