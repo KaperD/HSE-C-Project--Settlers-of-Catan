@@ -151,7 +151,6 @@ void MarketHandler::displayEvent(Event& event) {
 //===============BuildHandler===============
 
 void BuildHandler::processEvent(Event& event, bool needSend) {
-     std::cerr << "pppppppppppp";
     if (event.type() != EventType::BUILD) {
         throw std::logic_error("Wrong type");
     }
@@ -172,14 +171,12 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
     if (true) {
         std::cout << "YES" << '\n';
         gameModel_.settle(type, x_, y_);
-         std::cerr << "yyyyyyyyyyyyyyyy";
         if (type == Board::BuildingType::ROAD) {
             roadIsSet = true;
             gameView_.add_road({x_, y_}, Player - 1);
         }
         if (type == Board::BuildingType::VILLAGE) {
             roadIsSet = true;
-             std::cerr << "llllllllllll";
             gameView_.add_building({x_, y_}, Player - 1);
         }
         //displayEvent(event);

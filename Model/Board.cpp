@@ -1,7 +1,6 @@
 #include <cstdlib>
 #include <ctime>
 #include <memory>
-#include <iostream>
 #include "Board.h"
 
 namespace Board {
@@ -372,11 +371,8 @@ void Catan::settle(BuildingType s, int x, int y) {
         players[cur_player]->getResource(Resource::CLAY, 1);
         players[cur_player]->addRoad();
     }
-    std::cerr << "lalalalalalaal";
     cell(x, y)->setPlayer(cur_player);
-    std::cerr << "kekekekekeke";
     cell(x, y)->setBuildingType(s);
-    std::cerr << "popoppopopopopopop";
 }
 
 void Catan::setRobbers(int hex_num) {
