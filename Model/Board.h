@@ -7,17 +7,18 @@
 
 namespace Board {
 
-const int TERRITORIESNUM = 5;
-const int VERTEXNUM = 54;
-const int FIELDHEIGHT = 11;
-const int FIELDWIDTH = 21;
-const int HEXESNUM = 19;
+constexpr int TERRITORIESNUM = 5;
+constexpr int VERTEXNUM = 54;
+constexpr int FIELDHEIGHT = 11;
+constexpr int FIELDWIDTH = 21;
+constexpr int HEXESNUM = 19;
 
 enum class PlayerNum {
     NONE,
     GAMER1,
     GAMER2,
-    GAMER3
+    GAMER3,
+    GAMER4
 };
 
 enum class Resource {
@@ -127,14 +128,17 @@ private:
 
 class Catan {
 public:
+    //TODO: Gamers Number in constructor
     Catan();
 
     void settle(BuildingType s, int x, int y);
     void giveResources(int cubes_num);
+    void setRobbers(int hex_num);
 
     //возвращает true, если торговля прошла успешно, false, если не хватило ресурсов на обмен
     bool trade(Resource re_for_trade, Resource need_re);
-    void updateRoadsRecord(const std::unique_ptr<Cell>& v, int roadsCount = 0);
+    //TODO: bool tradeWith(PlayerNum, Resource, Resource, int) function
+
 
     //возвращает true или false аналогично торговле
     bool buildDevCard();
@@ -147,7 +151,6 @@ public:
     const std::unique_ptr<Hexagon>& getHex(int indx) const;
     void changeCurPlayer(PlayerNum new_player);
     PlayerNum getCurPlayer() const;
-    void setRobbers(int hex_num);
 
     int getRoadsRecord() const;
     PlayerNum getRoadsRecordHolder() const;
@@ -173,6 +176,7 @@ private:
     PlayerNum last_knights_record_holder = PlayerNum::NONE;
     int knights_record = 2;
 
+    void updateRoadsRecord(const std::unique_ptr<Cell>& v, int roadsCount = 0);
     void clearMarks();
 };
 
