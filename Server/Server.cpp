@@ -172,7 +172,7 @@ private:
 
  
 void RunServer() {
-    std::string server_address("0.0.0.0:80");
+    std::string server_address("209.97.148.147:80");
     GameServerImpl service;
 
     ServerBuilder builder;
