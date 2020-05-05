@@ -108,19 +108,16 @@ public:
     void decrVictoryPoints(int vp);
     void giveDevCard(DevelopmentCard dev_card);
     void incrArmy();
-    void addRoad();
     void delDevCard(DevelopmentCard dev_card);
 
     int getVictoryPoints() const;
     int getKnightsNum() const;
-    int getRoadsNum() const;
 
     int checkResourceNum(Resource re);
 
 private:
     PlayerNum id;
-    int victory_points;
-    int roads = 0;
+    int victory_points = 0;
     int knights = 0;
     std::unordered_map<Resource, int> cards;
     std::unordered_map<DevelopmentCard, int> dev_cards;
@@ -176,7 +173,9 @@ private:
     PlayerNum last_knights_record_holder = PlayerNum::NONE;
     int knights_record = 2;
 
-    void updateRoadsRecord(const std::unique_ptr<Cell>& v, int roadsCount = 0);
+    int findRoadsRecord(const std::unique_ptr<Cell>& v);
+    void updateRoadsRecord();
+    const std::unique_ptr<Cell>& getStart(const std::unique_ptr<Cell>& v, int x, int y);
     void clearMarks();
 };
 

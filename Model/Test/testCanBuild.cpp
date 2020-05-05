@@ -3,6 +3,7 @@
 
 using namespace Board;
 
+
 TEST(canBuildTest, simpleVillageCase) {
     Catan board;
     board.settle(BuildingType::VILLAGE, 8, 6);

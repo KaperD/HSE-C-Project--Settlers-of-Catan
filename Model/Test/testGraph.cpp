@@ -5,6 +5,7 @@
 
 using namespace Board;
 
+
 TEST(CatanGraph, ShowGraph) {
     Catan board;
     for (int i = 0; i < FIELDHEIGHT; i ++) {

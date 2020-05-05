@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <memory>
+#include <iostream>//for debug
 
 #include "Board.h"
 #include "random.h"
@@ -56,20 +57,12 @@ void Player::decrVictoryPoints(int vp) {
     victory_points -= vp;
 }
 
-int Player::getRoadsNum() const {
-    return roads;
-}
-
 int Player::getKnightsNum() const {
     return knights;
 }
 
 void Player::incrArmy() {
     knights++;
-}
-
-void Player::addRoad() {
-    roads++;
 }
 
 void Player::giveDevCard(DevelopmentCard dev_card) {
@@ -240,10 +233,11 @@ Catan::Catan() : field(FIELDHEIGHT), players(4) {
         }
     }
 
-    players[PlayerNum::NONE] = std::make_unique<Player>(PlayerNum::NONE); //fiction
+    players[PlayerNum::NONE] = std::make_unique<Player>(PlayerNum::NONE);
     players[PlayerNum::GAMER1] = std::make_unique<Player>(PlayerNum::GAMER1);
     players[PlayerNum::GAMER2] = std::make_unique<Player>(PlayerNum::GAMER2);
     players[PlayerNum::GAMER3] = std::make_unique<Player>(PlayerNum::GAMER3);
+    players[PlayerNum::GAMER3] = std::make_unique<Player>(PlayerNum::GAMER4);
     cur_player = PlayerNum::GAMER1;
 
     for (int i = 1; i < 4; i += 2) {
@@ -387,20 +381,93 @@ void Catan::settle(BuildingType s, int x, int y) {
     } else {
         players[cur_player]->getResource(Resource::TREE, 1);
         players[cur_player]->getResource(Resource::CLAY, 1);
-        players[cur_player]->addRoad();
 
         cell(x, y)->setPlayer(cur_player);
 
-        for (int vx = 0; vx < FIELDHEIGHT; vx += 2) {
-            for (int vy = 0; vy < FIELDWIDTH; vy += 2) {
-                if (cell(vx, vy) == nullptr || cell(vx, vy)->marked ||
-                    cell(vx, vy)->getPlayer() != cur_player) continue;
-                updateRoadsRecord(cell(vx, vy));
+        updateRoadsRecord();
+    }
+}
+
+int Catan::findRoadsRecord(const std::unique_ptr<Cell> &v) {
+    if (v == nullptr) return -1;
+    if (v->getPlayer() != cur_player && v->getPlayer() != PlayerNum::NONE) return -1;
+    if (v->marked) return 0;
+
+
+    v->marked = true;
+    std::vector<int> roadsNum(3);
+    int numR = v->getRoadsNum();
+
+    for (int i = 0; i < numR; i++) {
+        int rx = v->getRoad(i).first;
+        int ry = v->getRoad(i).second;
+
+        if (cell(rx, ry) == nullptr || cell(rx, ry)->marked || cell(rx, ry)->getPlayer() != cur_player) {
+            continue;
+        }
+        cell(rx, ry)->marked = true;
+
+        for (int k = 0; k < 2; k++) {
+            int vx = cell(rx, ry)->getVertex(k).first;
+            int vy = cell(rx, ry)->getVertex(k).second;
+            if (cell(vx, vy) == v) continue;
+            roadsNum[i] += findRoadsRecord(cell(vx, vy)) + 1;
+        }
+    }
+
+    int sum = 0;
+    std::vector<int> sumRoads(3);
+    int maxRoadsNum = 0;
+    sumRoads[0] = roadsNum[0] + roadsNum[1];
+    sumRoads[1] = roadsNum[0] + roadsNum[2];
+    sumRoads[2] = roadsNum[2] + roadsNum[1];
+    sum = std::max(sumRoads[0], std::max(sumRoads[1], sumRoads[2]));
+    if (sum > roads_record) {
+        setRoadsRecord(sum);
+    }
+
+    for (auto roads : roadsNum) {
+        if (roads > maxRoadsNum) maxRoadsNum = roads;
+    }
+
+    return maxRoadsNum;
+}
+
+const std::unique_ptr<Cell>& Catan::getStart(const std::unique_ptr<Cell> &v, int x, int y) {
+    if (y - 2 < 0 || cell(x, y - 1) == nullptr || cell(x, y - 1)->marked ||
+        cell(x, y - 1)->getPlayer() != cur_player || cell(x, y - 2) == nullptr ||
+        (cell(x, y - 2)->getPlayer() != cur_player && cell(x, y - 2)->getPlayer() != PlayerNum::NONE)) {
+        return v;
+    }
+
+    return getStart(cell(x, y - 2), x, y - 2);
+}
+
+void Catan::clearMarks() {
+    for (int x = 0; x < FIELDHEIGHT; x++) {
+        for (int y = 0; y < FIELDWIDTH; y++) {
+            if (cell(x, y) != nullptr) {
+                cell(x, y)->marked = false;
             }
         }
-
-        clearMarks();
     }
+}
+
+void Catan::updateRoadsRecord() {
+    int maybeRecord;
+
+    for (int vx = 0; vx < FIELDHEIGHT; vx += 2) {
+        for (int vy = 0; vy < FIELDWIDTH; vy += 2) {
+            if (cell(vx, vy) == nullptr || cell(vx, vy)->marked ||
+                cell(vx, vy)->getPlayer() != cur_player) continue;
+            maybeRecord = findRoadsRecord(getStart(cell(vx, vy), vx, vy));
+            if (maybeRecord > roads_record) {
+                setRoadsRecord(maybeRecord);
+            }
+        }
+    }
+
+    clearMarks();
 }
 
 void Catan::setRobbers(int hex_num) {
@@ -461,43 +528,6 @@ bool Catan::trade(Resource re_for_trade, Resource need_re) {
     players[cur_player]->getResource(re_for_trade, 4);
     players[cur_player]->giveResource(need_re, 1);
     return true;
-}
-
-void Catan::updateRoadsRecord(const std::unique_ptr<Cell>& v, int roadsCount) {
-    if (v == nullptr || v->marked) return;
-    if (v->getPlayer() != cur_player && v->getPlayer() != PlayerNum::NONE) return;
-
-    v->marked = true;
-    int numR = v->getRoadsNum();
-    for (int i = 0; i < numR; i++) {
-        int rx = v->getRoad(i).first;
-        int ry = v->getRoad(i).second;
-
-        if (cell(rx, ry) == nullptr || cell(rx, ry)->marked || cell(rx, ry)->getPlayer() != cur_player) continue;
-        cell(rx, ry)->marked = true;
-        roadsCount++;
-        if (roadsCount > roads_record) {
-            setRoadsRecord(roadsCount);
-        }
-
-        int vx = cell(rx, ry)->getVertex(0).first;
-        int vy = cell(rx, ry)->getVertex(0).second;
-        updateRoadsRecord(cell(vx, vy), roadsCount);
-        vx = cell(rx, ry)->getVertex(1).first;
-        vy = cell(rx, ry)->getVertex(1).second;
-        updateRoadsRecord(cell(vx, vy), roadsCount);
-        roadsCount--;
-    }
-}
-
-void Catan::clearMarks() {
-    for (int x = 0; x < FIELDHEIGHT; x++) {
-        for (int y = 0; y < FIELDWIDTH; y++) {
-            if (cell(x, y) != nullptr) {
-                cell(x, y)->marked = false;
-            }
-        }
-    }
 }
 
 bool Catan::buildDevCard() {

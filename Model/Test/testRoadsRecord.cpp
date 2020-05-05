@@ -63,8 +63,8 @@ TEST(RoadsRecord, from_rules) {
     board.settle(BuildingType::ROAD, 6, 5);
     board.settle(BuildingType::ROAD, 6, 7);
 
-    //ASSERT_EQ(board.getRoadsRecordHolder(), PlayerNum::GAMER1);
-    //ASSERT_EQ(board.getRoadsRecord(), 5);
+    ASSERT_EQ(board.getRoadsRecordHolder(), PlayerNum::GAMER1);
+    ASSERT_EQ(board.getRoadsRecord(), 5);
 
     board.changeCurPlayer(PlayerNum::GAMER2);
     board.settle(BuildingType::VILLAGE, 6, 8);
@@ -76,6 +76,7 @@ TEST(RoadsRecord, from_rules) {
     board.settle(BuildingType::ROAD, 5, 12);
     board.settle(BuildingType::ROAD, 4, 13);
     board.settle(BuildingType::ROAD, 4, 15);
+    // board.settle(BuildingType::ROAD, 5, 16); так получаем цикл и ответ уже 8
     board.settle(BuildingType::ROAD, 4, 17);
 
     ASSERT_EQ(board.getRoadsRecordHolder(), PlayerNum::GAMER2);
@@ -96,7 +97,100 @@ TEST(RoadsRecord, branches) {
     ASSERT_EQ(board.getRoadsRecordHolder(), PlayerNum::NONE);
 }
 
-TEST(RoadsRecord, dynamic_begins) {
+TEST(RoadsRecord, fork) {
+    Catan board;
+
+    board.settle(BuildingType::VILLAGE, 2, 10);
+    board.settle(BuildingType::ROAD, 3, 10);
+    board.settle(BuildingType::ROAD, 4, 9);
+    board.settle(BuildingType::ROAD, 4, 7);
+    board.settle(BuildingType::ROAD, 4, 5);
+    board.settle(BuildingType::ROAD, 4, 11);
+    board.settle(BuildingType::ROAD, 4, 13);
+    board.settle(BuildingType::ROAD, 4, 15);
+
+    ASSERT_EQ(board.getRoadsRecordHolder(), PlayerNum::GAMER1);
+    ASSERT_EQ(board.getRoadsRecord(), 6);
+}
+
+TEST(RoadsRecord, cycle_level0) {
+    Catan board;
+    board.settle(BuildingType::VILLAGE, 6 ,8);
+    board.settle(BuildingType::ROAD, 6, 9);
+    board.settle(BuildingType::ROAD, 6, 7);
+    board.settle(BuildingType::ROAD, 7, 6);
+    board.settle(BuildingType::ROAD, 7, 10);
+    board.settle(BuildingType::ROAD, 8, 7);
+    board.settle(BuildingType::ROAD, 8, 9);
+
+    ASSERT_EQ(board.getRoadsRecordHolder(), PlayerNum::GAMER1);
+    ASSERT_EQ(board.getRoadsRecord(), 6);
+}
+
+TEST(RoadsRecord, cycle_level1) {
+    Catan board;
+
+    board.settle(BuildingType::VILLAGE, 6 ,4);
+    board.settle(BuildingType::ROAD, 6, 5);
+    board.settle(BuildingType::ROAD, 6, 7);
+    board.settle(BuildingType::ROAD, 6, 9);
+    board.settle(BuildingType::ROAD, 6, 11);
+    board.settle(BuildingType::ROAD, 7, 6);
+    board.settle(BuildingType::ROAD, 7, 10);
+    board.settle(BuildingType::ROAD, 8, 7);
+    board.settle(BuildingType::ROAD, 8, 9);
+
+    ASSERT_EQ(board.getRoadsRecordHolder(), PlayerNum::GAMER1);
+    ASSERT_EQ(board.getRoadsRecord(), 7);
+}
+
+TEST(RoadsRecord, cycle_level2) {
+    Catan board;
+
+    board.settle(BuildingType::VILLAGE, 6 ,8);
+    board.settle(BuildingType::ROAD, 6, 7);
+    board.settle(BuildingType::ROAD, 6, 9);
+    board.settle(BuildingType::ROAD, 6, 5);
+    board.settle(BuildingType::ROAD, 6, 11);
+    board.settle(BuildingType::ROAD, 7, 6);
+    board.settle(BuildingType::ROAD, 7, 10);
+    board.settle(BuildingType::ROAD, 8, 7);
+    board.settle(BuildingType::ROAD, 8, 9);
+
+    ASSERT_EQ(board.getRoadsRecordHolder(), PlayerNum::GAMER1);
+    ASSERT_EQ(board.getRoadsRecord(), 7);
+}
+
+TEST(RoadsRecord, cycle_level3_boss) {
+    Catan board;
+    board.settle(BuildingType::VILLAGE, 4 ,8);
+    board.settle(BuildingType::ROAD, 4, 7);
+    board.settle(BuildingType::ROAD, 4, 9);
+    board.settle(BuildingType::ROAD, 4, 5);
+    board.settle(BuildingType::ROAD, 4, 11);
+    board.settle(BuildingType::ROAD, 3, 6);
+    board.settle(BuildingType::ROAD, 3, 10);
+    board.settle(BuildingType::ROAD, 2, 7);
+    board.settle(BuildingType::ROAD, 2, 9);
+
+    board.settle(BuildingType::ROAD, 5, 8);
+    board.settle(BuildingType::ROAD, 5, 4);
+    board.settle(BuildingType::ROAD, 5, 12);
+
+    board.settle(BuildingType::ROAD, 6, 7);
+    board.settle(BuildingType::ROAD, 6, 9);
+    board.settle(BuildingType::ROAD, 6, 5);
+    board.settle(BuildingType::ROAD, 6, 11);
+    board.settle(BuildingType::ROAD, 7, 6);
+    board.settle(BuildingType::ROAD, 7, 10);
+    board.settle(BuildingType::ROAD, 8, 7);
+    board.settle(BuildingType::ROAD, 8, 9);
+
+    ASSERT_EQ(board.getRoadsRecordHolder(), PlayerNum::GAMER1);
+    ASSERT_EQ(board.getRoadsRecord(), 16);
+}
+
+TEST(RoadsRecord, dynamic) {
     Catan board;
 
     board.settle(BuildingType::VILLAGE, 0, 4);
@@ -115,6 +209,6 @@ TEST(RoadsRecord, dynamic_begins) {
     board.settle(BuildingType::ROAD, 4, 11);
     board.settle(BuildingType::ROAD, 4, 13);
 
-    //ASSERT_EQ(board.getRoadsRecordHolder(), PlayerNum::GAMER2);
-    //ASSERT_EQ(board.getRoadsRecord(), 6);
+    ASSERT_EQ(board.getRoadsRecordHolder(), PlayerNum::GAMER2);
+    ASSERT_EQ(board.getRoadsRecord(), 6);
 }
