@@ -48,7 +48,7 @@ namespace utility {
         }
 
         bool empty() {
-            return hasElement_.load();
+            return !hasElement_.load();
         }
 
 

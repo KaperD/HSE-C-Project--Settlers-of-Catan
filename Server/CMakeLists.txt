@@ -41,3 +41,4 @@ target_link_libraries(server
 )
 
 include_directories(../Utility)
+include_directories(Protos)
