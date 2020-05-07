@@ -33,6 +33,8 @@ public:
 
     ::game::Event GetEvent();
 
+    bool HasEvent();
+
 
 private:
     std::unique_ptr<::game::Network::Stub> stub_;

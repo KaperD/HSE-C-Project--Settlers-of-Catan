@@ -23,6 +23,7 @@ using ::game::EventType;
 //    }
 //}
 
+
 void GUI::load_textures() {
     for (int i = 0; i < 19; ++i) {
         field_arr[i] = rand()%6;
@@ -183,12 +184,23 @@ void GUI::make_render() {
 }
 
 void upgrade(GUI* g) {
+    constexpr int FPS = 60;
+    constexpr int frameDelay = 1000 / FPS;
+
+    uint32_t frameStart = 0;
+    int frameTime = 0;
+
     while (true) {
-//        std::cout << 3;
-        SDL_Delay(20);
+        frameStart = SDL_GetTicks();
+
         g->make_render();
         SDL_RenderPresent(g->ren);
         if (g->quit) return;
+
+        frameTime = static_cast<int>(SDL_GetTicks() - frameStart);
+        if (frameDelay > frameTime) {
+            SDL_Delay(frameDelay - frameTime);
+        }
     }
 }
 

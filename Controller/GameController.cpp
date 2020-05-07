@@ -4,6 +4,7 @@
 #include <ctime>
 #include <iostream>
 #include <thread>
+#include <chrono>
 
 #include "GameController.h"
 #include "random.h"
@@ -280,7 +281,6 @@ void GameController::RunGame() {
     while (!quit) {
         if (currentTurn_ == myTurn_) {
             while (true) {
-                // start() Засекается время начала
                 Event event = gameView_.getTurn();
                 int x = event.type();
                 std::cout << "gdsgs" << x << std::endl;
@@ -300,11 +300,14 @@ void GameController::RunGame() {
                 } else if (x == EventType::ENDTURN) {
                     break;
                 }
-                // update() // вывести текущее состояние
-                // delay() // подождать, если действия выполнелись слишком быстро
             }
         } else {
             while (true) {
+                if (!gameClient_.HasEvent()) {
+                    std::cout << "I'm sleeping" << std::endl;
+                    std::this_thread::sleep_for(std::chrono::seconds(1));
+                    continue;
+                }
                 Event event = gameClient_.GetEvent();
                 int x = event.type();
                 handlers_[x]->processEvent(event, false);

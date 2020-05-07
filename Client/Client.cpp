@@ -1,10 +1,9 @@
-#include <iostream>
-
 #include <grpc/grpc.h>
 #include <grpcpp/channel.h>
 #include <grpcpp/client_context.h>
 #include <grpcpp/create_channel.h>
 #include <grpcpp/security/credentials.h>
+#include <game.pb.h>
 #include "Client.h"
 #include "game.grpc.pb.h"
 
@@ -28,6 +27,7 @@ using game::Player;
 using game::Network;
 using game::NumberOfPlayers;
 using game::GameId;
+using game::Bool;
 
 
 GameClient::GameClient(const std::shared_ptr<Channel>& channel)
@@ -100,5 +100,17 @@ Event GameClient::GetEvent() {
     }
 
     return event;
+}
+
+bool GameClient::HasEvent() {
+    ClientContext context;
+    Bool hasEvent;
+
+    Status status = stub_->HasEvent(&context, player_, &hasEvent);
+    if (!status.ok()) {
+        throw NetworkException("Can't HasEvent");
+    }
+
+    return hasEvent.hasevent();
 }
 
