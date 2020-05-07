@@ -23,7 +23,6 @@ using ::game::EventType;
 //    }
 //}
 
-
 void GUI::load_textures() {
     for (int i = 0; i < 19; ++i) {
         field_arr[i] = rand()%6;
@@ -49,8 +48,8 @@ void GUI::load_textures() {
     house_cur = IMG_LoadTexture(ren, "image/house_cur.bmp");
     house1_cur = IMG_LoadTexture(ren, "image/house_cur.bmp");
     house2_cur = IMG_LoadTexture(ren, "image/house_cur.bmp");
-    house1 = IMG_LoadTexture(ren, "image/house1.bmp");
-    house2 = IMG_LoadTexture(ren, "image/house2.bmp");
+    house1 = IMG_LoadTexture(ren, "image/house.bmp");
+    house2 = IMG_LoadTexture(ren, "image/house.bmp");
 
     Vova = IMG_LoadTexture(ren, "image/road_green.bmp");
     Vova1 = IMG_LoadTexture(ren, "image/road1_green.bmp");
@@ -66,7 +65,7 @@ void GUI::load_textures() {
 //    sfx = Mix_LoadWAV("image/music.wav");
 //    button_sound = Mix_LoadWAV("image/button_sound.wav");
 //    build_sound = Mix_LoadWAV("image/build_sound.wav");
-//    if (sfx == nullptr)  std::cout << "HUY";
+//    if (sfx == nullptr)  std::cout << "Hhhh";
 }
 
 void GUI::destroy_textures() {
@@ -151,8 +150,9 @@ void GUI::render_roads() {
 void GUI::render_buildings() {
     std::lock_guard<std::mutex> lock(mu);
     for (auto e: buildings->vec) {
-        if (e.built)
+        if (e.built) {
             SDL_RenderCopy(ren, e.texture, nullptr, &e.dest);
+        }
     }
     if (render_type == 2) {
         int e = return_building(tmp_building.first, tmp_building.second);
@@ -286,7 +286,7 @@ void GUI::get_coors_building () {
                 int x,y;
                 x = e.motion.x;
                 y = e.motion.y;
-                tmp_house = std::make_pair(x, y);
+                tmp_building = std::make_pair(x, y);
             }
             if (e.type == SDL_MOUSEBUTTONDOWN) {
 //                Mix_PlayChannel(-1, button_sound, 0);
@@ -297,7 +297,7 @@ void GUI::get_coors_building () {
                     render_type = old_render_type;
                     return;
                 }
-                tmp_coors = return_road(x, y);
+                tmp_coors = return_building(x, y);
                 if (tmp_coors != -1) return;
             }
         }
@@ -337,7 +337,19 @@ Event GUI::getTurn () {
                     q->set_y(p.second);
                     return event;
                 }
-                if (x > 200 && x < 480 && y > 300 && y < 482) { // деревня
+                if (x > 200 && x < 480 && y > 300 && y < 482) { // derevnia
+                    get_coors_building();
+                    if (render_type == 0) continue;
+                    auto p = buildings->vec[tmp_coors].get_model_coors();
+                    Event event;
+                    event.set_type(EventType::BUILD);
+                    auto q = event.mutable_buildinfo();
+                    q->set_buildingtype(1);
+                    q->set_x(p.first);
+                    q->set_y(p.second);
+                    return event;
+                }
+                if (x > 200 && x < 480 && y > 500 && y < 700) { // деревня
                     Event event;
                     event.set_type(EventType::ENDTURN);
                     auto q = event.mutable_buildinfo();
@@ -456,23 +468,38 @@ GUI::~GUI() {
 }
 
 SDL_Texture *GUI::get_building(int i, int type) {
-    if (i == 0) return type ? house : house_cur;
-    if (i == 1) return type ? house1 : house1_cur;
-    if (i == 2) return type ? house2 : house2_cur;
+    if (i == 0) return !(type) ? house : house_cur;
+    if (i == 1) return !(type) ? house1 : house1_cur;
+    if (i == 2) return !(type) ? house2 : house2_cur;
 }
 
 void GUI::add_building(std::pair<int, int> tmp, int player) {
     std::lock_guard<std::mutex> lock(mu);
-    for (auto e:buildings->vec) {
+    for (auto& e:buildings->vec) {
         if (tmp.first == e.model_x && tmp.second == e.model_y) {
             e.built++;
-            e.texture = build_texture_arr[player];
-            e.cur_texture = cur_build_texture_arr[player];
+            //e.texture = build_texture_arr[player];
+            //e.cur_texture = cur_build_texture_arr[player];
             return;
         }
     }
 }
 
+
+
+// void GUI::add_road(std::pair<int, int> tmp, int player) {
+//     std::lock_guard<std::mutex> lock(mu);
+//     for (auto& e : roads->vec) {
+//         if (tmp.first == e.model_x && tmp.second == e.model_y) {
+//             e.built++;
+//             std::cout << player << std::endl;
+//             if (player != 0) {
+//                 e.texture = e.texture2;
+//             }
+//             return;
+//         }
+//     }
+// }
 
 Building_arr::Building_arr(GUI& gui) {
     SDL_Rect dest;
@@ -498,8 +525,10 @@ Building_arr::Building_arr(GUI& gui) {
             SDL_Texture *cur_texture = gui.get_building(0, 1);
             Obj tmp(X1 + j * DX / SCALE_X, Y1 + i * DY / SCALE_Y,
                     X2 + j * DX / SCALE_X, Y2 + i * DY / SCALE_Y,
-                    i * 2, 	j * 2 + 1,
+                   	(i + 1)/2,  j*2 , 
                     texture, nullptr, cur_texture, dest);
+            //tmp.built = true;
+            //std::cout << (i + 1)/2 << ' ' << j*2  << '\n';
             vec.push_back(tmp);
         }
     }
@@ -509,3 +538,4 @@ Building_arr::~Building_arr() = default;
 
 
 } // namespace GUI
+

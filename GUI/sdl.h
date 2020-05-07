@@ -103,7 +103,6 @@ public:
     Building_arr *buildings = nullptr;
     std::pair<int, int> tmp_road;
     //Mix_Chunk *sfx, *button_sound, *build_sound;
-    std::pair<int, int> tmp_house;
     std::pair<SDL_Texture*, int> cur_table;
     SDL_Texture *back, *back_ground, *road, *road1,
             *road2, *oct, *cur_road, *cur_road1,
