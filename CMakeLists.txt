@@ -30,7 +30,8 @@ grpc_generate_cpp(GRPC_SRCS GRPC_HDRS ${PROTO_SRC_DIR} ${PROTOS})
 # sudo apt-get install libsdl-dev
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
-include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
+find_package(SDL2_mixer REQUIRED)
+include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS} ${SDL2_MIXER_INCLUDE_DIRS})
 
 set(
     client
@@ -85,6 +86,7 @@ target_link_libraries(project
     ${EXECUTABLE_NAME}
     ${SDL2_IMAGE_LIBRARIES}
     ${SDL2_LIBRARIES}
+    ${SDL2_MIXER_LIBRARIES}
     gRPC::grpc++_reflection
     protobuf::libprotobuf
 )

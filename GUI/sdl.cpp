@@ -12,16 +12,16 @@ namespace GUI {
 using ::game::Event;
 using ::game::EventType;
 
-//void play_music(GUI* gui) {
-//    while (!gui->quit){
-//        std::cout << 1;
-//        Mix_PlayChannel(-1, gui->sfx, 0);
-//        for (int i = 0; i < 18000; ++i) {
-//            if (gui->quit) return;
-//            SDL_Delay(10);
-//        }
-//    }
-//}
+void play_music(GUI* gui) {
+    while (!gui->quit){
+        std::cout << "MUSIC" << std::endl;
+        Mix_PlayChannel(-1, gui->sfx, 0);
+        for (int i = 0; i < 18000; ++i) {
+            if (gui->quit) return;
+            SDL_Delay(1000);
+        }
+    }
+}
 
 void GUI::load_textures() {
     for (int i = 0; i < 19; ++i) {
@@ -61,11 +61,11 @@ void GUI::load_textures() {
     cur_build_texture_arr[1] = house1_cur;
     build_texture_arr[2] = house2;
     cur_build_texture_arr[2] = house2_cur;
-//    sfx = nullptr;
-//    sfx = Mix_LoadWAV("image/music.wav");
-//    button_sound = Mix_LoadWAV("image/button_sound.wav");
-//    build_sound = Mix_LoadWAV("image/build_sound.wav");
-//    if (sfx == nullptr)  std::cout << "Hhhh";
+    sfx = nullptr;
+    sfx = Mix_LoadWAV("image/music.wav");
+    button_sound = Mix_LoadWAV("image/button_sound.wav");
+    build_sound = Mix_LoadWAV("image/build_sound.wav");
+    if (sfx == nullptr)  std::cout << "Hhhh";
 }
 
 void GUI::destroy_textures() {
@@ -208,7 +208,7 @@ void upgrade(GUI* g) {
 GUI::GUI() {
     SDL_Init( SDL_INIT_EVERYTHING );
     SDL_Init(SDL_INIT_AUDIO);
-//    Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 4096);
+    Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 4096);
     SDL_GetDesktopDisplayMode(0,&displayMode);
     win = SDL_CreateWindow("Hello World!", 0, 0, displayMode.w, displayMode.h, SDL_WINDOW_SHOWN);
     ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);

@@ -6,7 +6,7 @@
 #define UNTITLED3_SDL_H
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-//#include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_mixer.h>
 #include <iostream>
 #include <random>
 #include <time.h>
@@ -19,7 +19,7 @@ namespace GUI {
 
 class GUI;
 void upgrade(GUI* g);
-
+void play_music(GUI* gui);
 
 
 enum Colour {
@@ -102,7 +102,7 @@ public:
     Road_arr *roads = nullptr;
     Building_arr *buildings = nullptr;
     std::pair<int, int> tmp_road;
-    //Mix_Chunk *sfx, *button_sound, *build_sound;
+    Mix_Chunk *sfx, *button_sound, *build_sound;
     std::pair<SDL_Texture*, int> cur_table;
     SDL_Texture *back, *back_ground, *road, *road1,
             *road2, *oct, *cur_road, *cur_road1,

@@ -31,12 +31,11 @@ int main() {
         return 0;
     }
     std::thread update(GUI::upgrade, &view);
-
-    //std::thread music(play_music, a);
+    std::thread music(GUI::play_music, &view);
 
     gc.RunGame();
 
-//    music.join();
+    music.join();
     update.join();
 
     return 0;
