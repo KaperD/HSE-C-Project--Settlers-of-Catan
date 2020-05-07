@@ -192,7 +192,7 @@ Road::Road(int x, int y, bool is_horizontal, bool is_even) : Cell(BuildingType::
 
 //================Hexagon==================
 
-Hexagon::Hexagon(int x, int y) : Cell(BuildingType::NONE) {
+Hexagon::Hexagon(int x, int y, int resource, int number) : Cell(BuildingType::NONE) {
     vertexes.emplace_back(x + 1, y + 2);
     vertexes.emplace_back(x + 1, y);
     vertexes.emplace_back(x + 1, y - 2);
@@ -200,11 +200,9 @@ Hexagon::Hexagon(int x, int y) : Cell(BuildingType::NONE) {
     vertexes.emplace_back(x - 1, y);
     vertexes.emplace_back(x - 1, y - 2);
 
-    int random_resource = utility::Random::getRandomNumberFromTo(1, TERRITORIESNUM);
-    re = static_cast<Resource>(random_resource);
-    robbers = false;
-    num = utility::Random::getRandomNumberFromTo(2, 12);
-    if (num == 7) num++;
+    re = static_cast<Resource>(resource);
+    num = number;
+    robbers = re == Resource::NONE;
 }
 
 void Hexagon::setRobbers() {
@@ -225,7 +223,7 @@ bool Hexagon::robbersIsHere() const {
 
 //=================Catan====================
 
-Catan::Catan() : field(FIELDHEIGHT), players(4) {
+Catan::Catan(utility::Random& ran) : field(FIELDHEIGHT), players(4), random(ran) {
 
     for (int i = 0; i < FIELDHEIGHT; i++) {
         for (int k = 0; k < FIELDWIDTH; k++) {
@@ -240,14 +238,21 @@ Catan::Catan() : field(FIELDHEIGHT), players(4) {
     players[PlayerNum::GAMER3] = std::make_unique<Player>(PlayerNum::GAMER4);
     cur_player = PlayerNum::GAMER1;
 
+    auto randomResouresAndNumbers = random.generateResourcesAndNumbers();
+    auto curResourseAndNumber = std::begin(randomResouresAndNumbers);
+
     for (int i = 1; i < 4; i += 2) {
         for (int j = 5 - i; j < 16 + i; j++) {
             if ((j + i - 1) % 4 == 0) {
                 cell(i, j) = std::make_unique<Road>(i, j, false, false);
                 cell(10 - i, j) = std::make_unique<Road>(10 - i, j, false, false);
             } else if (j % 2 == 0) {
-                hexes.push_back(std::make_unique<Hexagon>(i, j));
-                hexes.push_back(std::make_unique<Hexagon>(10 - i, j));
+                hexes.push_back(std::make_unique<Hexagon>(i, j, curResourseAndNumber->resource,
+                                                                curResourseAndNumber->number));
+                ++curResourseAndNumber;
+                hexes.push_back(std::make_unique<Hexagon>(10 - i, j, curResourseAndNumber->resource,
+                                                                     curResourseAndNumber->number));
+                ++curResourseAndNumber;
             }
         }
     }
@@ -270,13 +275,11 @@ Catan::Catan() : field(FIELDHEIGHT), players(4) {
         if (j % 4 == 0) {
             cell(5, j) = std::make_unique<Road>(5, j, false, false);
         } else if (j % 2 == 0) {
-            hexes.push_back(std::make_unique<Hexagon>(5, j));
+            hexes.push_back(std::make_unique<Hexagon>(5, j, curResourseAndNumber->resource,
+                                                            curResourseAndNumber->number));
+            ++curResourseAndNumber;
         }
     }
-
-    robbers_hex = utility::Random::getRandomNumberFromTo(1, TERRITORIESNUM);
-    hexes[robbers_hex]->setRobbers();
-
 }
 
 const std::unique_ptr<Cell>& Catan::getFieldCell(int x, int y) const {
@@ -536,7 +539,7 @@ bool Catan::buildDevCard() {
         getPlayerCardNum(Resource::WOOL) < 1) {
         return false;
     }
-    auto card = static_cast<DevelopmentCard>(utility::Random::getRandomNumberFromTo(1, 5));
+    auto card = static_cast<DevelopmentCard>(random.getRandomNumberFromTo(1, 5));
     players[cur_player]->giveDevCard(card);
     return true;
 }
@@ -556,8 +559,8 @@ void Catan::playDevCard(DevelopmentCard card, int extraData) {
         return;
     }
     if (card == DevelopmentCard::INVENTION) {
-        Resource re1 = static_cast<Resource>(utility::Random::getRandomNumberFromTo(1, TERRITORIESNUM));
-        Resource re2 = static_cast<Resource>(utility::Random::getRandomNumberFromTo(1, TERRITORIESNUM));
+        Resource re1 = static_cast<Resource>(random.getRandomNumberFromTo(1, TERRITORIESNUM));
+        Resource re2 = static_cast<Resource>(random.getRandomNumberFromTo(1, TERRITORIESNUM));
         players[cur_player]->giveResource(re1, 1);
         players[cur_player]->giveResource(re2, 1);
         return;

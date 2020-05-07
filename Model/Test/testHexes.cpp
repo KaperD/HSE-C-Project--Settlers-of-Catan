@@ -1,10 +1,13 @@
 #include "gtest/gtest.h"
 #include "../Board.h"
+#include "../Utility/random.h"
 
+using utility::Random;
 using namespace Board;
 
 TEST(CatanGraph, HexDesert) {
-    Catan board;
+    Random random;
+    Catan board(random);
     int desert_cnt = 0;
     for (int i = 0; i < HEXESNUM; i++) {
         if (board.getHex(i)->robbersIsHere()) {

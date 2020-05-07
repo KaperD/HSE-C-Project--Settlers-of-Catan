@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <memory>
+#include <random.h>
 
 namespace Board {
 
@@ -85,7 +86,7 @@ public:
 
 class Hexagon : public Cell {
 public:
-    Hexagon(int x, int y);
+    Hexagon(int x, int y, int resource, int number);
 
     void setRobbers();
     Resource getResource() const;
@@ -126,7 +127,7 @@ private:
 class Catan {
 public:
     //TODO: Gamers Number in constructor
-    Catan();
+    Catan(utility::Random& ran);
 
     void settle(BuildingType s, int x, int y);
     void giveResources(int cubes_num);
@@ -177,6 +178,8 @@ private:
     void updateRoadsRecord();
     const std::unique_ptr<Cell>& getStart(const std::unique_ptr<Cell>& v, int x, int y);
     void clearMarks();
+
+    utility::Random& random;
 };
 
 } // namespace Board

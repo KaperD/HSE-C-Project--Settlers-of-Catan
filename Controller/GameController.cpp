@@ -20,7 +20,6 @@ using game::Build;
 using game::Player;
 using game::Network;
 
-using utility::Random;
 
 
 namespace {
@@ -82,7 +81,7 @@ void DiceHandler::processEvent(Event& event, bool needSend) {
     number_ = diceInfo->number();
 
     if (number_== 0) {
-        number_ = Random::getRandomNumberFromTo(1, 6) + Random::getRandomNumberFromTo(1, 6);
+        number_ = random_.getRandomNumberFromTo(1, 6) + random_.getRandomNumberFromTo(1, 6);
         diceInfo->set_number(number_);
     }
 
@@ -109,6 +108,7 @@ void DiceHandler::displayEvent(Event& event) {
     Вывести изменения ресурсов и выпавшее число
     */
 }
+
 
 
 
@@ -253,7 +253,7 @@ void EndGameHandler::displayEvent(Event& event) {
 //===============GameController===============
 
 
-GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI& view)
+GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI& view, utility::Random& ran)
     : gameModel_(model)
     , gameView_(view) 
     , gameClient_(client) {
@@ -262,7 +262,7 @@ GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI
         handlers_.push_back(nullptr);
     }
     handlers_[0] = std::make_unique<CardHandler     >(gameModel_, gameView_, gameClient_);
-    handlers_[1] = std::make_unique<DiceHandler     >(gameModel_, gameView_, gameClient_);
+    handlers_[1] = std::make_unique<DiceHandler     >(gameModel_, gameView_, gameClient_, ran);
     handlers_[2] = std::make_unique<MarketHandler   >(gameModel_, gameView_, gameClient_);
     handlers_[3] = std::make_unique<BuildHandler    >(gameModel_, gameView_, gameClient_);
     handlers_[4] = std::make_unique<EndTurnHandler  >(gameModel_, gameView_, gameClient_);
