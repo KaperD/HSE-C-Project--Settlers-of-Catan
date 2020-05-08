@@ -22,7 +22,7 @@ private:
 
 class GameClient {
 public:
-    GameClient();
+    GameClient(bool isLocal);
     explicit GameClient(const std::shared_ptr<::grpc::Channel>& channel);
 
     game::OrderInfo StartNewGame(int numberOfPlayers);

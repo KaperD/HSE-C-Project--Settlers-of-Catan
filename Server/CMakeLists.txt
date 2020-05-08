@@ -36,11 +36,13 @@ add_executable(server
     ${spinlock}
 )
 target_link_libraries(server
-    /usr/local/lib/libgrpc++_unsecure.a
-    /usr/local/lib/libgrpc.a
-    /usr/local/lib/libgrpc++.a
-    /usr/local/lib/libprotobuf.a
-    /lib/x86_64-linux-gnu/libpthread.so.0
+    gRPC::grpc++_reflection
+    protobuf::libprotobuf
+#    /usr/local/lib/libgrpc++_unsecure.a
+#    /usr/local/lib/libgrpc.a
+#    /usr/local/lib/libgrpc++.a
+#    /usr/local/lib/libprotobuf.a
+#    /lib/x86_64-linux-gnu/libpthread.so.0
 )
 
 include_directories(../Utility)

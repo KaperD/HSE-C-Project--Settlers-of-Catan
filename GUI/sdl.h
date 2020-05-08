@@ -119,7 +119,6 @@ public:
     SDL_Renderer *ren;
     SDL_DisplayMode displayMode{};
     SDL_Window *win;
-    SDL_Texture *get_roadVova(int x, int type);
     void load_textures();
 
     int tmp_coors{};

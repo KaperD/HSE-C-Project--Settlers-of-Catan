@@ -1,7 +1,7 @@
 project(Catan)
 cmake_minimum_required(VERSION 3.2)
 
-add_compile_options(-std=c++17)
+set (CMAKE_CXX_STANDARD 17)
 
 # GRPC and Protocol Buffers libraries location
 list(APPEND CMAKE_PREFIX_PATH "/usr/local")
@@ -80,7 +80,7 @@ add_executable(project
     ${spinlock}
     ${random}
     ${gui}
-)
+        Network/LocalServer.h)
 
 target_link_libraries(project
     ${EXECUTABLE_NAME}
