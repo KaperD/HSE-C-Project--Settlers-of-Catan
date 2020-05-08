@@ -97,7 +97,9 @@ enum Rode {
 
 class GUI {
 public:
-    std::mutex mu {};
+    std::mutex mutex_for_roads {};
+    std::mutex mutex_for_buildings {};
+    std::mutex mutex_for_ren {};
 
     Road_arr *roads = nullptr;
     Building_arr *buildings = nullptr;

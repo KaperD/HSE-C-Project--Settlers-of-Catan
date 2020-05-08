@@ -87,6 +87,11 @@ target_link_libraries(project
     ${SDL2_IMAGE_LIBRARIES}
     ${SDL2_LIBRARIES}
     ${SDL2_MIXER_LIBRARIES}
+    # /usr/local/lib/libgrpc++_unsecure.a
+    # /usr/local/lib/libgrpc.a
+    # /usr/local/lib/libgrpc++.a
+    # /usr/local/lib/libprotobuf.a
+    # /lib/x86_64-linux-gnu/libpthread.so.0
     gRPC::grpc++_reflection
     protobuf::libprotobuf
 )

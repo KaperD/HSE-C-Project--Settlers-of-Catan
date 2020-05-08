@@ -9,6 +9,18 @@
 
 namespace GUI {
 
+namespace {
+
+class Limiter {
+public:
+
+private:
+};
+
+} // namespace
+
+
+
 using ::game::Event;
 using ::game::EventType;
 
@@ -51,9 +63,9 @@ void GUI::load_textures() {
     house1 = IMG_LoadTexture(ren, "image/house.bmp");
     house2 = IMG_LoadTexture(ren, "image/house.bmp");
 
-    Vova = IMG_LoadTexture(ren, "image/road_green.bmp");
-    Vova1 = IMG_LoadTexture(ren, "image/road1_green.bmp");
-    Vova2 = IMG_LoadTexture(ren, "image/road2_green.bmp");
+    Vova = IMG_LoadTexture(ren, "image/road_green.bmp"); // TODO: Назвать по-другому с помощью возможностей Clion
+    Vova1 = IMG_LoadTexture(ren, "image/road1_green.bmp"); // TODO: Назвать по-другому
+    Vova2 = IMG_LoadTexture(ren, "image/road2_green.bmp"); // TODO: Назвать по-другому
 
     build_texture_arr[0] = house;
     cur_build_texture_arr[0] = house_cur;
@@ -68,11 +80,11 @@ void GUI::load_textures() {
     if (sfx == nullptr)  std::cout << "Hhhh";
 }
 
-void GUI::destroy_textures() {
+void GUI::destroy_textures() { // TODO: Удалять всё, а не только часть
     for (auto & i : arr) {
         SDL_DestroyTexture(i);
     }
-//    Mix_CloseAudio();
+    Mix_CloseAudio();
     SDL_DestroyTexture(road);
     SDL_DestroyTexture(road1);
     SDL_DestroyTexture(road2);
@@ -81,18 +93,18 @@ void GUI::destroy_textures() {
 }
 
 void GUI::render_background() const {
-    SDL_Rect dest1;
+    static SDL_Rect dest1;
     dest1.x = 0;
     dest1.y = 0;
     dest1.w = displayMode.w;
     dest1.h = displayMode.h;
-    assert(ren != nullptr);
-    SDL_RenderCopy(ren,back_ground,nullptr,&dest1); //Копируем в рендер фон
-    SDL_RenderCopy(ren,back,nullptr,&dest1); //Копируем в рендер фон
+    assert(ren != nullptr); // TODO: гонка данных --- ren
+    SDL_RenderCopy(ren, back_ground, nullptr, &dest1); //Копируем в рендер фон // TODO: гонка данных --- ren
+    SDL_RenderCopy(ren, back, nullptr, &dest1); //Копируем в рендер фон // TODO: гонка данных --- ren
 }
 
 void GUI::render_tables() const {
-    SDL_Rect dest;
+    static SDL_Rect dest;
     dest.x = 200;
     dest.y = 98;
     dest.w = 480 - 200;
@@ -132,7 +144,7 @@ void GUI::render_field() {
 }
 
 void GUI::render_roads() {
-    std::lock_guard<std::mutex> lock(mu);
+    std::lock_guard<std::mutex> lock(mutex_for_roads);
     for (auto e: roads->vec) {
         if (e.built) {
             SDL_RenderCopy(ren, e.texture, nullptr, &e.dest);
@@ -148,7 +160,7 @@ void GUI::render_roads() {
 
 
 void GUI::render_buildings() {
-    std::lock_guard<std::mutex> lock(mu);
+    std::lock_guard<std::mutex> lock(mutex_for_roads);
     for (auto e: buildings->vec) {
         if (e.built) {
             SDL_RenderCopy(ren, e.texture, nullptr, &e.dest);
@@ -172,7 +184,7 @@ void GUI::render_tables_time() const {
 
 
 
-void GUI::make_render() {
+void GUI::make_render() { // TODO: гонка данных --- ren
     SDL_RenderClear(ren);
     render_background();
     render_field();
@@ -192,7 +204,7 @@ void upgrade(GUI* g) {
 
     while (true) {
         frameStart = SDL_GetTicks();
-
+        // TODO: сделать mutex и захватывать его с помощью std::lock_guard
         g->make_render();
         SDL_RenderPresent(g->ren);
         if (g->quit) return;
@@ -210,7 +222,7 @@ GUI::GUI() {
     SDL_Init(SDL_INIT_AUDIO);
     Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 4096);
     SDL_GetDesktopDisplayMode(0,&displayMode);
-    win = SDL_CreateWindow("Hello World!", 0, 0, displayMode.w, displayMode.h, SDL_WINDOW_SHOWN);
+    win = SDL_CreateWindow("Settlers of Catan", 0, 0, displayMode.w, displayMode.h, SDL_WINDOW_SHOWN);
     ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 }
 
@@ -222,7 +234,8 @@ void GUI::get_coors_road () {
     //SDL_Rect dest;
     SDL_Event e;
     clock_t begin_time = clock();
-    while (!quit) {
+    while (!quit) { // TODO: нужно ограничить частоту цикла, так как процессор очень сильно нагружается
+        // TODO: сделать класс у которого будут методы --- засечь начало и подождать, если действия выполнились очень быстро
         clock_t end_time = clock();
         if (end_time - begin_time > CLOCKS_PER_SEC * 30) {
             cur_table = std::make_pair(table_time, clock() + 5*CLOCKS_PER_SEC);
@@ -267,6 +280,7 @@ void GUI::get_coors_building () {
     SDL_Event e;
     clock_t begin_time = clock();
     while (!quit) {
+        // TODO: также нужно ограничить частоту цикла с помощью того же класса
         clock_t end_time = clock();
         if (end_time - begin_time > CLOCKS_PER_SEC * 30) {
             cur_table = std::make_pair(table_time, clock() + 5*CLOCKS_PER_SEC);
@@ -307,7 +321,7 @@ void GUI::get_coors_building () {
 Event GUI::getTurn () {
     SDL_Event e;
     render_type = 0;
-    while (!quit) {
+    while (!quit) { // TODO: также нужно ограничить частоту цикла с помощью того же класса
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) {
                 quit = true;
@@ -380,7 +394,7 @@ SDL_Texture *GUI::get_vert_road(int type) {
 }
 
 void GUI::add_road(std::pair<int, int> tmp, int player) {
-    std::lock_guard<std::mutex> lock(mu);
+    std::lock_guard<std::mutex> lock(mutex_for_roads);
     for (auto& e : roads->vec) {
         if (tmp.first == e.model_x && tmp.second == e.model_y) {
             e.built++;
@@ -474,7 +488,7 @@ SDL_Texture *GUI::get_building(int i, int type) {
 }
 
 void GUI::add_building(std::pair<int, int> tmp, int player) {
-    std::lock_guard<std::mutex> lock(mu);
+    std::lock_guard<std::mutex> lock(mutex_for_roads);
     for (auto& e:buildings->vec) {
         if (tmp.first == e.model_x && tmp.second == e.model_y) {
             e.built++;
@@ -488,7 +502,7 @@ void GUI::add_building(std::pair<int, int> tmp, int player) {
 
 
 // void GUI::add_road(std::pair<int, int> tmp, int player) {
-//     std::lock_guard<std::mutex> lock(mu);
+//     std::lock_guard<std::mutex> lock(mutex_for_roads);
 //     for (auto& e : roads->vec) {
 //         if (tmp.first == e.model_x && tmp.second == e.model_y) {
 //             e.built++;
