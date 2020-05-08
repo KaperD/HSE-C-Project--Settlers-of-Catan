@@ -13,8 +13,23 @@ namespace {
 
 class Limiter {
 public:
+    void storeStartTime() {
+        frameStart = SDL_GetTicks();
+    }
+
+    void delay() {
+        frameTime = static_cast<int>(SDL_GetTicks() - frameStart);
+        if (frameDelay > frameTime) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(frameDelay - frameTime));
+        }
+    }
 
 private:
+    const int FPS = 60;
+    const int frameDelay = 1000 / FPS;
+
+    uint32_t frameStart = 0;
+    int frameTime = 0;
 };
 
 } // namespace
@@ -211,7 +226,7 @@ void upgrade(GUI* g) {
 
         frameTime = static_cast<int>(SDL_GetTicks() - frameStart);
         if (frameDelay > frameTime) {
-            SDL_Delay(frameDelay - frameTime);
+            std::this_thread::sleep_for(std::chrono::milliseconds(frameDelay - frameTime));
         }
     }
 }
@@ -224,6 +239,7 @@ GUI::GUI() {
     SDL_GetDesktopDisplayMode(0,&displayMode);
     win = SDL_CreateWindow("Settlers of Catan", 0, 0, displayMode.w, displayMode.h, SDL_WINDOW_SHOWN);
     ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    //std::cout << "Sync " << SDL_GL_SetSwapInterval(1) << std::endl;
 }
 
 
@@ -234,8 +250,14 @@ void GUI::get_coors_road () {
     //SDL_Rect dest;
     SDL_Event e;
     clock_t begin_time = clock();
+
+    Limiter limit;
+
     while (!quit) { // TODO: нужно ограничить частоту цикла, так как процессор очень сильно нагружается
         // TODO: сделать класс у которого будут методы --- засечь начало и подождать, если действия выполнились очень быстро
+
+        limit.storeStartTime();
+
         clock_t end_time = clock();
         if (end_time - begin_time > CLOCKS_PER_SEC * 30) {
             cur_table = std::make_pair(table_time, clock() + 5*CLOCKS_PER_SEC);
@@ -269,6 +291,7 @@ void GUI::get_coors_road () {
                 if (tmp_coors != -1) return;
             }
         }
+        limit.delay();
     }
 }
 
@@ -279,8 +302,14 @@ void GUI::get_coors_building () {
     //SDL_Rect dest;
     SDL_Event e;
     clock_t begin_time = clock();
+
+    Limiter limit;
+
     while (!quit) {
         // TODO: также нужно ограничить частоту цикла с помощью того же класса
+
+        limit.storeStartTime();
+
         clock_t end_time = clock();
         if (end_time - begin_time > CLOCKS_PER_SEC * 30) {
             cur_table = std::make_pair(table_time, clock() + 5*CLOCKS_PER_SEC);
@@ -315,13 +344,21 @@ void GUI::get_coors_building () {
                 if (tmp_coors != -1) return;
             }
         }
+
+        limit.delay();
     }
 }
 
 Event GUI::getTurn () {
     SDL_Event e;
     render_type = 0;
+
+    Limiter limit;
+
     while (!quit) { // TODO: также нужно ограничить частоту цикла с помощью того же класса
+
+        limit.storeStartTime();
+
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) {
                 quit = true;
@@ -371,6 +408,9 @@ Event GUI::getTurn () {
                 }
             }
         }
+
+        limit.delay();
+
     }
     Event event;
     event.set_type(EventType::ENDGAME);
