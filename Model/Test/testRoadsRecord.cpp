@@ -7,7 +7,7 @@ using namespace Board;
 
 TEST(RoadsRecord, simple_case) {
     Random random;
-    Catan board(random);
+    Catan board(random, 2);
     board.settle(BuildingType::VILLAGE, 0, 4);
     board.settle(BuildingType::ROAD, 1, 4);
     board.settle(BuildingType::ROAD, 2, 5);
@@ -20,7 +20,7 @@ TEST(RoadsRecord, simple_case) {
 
 TEST(RoadsRecord, record_race) {
     Random random;
-    Catan board(random);
+    Catan board(random, 2);
     board.settle(BuildingType::VILLAGE, 0, 4);
     board.settle(BuildingType::ROAD, 1, 4);
     board.settle(BuildingType::ROAD, 2, 5);
@@ -43,7 +43,7 @@ TEST(RoadsRecord, record_race) {
 
 TEST(RoadsRecord, enemy_village) {
     Random random;
-    Catan board(random);
+    Catan board(random, 2);
     board.settle(BuildingType::VILLAGE, 4, 2);
     board.settle(BuildingType::ROAD, 4, 3);
     board.settle(BuildingType::ROAD, 4, 5);
@@ -61,7 +61,7 @@ TEST(RoadsRecord, enemy_village) {
 
 TEST(RoadsRecord, from_rules) {
     Random random;
-    Catan board(random);
+    Catan board(random, 2);
     board.settle(BuildingType::VILLAGE, 4, 2);
     board.settle(BuildingType::ROAD, 4, 1);
     board.settle(BuildingType::ROAD, 4, 3);
@@ -91,7 +91,7 @@ TEST(RoadsRecord, from_rules) {
 
 TEST(RoadsRecord, branches) {
     Random random;
-    Catan board(random);
+    Catan board(random, 2);
 
     board.settle(BuildingType::VILLAGE, 4, 10);
     board.settle(BuildingType::ROAD, 4, 9);
@@ -106,7 +106,7 @@ TEST(RoadsRecord, branches) {
 
 TEST(RoadsRecord, fork) {
     Random random;
-    Catan board(random);
+    Catan board(random, 2);
 
     board.settle(BuildingType::VILLAGE, 2, 10);
     board.settle(BuildingType::ROAD, 3, 10);
@@ -123,7 +123,7 @@ TEST(RoadsRecord, fork) {
 
 TEST(RoadsRecord, cycle_level0) {
     Random random;
-    Catan board(random);
+    Catan board(random, 2);
     board.settle(BuildingType::VILLAGE, 6 ,8);
     board.settle(BuildingType::ROAD, 6, 9);
     board.settle(BuildingType::ROAD, 6, 7);
@@ -138,7 +138,7 @@ TEST(RoadsRecord, cycle_level0) {
 
 TEST(RoadsRecord, cycle_level1) {
     Random random;
-    Catan board(random);
+    Catan board(random, 2);
 
     board.settle(BuildingType::VILLAGE, 6 ,4);
     board.settle(BuildingType::ROAD, 6, 5);
@@ -156,7 +156,7 @@ TEST(RoadsRecord, cycle_level1) {
 
 TEST(RoadsRecord, cycle_level2) {
     Random random;
-    Catan board(random);
+    Catan board(random, 2);
 
     board.settle(BuildingType::VILLAGE, 6 ,8);
     board.settle(BuildingType::ROAD, 6, 7);
@@ -174,7 +174,7 @@ TEST(RoadsRecord, cycle_level2) {
 
 TEST(RoadsRecord, cycle_level3_boss) {
     Random random;
-    Catan board(random);
+    Catan board(random, 2);
     board.settle(BuildingType::VILLAGE, 4 ,8);
     board.settle(BuildingType::ROAD, 4, 7);
     board.settle(BuildingType::ROAD, 4, 9);
@@ -204,7 +204,7 @@ TEST(RoadsRecord, cycle_level3_boss) {
 
 TEST(RoadsRecord, dynamic) {
     Random random;
-    Catan board(random);
+    Catan board(random, 2);
 
     board.settle(BuildingType::VILLAGE, 0, 4);
     board.settle(BuildingType::ROAD, 1, 4);
