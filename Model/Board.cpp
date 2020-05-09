@@ -392,14 +392,15 @@ void Catan::settle(BuildingType s, int x, int y) {
         players[cur_player]->getResource(Resource::WOOL, 1);
         players[cur_player]->getResource(Resource::WHEAT, 1);
         cell(x, y)->setPlayer(cur_player);
+        players[cur_player]->giveVictoryPoints(1);
     } else if (s == BuildingType::CITY) {
         players[cur_player]->getResource(Resource::ORE, 3);
         players[cur_player]->getResource(Resource::WHEAT, 2);
         cell(x, y)->setBuildingType(BuildingType::CITY);
+        players[cur_player]->giveVictoryPoints(2);
     } else {
         players[cur_player]->getResource(Resource::TREE, 1);
         players[cur_player]->getResource(Resource::CLAY, 1);
-
         cell(x, y)->setPlayer(cur_player);
 
         updateRoadsRecord();
