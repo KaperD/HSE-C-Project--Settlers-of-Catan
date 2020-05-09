@@ -663,9 +663,10 @@ void Catan::setKnightRecord(int new_record) {
 }
 
 bool Catan::isFinished() {
-    return players[PlayerNum::GAMER1]->getVictoryPoints() == 10 ||
-           players[PlayerNum::GAMER2]->getVictoryPoints() == 10 ||
-           players[PlayerNum::GAMER3]->getVictoryPoints() == 10;
+    for(int i = 1; i <= gamersNum; i++) {
+        if (players[playersIDs[i]]->getVictoryPoints() >= 10) return true;
+    }
+    return false;
 }
 
 }
