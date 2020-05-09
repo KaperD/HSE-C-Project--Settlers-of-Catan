@@ -1,37 +1,81 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-//#include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_mixer.h>
 #include <iostream>
 #include <thread>
 #include <ctime>
 #include <cassert>
+#include <random.h>
 #include "sdl.h"
 
 namespace GUI {
 
+namespace {
+
+class Limiter {
+public:
+    void storeStartTime() {
+        frameStart = SDL_GetTicks();
+    }
+
+    void delay() {
+        frameTime = static_cast<int>(SDL_GetTicks() - frameStart);
+        if (frameDelay > frameTime) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(frameDelay - frameTime));
+        }
+    }
+
+private:
+    const int FPS = 60;
+    const int frameDelay = 1000 / FPS;
+
+    uint32_t frameStart = 0;
+    int frameTime = 0;
+};
+
+} // namespace
+
+
+
 using ::game::Event;
 using ::game::EventType;
 
-//void play_music(GUI* gui) {
-//    while (!gui->quit){
-//        std::cout << 1;
-//        Mix_PlayChannel(-1, gui->sfx, 0);
-//        for (int i = 0; i < 18000; ++i) {
-//            if (gui->quit) return;
-//            SDL_Delay(10);
-//        }
-//    }
-//}
+void play_music(GUI* gui) {
+    while (!gui->quit){
+        std::cout << "MUSIC" << std::endl;
+        Mix_PlayChannel(-1, gui->sfx, 0);
+        for (int i = 0; i < 18000; ++i) {
+            if (gui->quit) return;
+            SDL_Delay(1000);
+        }
+    }
+}
 
-void GUI::load_textures() {
-    for (int i = 0; i < 19; ++i) {
-        field_arr[i] = rand()%6;
-    }
+void GUI::load_textures(utility::Random& random) {
+    auto randomResouresAndNumbers = random.generateResourcesAndNumbers();
     std::string s = "image/oct .bmp";
-    for (int i = 0; i < 6; ++i) {
-        s[9] = i + '0';
-        arr[i] = IMG_LoadTexture(ren, s.c_str());
+
+    for (int i = 0; i < 19; ++i) {
+        int resource = randomResouresAndNumbers[i].resource;
+        int number = randomResouresAndNumbers[i].number;
+        s[9] = resource + '0'; // TODO: Числа в названиях файлов должны соответствовать enum в модели
+
+
+        SDL_Surface* numberImg = IMG_Load("image/number2.bmp"); // TODO: Вместо 2 нужно ставить число number, кроме случая, когда число 0, в этом случае не нужно изображение чилса
+
+        SDL_Surface* hex = IMG_Load(s.c_str());
+        SDL_Rect dest;
+        dest.x = numberImg->w / 3 + 36;
+        dest.y = numberImg->h / 3 + 78;
+        dest.w = static_cast<int>(static_cast<double>(numberImg->w) * 0.5);
+        dest.h = static_cast<int>(static_cast<double>(numberImg->h) * 0.5);
+        if (SDL_BlitScaled(numberImg, NULL, hex, &dest) != 0) {
+            std::cout << "Wrong Blit" << std::endl;
+        }
+        field_arr[i] = SDL_CreateTextureFromSurface(ren, hex);
+        SDL_FreeSurface(hex);
     }
+
     back_ground = IMG_LoadTexture(ren, "image/back_ground.bmp");
     back = IMG_LoadTexture(ren, "image/back.bmp");
     
@@ -43,7 +87,6 @@ void GUI::load_textures() {
     table_1 = IMG_LoadTexture(ren, "image/table_1.bmp");
     table_2 = IMG_LoadTexture(ren, "image/table_1.bmp");
     table_time = IMG_LoadTexture(ren, "image/table_time.bmp");
-
     (cur_texture_arr_building).push_back(IMG_LoadTexture(ren, "image/cur_house.bmp"));
     (cur_texture_arr_building).push_back(IMG_LoadTexture(ren, "image/cur_house1.bmp"));
    
@@ -82,11 +125,11 @@ void GUI::load_textures() {
 //    if (sfx == nullptr)  std::cout << "Hhhh";
 }
 
-void GUI::destroy_textures() {
-    for (auto & i : arr) {
+void GUI::destroy_textures() { // TODO: Удалять всё, а не только часть
+    for (auto & i : field_arr) {
         SDL_DestroyTexture(i);
     }
-//    Mix_CloseAudio();
+    Mix_CloseAudio();
     SDL_DestroyTexture(back_ground);
     SDL_DestroyTexture(back);
 }
@@ -97,9 +140,9 @@ void GUI::render_background() const {
     dest1.y = 0;
     dest1.w = displayMode.w;
     dest1.h = displayMode.h;
-    assert(ren != nullptr);
-    SDL_RenderCopy(ren,back_ground,nullptr,&dest1); //Копируем в рендер фон
-    SDL_RenderCopy(ren,back,nullptr,&dest1); //Копируем в рендер фон
+    assert(ren != nullptr); // TODO: гонка данных --- ren
+    SDL_RenderCopy(ren, back_ground, nullptr, &dest1); //Копируем в рендер фон // TODO: гонка данных --- ren
+    SDL_RenderCopy(ren, back, nullptr, &dest1); //Копируем в рендер фон // TODO: гонка данных --- ren
 }
 
 void GUI::render_tables() const {
@@ -133,7 +176,7 @@ void GUI::render_field() {
         dest.y += 150;
         for (int q = 0; q < k; ++q){
             dest.x += 100*sqrt(3);
-            SDL_RenderCopy(ren, arr[field_arr[it++]], nullptr, &dest); //Копируем в рендер персонажа
+            SDL_RenderCopy(ren, field_arr[it++], nullptr, &dest); //Копируем в рендер персонажа
         }
         dest.x-= 100*sqrt(3)*k;
         if (i < 2) {k+=1;dest.x-= 50*sqrt(3);}
@@ -143,7 +186,7 @@ void GUI::render_field() {
 }
 
 void GUI::render_roads() {
-    std::lock_guard<std::mutex> lock(mu);
+    std::lock_guard<std::mutex> lock(mutex_for_roads);
     for (auto e: roads->vec) {
         if (e.built) {
             SDL_RenderCopy(ren, texture_arr_road[e.type][e.colour], nullptr, &e.dest);
@@ -159,9 +202,10 @@ void GUI::render_roads() {
 
 
 void GUI::render_buildings() {
-    std::lock_guard<std::mutex> lock(mu);
+    std::lock_guard<std::mutex> lock(mutex_for_roads);
     for (auto e: buildings->vec) {
         if (e.built) {
+
             SDL_RenderCopy(ren, texture_arr_building[e.built][e.colour], nullptr, &e.dest);
         }
     }
@@ -183,7 +227,7 @@ void GUI::render_tables_time() const {
 
 
 
-void GUI::make_render() {
+void GUI::make_render() { // TODO: гонка данных --- ren
     SDL_RenderClear(ren);
     render_background();
     render_field();
@@ -195,12 +239,23 @@ void GUI::make_render() {
 }
 
 void upgrade(GUI* g) {
+    constexpr int FPS = 60;
+    constexpr int frameDelay = 1000 / FPS;
+
+    uint32_t frameStart = 0;
+    int frameTime = 0;
+
     while (true) {
-//        std::cout << 3;
-        SDL_Delay(20);
+        frameStart = SDL_GetTicks();
+        // TODO: сделать mutex и захватывать его с помощью std::lock_guard
         g->make_render();
         SDL_RenderPresent(g->ren);
         if (g->quit) return;
+
+        frameTime = static_cast<int>(SDL_GetTicks() - frameStart);
+        if (frameDelay > frameTime) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(frameDelay - frameTime));
+        }
     }
 }
 
@@ -208,21 +263,28 @@ void upgrade(GUI* g) {
 GUI::GUI() {
     SDL_Init( SDL_INIT_EVERYTHING );
     SDL_Init(SDL_INIT_AUDIO);
-//    Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 4096);
+    Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 4096);
     SDL_GetDesktopDisplayMode(0,&displayMode);
-    win = SDL_CreateWindow("Hello World!", 0, 0, displayMode.w, displayMode.h, SDL_WINDOW_SHOWN);
+    win = SDL_CreateWindow("Settlers of Catan", 0, 0, displayMode.w, displayMode.h, SDL_WINDOW_SHOWN);
     ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    //std::cout << "Sync " << SDL_GL_SetSwapInterval(1) << std::endl;
 }
 
 
 void GUI::get_coors_road () {
-//    Mix_PlayChannel(-1, build_sound, 0);
+    Mix_PlayChannel(-1, build_sound, 0);
     int old_render_type = render_type;
     render_type = 1;
     //SDL_Rect dest;
     SDL_Event e;
     clock_t begin_time = clock();
+
+    Limiter limit;
+
     while (!quit) {
+
+        limit.storeStartTime(); // засекает начало итерации
+
         clock_t end_time = clock();
         if (end_time - begin_time > CLOCKS_PER_SEC * 30) {
             cur_table = std::make_pair(table_time, clock() + 5*CLOCKS_PER_SEC);
@@ -244,7 +306,7 @@ void GUI::get_coors_road () {
                 tmp_road = std::make_pair(x, y);
             }
             if (e.type == SDL_MOUSEBUTTONDOWN) {
-//                Mix_PlayChannel(-1, button_sound, 0);
+                Mix_PlayChannel(-1, button_sound, 0);
                 int x, y;
                 SDL_GetMouseState(&x, &y); // Получить координаты мыши
                 if (x > 200 && x < 480 && y > 98 && y < 280) {
@@ -256,17 +318,26 @@ void GUI::get_coors_road () {
                 if (tmp_coors != -1) return;
             }
         }
+
+        limit.delay(); // Ждет, если операции выполнились слишком быстро
+
     }
 }
 
 void GUI::get_coors_building () {
-//    Mix_PlayChannel(-1, build_sound, 0);
+    Mix_PlayChannel(-1, build_sound, 0);
     int old_render_type = render_type;
     render_type = 2;
     //SDL_Rect dest;
     SDL_Event e;
     clock_t begin_time = clock();
+
+    Limiter limit;
+
     while (!quit) {
+
+        limit.storeStartTime();
+
         clock_t end_time = clock();
         if (end_time - begin_time > CLOCKS_PER_SEC * 30) {
             cur_table = std::make_pair(table_time, clock() + 5*CLOCKS_PER_SEC);
@@ -289,7 +360,7 @@ void GUI::get_coors_building () {
                 tmp_building = std::make_pair(x, y);
             }
             if (e.type == SDL_MOUSEBUTTONDOWN) {
-//                Mix_PlayChannel(-1, button_sound, 0);
+                Mix_PlayChannel(-1, button_sound, 0);
                 int x, y;
                 SDL_GetMouseState(&x, &y); // Получить координаты мыши
                 std::cout << "GGGG" << '\n';
@@ -301,13 +372,22 @@ void GUI::get_coors_building () {
                 if (tmp_coors != -1) return;
             }
         }
+
+        limit.delay();
+
     }
 }
 
 Event GUI::getTurn () {
     SDL_Event e;
     render_type = 0;
+
+    Limiter limit;
+
     while (!quit) {
+
+        limit.storeStartTime();
+
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) {
                 quit = true;
@@ -322,7 +402,7 @@ Event GUI::getTurn () {
                 return event;
             }
             if (e.type == SDL_MOUSEBUTTONDOWN) {
-//                Mix_PlayChannel(-1, button_sound, 0);
+                Mix_PlayChannel(-1, button_sound, 0);
                 int x, y;
                 SDL_GetMouseState(&x, &y);
                 if (x > 200 && x < 480 && y > 98 && y < 280) { // дорога
@@ -357,6 +437,9 @@ Event GUI::getTurn () {
                 }
             }
         }
+
+        limit.delay();
+
     }
     Event event;
     event.set_type(EventType::ENDGAME);
@@ -372,10 +455,13 @@ std::pair<int, int> Obj::get_model_coors() {
 }
 
 void GUI::add_road(std::pair<int, int> tmp, int player) {
-    std::lock_guard<std::mutex> lock(mu);
+    std::lock_guard<std::mutex> lock(mutex_for_roads);
     for (auto& e : roads->vec) {
         if (tmp.first == e.model_x && tmp.second == e.model_y) {
             e.built++;
+            // TODO: непонятно, зачем ++, можно сделать bool
+            // TODO: добавить дорогам метод, который принимает номер игрока и ставит для себя нужную текстуру, или же делать это здесь
+            // TODO: можно сделать, чтобы для уже построеных дорог cur_texture был пустым, чтобы они не подсвечивались при наведении
             e.colour = (Colour)player;
             return;
         }
@@ -448,10 +534,15 @@ GUI::~GUI() {
 }
 
 void GUI::add_building(std::pair<int, int> tmp, int player) {
-    std::lock_guard<std::mutex> lock(mu);
+    std::lock_guard<std::mutex> lock(mutex_for_roads);
     for (auto& e:buildings->vec) {
         if (tmp.first == e.model_x && tmp.second == e.model_y) {
             e.built++;
+            // TODO: непонятно, зачем ++, можно сделать bool
+            // TODO: добавить зданиям метод, который принимает номер игрока и ставит для себя нужную текстуру, или же делать это здесь
+            //e.texture = build_texture_arr[player];
+            //e.cur_texture = cur_build_texture_arr[player];
+            // TODO: можно сделать, чтобы для уже построеных зданий cur_texture был пустым, чтобы они не подсвечивались при наведении
             e.colour = (Colour)player;
             if (e.built > 1) e.built = 1;
             return;
@@ -462,7 +553,7 @@ void GUI::add_building(std::pair<int, int> tmp, int player) {
 
 
 // void GUI::add_road(std::pair<int, int> tmp, int player) {
-//     std::lock_guard<std::mutex> lock(mu);
+//     std::lock_guard<std::mutex> lock(mutex_for_roads);
 //     for (auto& e : roads->vec) {
 //         if (tmp.first == e.model_x && tmp.second == e.model_y) {
 //             e.built++;
@@ -474,7 +565,6 @@ void GUI::add_building(std::pair<int, int> tmp, int player) {
 //         }
 //     }
 // }
-
 
 Building_arr::Building_arr(GUI& gui) {
     SDL_Rect dest;

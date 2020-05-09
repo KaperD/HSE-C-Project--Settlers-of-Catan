@@ -1,34 +1,17 @@
 #include <iostream>
+#include <unordered_map>
 
 #include "gtest/gtest.h"
 #include "../Board.h"
+#include "../Utility/random.h"
 
+using utility::Random;
 using namespace Board;
 
-TEST(HexagonNum, GetRandomNum) {
-    Hexagon hex(1, 6);
-    ASSERT_EQ(hex.robbersIsHere(), false);
-}
-
-TEST(HexagonNum, GetRandomNum2) {
-    Hexagon hex(1, 6);
-    hex.setRobbers();
-    ASSERT_EQ(hex.robbersIsHere(), true);
-}
-
-TEST(CatanGraph, HexDesert) {
-    Catan board;
-    int desert_cnt = 0;
-    for (int i = 0; i < HEXESNUM; i++) {
-        if (board.getHex(i)->robbersIsHere()) {
-            desert_cnt++;
-        }
-    }
-    ASSERT_EQ(desert_cnt, 1);
-}
 
 TEST(CatanGraph, ShowGraph) {
-    Catan board;
+    Random random;
+    Catan board(random, 4);
     for (int i = 0; i < FIELDHEIGHT; i ++) {
         for (int j = 0; j < FIELDWIDTH; j ++) {
             if (board.getFieldCell(i, j) != nullptr) {
@@ -75,6 +58,17 @@ TEST(CatanGraph, ShowGraph) {
         }
     }
 
+    std::cout << "\nCheck Hexes Vertices\n";
+    for (int i = 0; i < HEXESNUM; i++) {
+        std::cout << i << ": ";
+        int lenV = board.getHex(i)->getVertexNum();
+        for (int v = 0; v < lenV; v++) {
+            std::cout << '(' << board.getHex(i)->getVertex(v).first << ", ";
+            std::cout << board.getHex(i)->getVertex(v).second << ") ";
+        }
+        std::cout << '\n';
+    }
+
     std::cout << '\n';
     std::cout << "Check Hexes Resources\n";
     for (int i = 0; i < HEXESNUM; i++) {
@@ -90,5 +84,3 @@ TEST(CatanGraph, ShowGraph) {
         std::cout << board.getHex(i)->getNum() << ' ';
     }
 }
-
-

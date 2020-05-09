@@ -10,9 +10,15 @@ service Network {
     rpc SendEvent(Event) returns (Void) {}
 
     rpc GetEvent(Player) returns (Event) {}
+
+    rpc HasEvent(Player) returns (Bool) {}
 }
 
 message Void {}
+
+message Bool {
+    bool hasEvent = 1;
+}
 
 message NumberOfPlayers {
     int32 numberOfPlayers = 1;
