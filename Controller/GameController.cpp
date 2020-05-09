@@ -240,9 +240,7 @@ void EndGameHandler::processEvent(Event& event, bool needSend) {
     if (event.type() != EventType::ENDGAME) {
         throw std::logic_error("Wrong type");
     }
-    if (needSend) {
-        sendEvent(event);
-    }
+    sendEvent(event);
 }
 
 void EndGameHandler::displayEvent(Event& event) {
@@ -380,3 +378,4 @@ void GameController::BeginGame() {
 
 
 } // namespace Controller
+

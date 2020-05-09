@@ -1,6 +1,5 @@
 #include <ctime>
 #include <memory>
-
 #include "Board.h"
 #include "random.h"
 

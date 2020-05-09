@@ -23,36 +23,29 @@ void play_music(GUI* gui);
 
 
 enum Colour {
-    BLACK,
-    WHITE,
+    YELLOW,
     BLUE,
     RED,
-    PINK,
-    ORANGE,
-    GREEN
+    GREEN,
+    NONE
 };
 
 class Obj {
 public:
     Obj(double x1, double y1, double x2,
-        double y2, int x, int y, SDL_Texture *_texture, SDL_Texture * texture2_,
-        SDL_Texture *_cur_texture, SDL_Rect _dest):
+        double y2, int x, int y, Colour _colour, SDL_Rect _dest, int _type):
             gui_x1(x1), gui_x2(x2), gui_y1(y1),
             gui_y2(y2), model_x(x), model_y(y),
-            texture(_texture), texture2(texture2_), cur_texture(_cur_texture),
-            dest(_dest){};
+            colour(_colour), dest(_dest), type(_type){};
 
     double gui_x1, gui_y1, gui_x2, gui_y2;
     int model_x, model_y;
-
-    SDL_Texture *texture;
-    SDL_Texture *texture2;
-    SDL_Texture *cur_texture;
 
     SDL_Rect dest;
 
     int built = 0;
     Colour colour;
+    int type = 0;
 
     bool is(int x, int y) const;
     std::pair<int, int> get_model_coors();
@@ -104,15 +97,22 @@ public:
     Road_arr *roads = nullptr;
     Building_arr *buildings = nullptr;
     std::pair<int, int> tmp_road;
+
     Mix_Chunk *sfx, *button_sound, *build_sound;
     std::pair<SDL_Texture*, int> cur_table;
-    SDL_Texture *back, *back_ground, *road, *road1,
-            *road2, *oct, *cur_road, *cur_road1,
+    SDL_Texture *back, *back_ground, *oct, *cur_road, *cur_road1,
             *cur_road2, *table, *table_1, *table_2,
-            *table_time, *house, *house1, *house2,
-            *house_cur, *house1_cur, *house2_cur, *Vova, *Vova1, *Vova2;
+            *table_time, *house_cur, *house1_cur;
+    SDL_Texture* arr[6];
     SDL_Texture* build_texture_arr[3];
     SDL_Texture* cur_build_texture_arr[3];
+
+    std::vector<SDL_Texture *> texture_arr_building[2];
+    std::vector<SDL_Texture *> cur_texture_arr_building;
+
+    std::vector<SDL_Texture *> texture_arr_road[3];
+    std::vector<SDL_Texture *> cur_texture_arr_road;
+
     bool quit = false;
     SDL_Texture* field_arr[19]{};
     int tmp_sound = 0;

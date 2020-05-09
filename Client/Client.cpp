@@ -36,6 +36,7 @@ GameClient::GameClient(const std::shared_ptr<Channel>& channel)
 
 //35.193.120.72:80
 
+
 GameClient::GameClient(bool isLocal) : player_() {
     if (isLocal) {
         stub_ = Network::NewStub(grpc::CreateChannel("localhost:50051",
@@ -44,7 +45,6 @@ GameClient::GameClient(bool isLocal) : player_() {
         stub_ = Network::NewStub(grpc::CreateChannel("209.97.148.147:80",
                                                      grpc::InsecureChannelCredentials()));
     }
-}
 
 OrderInfo GameClient::StartNewGame(int numberOfPlayers) {
     ClientContext context;
