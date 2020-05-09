@@ -6,7 +6,7 @@
 #define UNTITLED3_SDL_H
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-//#include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_mixer.h>
 #include <iostream>
 #include <random>
 #include <time.h>
@@ -19,7 +19,7 @@ namespace GUI {
 
 class GUI;
 void upgrade(GUI* g);
-
+void play_music(GUI* gui);
 
 
 enum Colour {
@@ -90,12 +90,15 @@ enum Rode {
 
 class GUI {
 public:
-    std::mutex mu {};
+    std::mutex mutex_for_roads {};
+    std::mutex mutex_for_buildings {};
+    std::mutex mutex_for_ren {};
 
     Road_arr *roads = nullptr;
     Building_arr *buildings = nullptr;
     std::pair<int, int> tmp_road;
-    //Mix_Chunk *sfx, *button_sound, *build_sound;
+
+    Mix_Chunk *sfx, *button_sound, *build_sound;
     std::pair<SDL_Texture*, int> cur_table;
     SDL_Texture *back, *back_ground, *oct, *cur_road, *cur_road1,
             *cur_road2, *table, *table_1, *table_2,
@@ -111,14 +114,13 @@ public:
     std::vector<SDL_Texture *> cur_texture_arr_road;
 
     bool quit = false;
-    int field_arr[19]{};
+    SDL_Texture* field_arr[19]{};
     int tmp_sound = 0;
     int render_type{};
     SDL_Renderer *ren;
     SDL_DisplayMode displayMode{};
     SDL_Window *win;
-    SDL_Texture *get_roadVova(int x, int type);
-    void load_textures();
+    void load_textures(utility::Random& random);
 
     int tmp_coors{};
 

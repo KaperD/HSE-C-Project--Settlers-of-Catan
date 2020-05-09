@@ -26,6 +26,7 @@ static const char* Network_method_names[] = {
   "/game.Network/JoinGame",
   "/game.Network/SendEvent",
   "/game.Network/GetEvent",
+  "/game.Network/HasEvent",
 };
 
 std::unique_ptr< Network::Stub> Network::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -39,6 +40,7 @@ Network::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
   , rpcmethod_JoinGame_(Network_method_names[1], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_SendEvent_(Network_method_names[2], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_GetEvent_(Network_method_names[3], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_HasEvent_(Network_method_names[4], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status Network::Stub::StartNewGame(::grpc::ClientContext* context, const ::game::NumberOfPlayers& request, ::game::OrderInfo* response) {
@@ -153,6 +155,34 @@ void Network::Stub::experimental_async::GetEvent(::grpc::ClientContext* context,
   return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::game::Event>::Create(channel_.get(), cq, rpcmethod_GetEvent_, context, request, false);
 }
 
+::grpc::Status Network::Stub::HasEvent(::grpc::ClientContext* context, const ::game::Player& request, ::game::Bool* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_HasEvent_, context, request, response);
+}
+
+void Network::Stub::experimental_async::HasEvent(::grpc::ClientContext* context, const ::game::Player* request, ::game::Bool* response, std::function<void(::grpc::Status)> f) {
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_HasEvent_, context, request, response, std::move(f));
+}
+
+void Network::Stub::experimental_async::HasEvent(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::Bool* response, std::function<void(::grpc::Status)> f) {
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_HasEvent_, context, request, response, std::move(f));
+}
+
+void Network::Stub::experimental_async::HasEvent(::grpc::ClientContext* context, const ::game::Player* request, ::game::Bool* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_HasEvent_, context, request, response, reactor);
+}
+
+void Network::Stub::experimental_async::HasEvent(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::game::Bool* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_HasEvent_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::game::Bool>* Network::Stub::AsyncHasEventRaw(::grpc::ClientContext* context, const ::game::Player& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::game::Bool>::Create(channel_.get(), cq, rpcmethod_HasEvent_, context, request, true);
+}
+
+::grpc::ClientAsyncResponseReader< ::game::Bool>* Network::Stub::PrepareAsyncHasEventRaw(::grpc::ClientContext* context, const ::game::Player& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::game::Bool>::Create(channel_.get(), cq, rpcmethod_HasEvent_, context, request, false);
+}
+
 Network::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       Network_method_names[0],
@@ -174,6 +204,11 @@ Network::Service::Service() {
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< Network::Service, ::game::Player, ::game::Event>(
           std::mem_fn(&Network::Service::GetEvent), this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Network_method_names[4],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Network::Service, ::game::Player, ::game::Bool>(
+          std::mem_fn(&Network::Service::HasEvent), this)));
 }
 
 Network::Service::~Service() {
@@ -201,6 +236,13 @@ Network::Service::~Service() {
 }
 
 ::grpc::Status Network::Service::GetEvent(::grpc::ServerContext* context, const ::game::Player* request, ::game::Event* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Network::Service::HasEvent(::grpc::ServerContext* context, const ::game::Player* request, ::game::Bool* response) {
   (void) context;
   (void) request;
   (void) response;

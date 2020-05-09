@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <memory>
+#include <random.h>
 
 #include "game.grpc.pb.h"
 #include "Board.h"
@@ -47,14 +48,16 @@ private:
 
 class DiceHandler : public Handler {
 public:
-    DiceHandler(Board::Catan& model, GUI::GUI& view, GameClient& client)
+    DiceHandler(Board::Catan& model, GUI::GUI& view, GameClient& client, utility::Random& ran)
     : Handler(model, view, client)
-    , number_(0) { }
+    , number_(0)
+    , random_(ran) { }
     void processEvent(::game::Event& event, bool needSend) override;
     void displayEvent(::game::Event& event) override;
     using Handler::sendEvent;
 private:
     int number_;
+    utility::Random& random_;
 };
 
 class MarketHandler : public Handler {
@@ -116,14 +119,12 @@ public:
 
 class GameController final {
 public:
-    GameController(Board::Catan& model, GameClient& client, GUI::GUI& view);
+    GameController(Board::Catan& model, GameClient& client, GUI::GUI& view, utility::Random& ran, const game::OrderInfo& info);
 
     GameController(const GameController&) = delete;
     GameController operator=(const GameController&) = delete;
 
     void RunGame();
-
-    bool ConnectToGame(int type, int val);
 
 
 private:

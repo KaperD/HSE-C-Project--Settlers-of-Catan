@@ -1,7 +1,7 @@
 project(Catan)
 cmake_minimum_required(VERSION 3.2)
 
-add_compile_options(-std=c++17)
+set (CMAKE_CXX_STANDARD 17)
 
 # GRPC and Protocol Buffers libraries location
 list(APPEND CMAKE_PREFIX_PATH "/usr/local")
@@ -30,8 +30,8 @@ grpc_generate_cpp(GRPC_SRCS GRPC_HDRS ${PROTO_SRC_DIR} ${PROTOS})
 # sudo apt-get install libsdl-dev
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
-find_package(SFML 2 REQUIRED audio)
-include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS} ${SFML_INCLUDE_DIR})
+find_package(SDL2_mixer REQUIRED)
+include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS} ${SDL2_MIXER_INCLUDE_DIRS})
 
 set(
     client
@@ -80,14 +80,18 @@ add_executable(project
     ${spinlock}
     ${random}
     ${gui}
-)
+        Network/LocalServer.h)
 
 target_link_libraries(project
     ${EXECUTABLE_NAME}
-    ${SFML_LIBRARIES}
-    ${SFML_DEPENDENCIES}
     ${SDL2_IMAGE_LIBRARIES}
     ${SDL2_LIBRARIES}
+    ${SDL2_MIXER_LIBRARIES}
+    # /usr/local/lib/libgrpc++_unsecure.a
+    # /usr/local/lib/libgrpc.a
+    # /usr/local/lib/libgrpc++.a
+    # /usr/local/lib/libprotobuf.a
+    # /lib/x86_64-linux-gnu/libpthread.so.0
     gRPC::grpc++_reflection
     protobuf::libprotobuf
 )
