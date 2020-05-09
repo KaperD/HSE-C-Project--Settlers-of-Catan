@@ -4,6 +4,7 @@
 #include <ctime>
 #include <iostream>
 #include <thread>
+#include <chrono>
 
 #include "GameController.h"
 #include "random.h"
@@ -19,7 +20,6 @@ using game::Build;
 using game::Player;
 using game::Network;
 
-using utility::Random;
 
 
 namespace {
@@ -81,7 +81,7 @@ void DiceHandler::processEvent(Event& event, bool needSend) {
     number_ = diceInfo->number();
 
     if (number_== 0) {
-        number_ = Random::getRandomNumberFromTo(1, 6) + Random::getRandomNumberFromTo(1, 6);
+        number_ = random_.getRandomNumberFromTo(1, 6) + random_.getRandomNumberFromTo(1, 6);
         diceInfo->set_number(number_);
     }
 
@@ -108,6 +108,7 @@ void DiceHandler::displayEvent(Event& event) {
     Вывести изменения ресурсов и выпавшее число
     */
 }
+
 
 
 
@@ -176,7 +177,7 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
             gameView_.add_road({x_, y_}, Player - 1);
         }
         if (type == Board::BuildingType::VILLAGE) {
-            roadIsSet = true;
+            villageIsSet = true;
             gameView_.add_building({x_, y_}, Player - 1);
         }
         //displayEvent(event);
@@ -252,7 +253,7 @@ void EndGameHandler::displayEvent(Event& event) {
 //===============GameController===============
 
 
-GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI& view)
+GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI& view, utility::Random& ran)
     : gameModel_(model)
     , gameView_(view) 
     , gameClient_(client) {
@@ -261,7 +262,7 @@ GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI
         handlers_.push_back(nullptr);
     }
     handlers_[0] = std::make_unique<CardHandler     >(gameModel_, gameView_, gameClient_);
-    handlers_[1] = std::make_unique<DiceHandler     >(gameModel_, gameView_, gameClient_);
+    handlers_[1] = std::make_unique<DiceHandler     >(gameModel_, gameView_, gameClient_, ran);
     handlers_[2] = std::make_unique<MarketHandler   >(gameModel_, gameView_, gameClient_);
     handlers_[3] = std::make_unique<BuildHandler    >(gameModel_, gameView_, gameClient_);
     handlers_[4] = std::make_unique<EndTurnHandler  >(gameModel_, gameView_, gameClient_);
@@ -280,7 +281,6 @@ void GameController::RunGame() {
     while (!quit) {
         if (currentTurn_ == myTurn_) {
             while (true) {
-                // start() Засекается время начала
                 Event event = gameView_.getTurn();
                 int x = event.type();
                 std::cout << "gdsgs" << x << std::endl;
@@ -300,11 +300,14 @@ void GameController::RunGame() {
                 } else if (x == EventType::ENDTURN) {
                     break;
                 }
-                // update() // вывести текущее состояние
-                // delay() // подождать, если действия выполнелись слишком быстро
             }
         } else {
             while (true) {
+                if (!gameClient_.HasEvent()) {
+                    std::cout << "I'm sleeping" << std::endl;
+                    std::this_thread::sleep_for(std::chrono::seconds(1));
+                    continue;
+                }
                 Event event = gameClient_.GetEvent();
                 int x = event.type();
                 handlers_[x]->processEvent(event, false);

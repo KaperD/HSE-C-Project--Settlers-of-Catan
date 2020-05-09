@@ -2,11 +2,15 @@
 
 #include "gtest/gtest.h"
 #include "../Board.h"
+#include "../Utility/random.h"
 
+using utility::Random;
 using namespace Board;
 
+
 TEST(CatanGraph, ShowGraph) {
-    Catan board;
+    Random random;
+    Catan board(random);
     for (int i = 0; i < FIELDHEIGHT; i ++) {
         for (int j = 0; j < FIELDWIDTH; j ++) {
             if (board.getFieldCell(i, j) != nullptr) {

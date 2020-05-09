@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <memory>
+#include <random.h>
 
 namespace Board {
 
@@ -85,7 +86,7 @@ public:
 
 class Hexagon : public Cell {
 public:
-    Hexagon(int x, int y);
+    Hexagon(int x, int y, int resource, int number);
 
     void setRobbers();
     Resource getResource() const;
@@ -108,19 +109,16 @@ public:
     void decrVictoryPoints(int vp);
     void giveDevCard(DevelopmentCard dev_card);
     void incrArmy();
-    void addRoad();
     void delDevCard(DevelopmentCard dev_card);
 
     int getVictoryPoints() const;
     int getKnightsNum() const;
-    int getRoadsNum() const;
 
     int checkResourceNum(Resource re);
 
 private:
     PlayerNum id;
-    int victory_points;
-    int roads = 0;
+    int victory_points = 0;
     int knights = 0;
     std::unordered_map<Resource, int> cards;
     std::unordered_map<DevelopmentCard, int> dev_cards;
@@ -129,7 +127,7 @@ private:
 class Catan {
 public:
     //TODO: Gamers Number in constructor
-    Catan();
+    Catan(utility::Random& ran);
 
     void settle(BuildingType s, int x, int y);
     void giveResources(int cubes_num);
@@ -176,8 +174,12 @@ private:
     PlayerNum last_knights_record_holder = PlayerNum::NONE;
     int knights_record = 2;
 
-    void updateRoadsRecord(const std::unique_ptr<Cell>& v, int roadsCount = 0);
+    int findRoadsRecord(const std::unique_ptr<Cell>& v);
+    void updateRoadsRecord();
+    const std::unique_ptr<Cell>& getStart(const std::unique_ptr<Cell>& v, int x, int y);
     void clearMarks();
+
+    utility::Random& random;
 };
 
 } // namespace Board

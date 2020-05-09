@@ -9,19 +9,46 @@
 
 namespace GUI {
 
+namespace {
+
+class Limiter {
+public:
+    void storeStartTime() {
+        frameStart = SDL_GetTicks();
+    }
+
+    void delay() {
+        frameTime = static_cast<int>(SDL_GetTicks() - frameStart);
+        if (frameDelay > frameTime) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(frameDelay - frameTime));
+        }
+    }
+
+private:
+    const int FPS = 60;
+    const int frameDelay = 1000 / FPS;
+
+    uint32_t frameStart = 0;
+    int frameTime = 0;
+};
+
+} // namespace
+
+
+
 using ::game::Event;
 using ::game::EventType;
 
-//void play_music(GUI* gui) {
-//    while (!gui->quit){
-//        std::cout << 1;
-//        Mix_PlayChannel(-1, gui->sfx, 0);
-//        for (int i = 0; i < 18000; ++i) {
-//            if (gui->quit) return;
-//            SDL_Delay(10);
-//        }
-//    }
-//}
+void play_music(GUI* gui) {
+    while (!gui->quit){
+        std::cout << "MUSIC" << std::endl;
+        Mix_PlayChannel(-1, gui->sfx, 0);
+        for (int i = 0; i < 18000; ++i) {
+            if (gui->quit) return;
+            SDL_Delay(1000);
+        }
+    }
+}
 
 void GUI::load_textures() {
     for (int i = 0; i < 19; ++i) {
@@ -48,12 +75,12 @@ void GUI::load_textures() {
     house_cur = IMG_LoadTexture(ren, "image/house_cur.bmp");
     house1_cur = IMG_LoadTexture(ren, "image/house_cur.bmp");
     house2_cur = IMG_LoadTexture(ren, "image/house_cur.bmp");
-    house1 = IMG_LoadTexture(ren, "image/house1.bmp");
-    house2 = IMG_LoadTexture(ren, "image/house2.bmp");
+    house1 = IMG_LoadTexture(ren, "image/house.bmp");
+    house2 = IMG_LoadTexture(ren, "image/house.bmp");
 
-    Vova = IMG_LoadTexture(ren, "image/road_green.bmp");
-    Vova1 = IMG_LoadTexture(ren, "image/road1_green.bmp");
-    Vova2 = IMG_LoadTexture(ren, "image/road2_green.bmp");
+    Vova = IMG_LoadTexture(ren, "image/road_green.bmp"); // TODO: Назвать по-другому с помощью возможностей Clion
+    Vova1 = IMG_LoadTexture(ren, "image/road1_green.bmp"); // TODO: Назвать по-другому
+    Vova2 = IMG_LoadTexture(ren, "image/road2_green.bmp"); // TODO: Назвать по-другому
 
     build_texture_arr[0] = house;
     cur_build_texture_arr[0] = house_cur;
@@ -61,18 +88,18 @@ void GUI::load_textures() {
     cur_build_texture_arr[1] = house1_cur;
     build_texture_arr[2] = house2;
     cur_build_texture_arr[2] = house2_cur;
-//    sfx = nullptr;
-//    sfx = Mix_LoadWAV("image/music.wav");
-//    button_sound = Mix_LoadWAV("image/button_sound.wav");
-//    build_sound = Mix_LoadWAV("image/build_sound.wav");
-//    if (sfx == nullptr)  std::cout << "HUY";
+    sfx = nullptr;
+    sfx = Mix_LoadWAV("image/music.wav");
+    button_sound = Mix_LoadWAV("image/button_sound.wav");
+    build_sound = Mix_LoadWAV("image/build_sound.wav");
+    if (sfx == nullptr)  std::cout << "Hhhh";
 }
 
-void GUI::destroy_textures() {
+void GUI::destroy_textures() { // TODO: Удалять всё, а не только часть
     for (auto & i : arr) {
         SDL_DestroyTexture(i);
     }
-//    Mix_CloseAudio();
+    Mix_CloseAudio();
     SDL_DestroyTexture(road);
     SDL_DestroyTexture(road1);
     SDL_DestroyTexture(road2);
@@ -81,18 +108,18 @@ void GUI::destroy_textures() {
 }
 
 void GUI::render_background() const {
-    SDL_Rect dest1;
+    static SDL_Rect dest1;
     dest1.x = 0;
     dest1.y = 0;
     dest1.w = displayMode.w;
     dest1.h = displayMode.h;
-    assert(ren != nullptr);
-    SDL_RenderCopy(ren,back_ground,nullptr,&dest1); //Копируем в рендер фон
-    SDL_RenderCopy(ren,back,nullptr,&dest1); //Копируем в рендер фон
+    assert(ren != nullptr); // TODO: гонка данных --- ren
+    SDL_RenderCopy(ren, back_ground, nullptr, &dest1); //Копируем в рендер фон // TODO: гонка данных --- ren
+    SDL_RenderCopy(ren, back, nullptr, &dest1); //Копируем в рендер фон // TODO: гонка данных --- ren
 }
 
 void GUI::render_tables() const {
-    SDL_Rect dest;
+    static SDL_Rect dest;
     dest.x = 200;
     dest.y = 98;
     dest.w = 480 - 200;
@@ -132,7 +159,7 @@ void GUI::render_field() {
 }
 
 void GUI::render_roads() {
-    std::lock_guard<std::mutex> lock(mu);
+    std::lock_guard<std::mutex> lock(mutex_for_roads);
     for (auto e: roads->vec) {
         if (e.built) {
             SDL_RenderCopy(ren, e.texture, nullptr, &e.dest);
@@ -148,10 +175,11 @@ void GUI::render_roads() {
 
 
 void GUI::render_buildings() {
-    std::lock_guard<std::mutex> lock(mu);
+    std::lock_guard<std::mutex> lock(mutex_for_roads);
     for (auto e: buildings->vec) {
-        if (e.built)
+        if (e.built) {
             SDL_RenderCopy(ren, e.texture, nullptr, &e.dest);
+        }
     }
     if (render_type == 2) {
         int e = return_building(tmp_building.first, tmp_building.second);
@@ -171,7 +199,7 @@ void GUI::render_tables_time() const {
 
 
 
-void GUI::make_render() {
+void GUI::make_render() { // TODO: гонка данных --- ren
     SDL_RenderClear(ren);
     render_background();
     render_field();
@@ -183,12 +211,23 @@ void GUI::make_render() {
 }
 
 void upgrade(GUI* g) {
+    constexpr int FPS = 60;
+    constexpr int frameDelay = 1000 / FPS;
+
+    uint32_t frameStart = 0;
+    int frameTime = 0;
+
     while (true) {
-//        std::cout << 3;
-        SDL_Delay(20);
+        frameStart = SDL_GetTicks();
+        // TODO: сделать mutex и захватывать его с помощью std::lock_guard
         g->make_render();
         SDL_RenderPresent(g->ren);
         if (g->quit) return;
+
+        frameTime = static_cast<int>(SDL_GetTicks() - frameStart);
+        if (frameDelay > frameTime) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(frameDelay - frameTime));
+        }
     }
 }
 
@@ -196,10 +235,11 @@ void upgrade(GUI* g) {
 GUI::GUI() {
     SDL_Init( SDL_INIT_EVERYTHING );
     SDL_Init(SDL_INIT_AUDIO);
-//    Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 4096);
+    Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 4096);
     SDL_GetDesktopDisplayMode(0,&displayMode);
-    win = SDL_CreateWindow("Hello World!", 0, 0, displayMode.w, displayMode.h, SDL_WINDOW_SHOWN);
+    win = SDL_CreateWindow("Settlers of Catan", 0, 0, displayMode.w, displayMode.h, SDL_WINDOW_SHOWN);
     ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    //std::cout << "Sync " << SDL_GL_SetSwapInterval(1) << std::endl;
 }
 
 
@@ -210,7 +250,14 @@ void GUI::get_coors_road () {
     //SDL_Rect dest;
     SDL_Event e;
     clock_t begin_time = clock();
-    while (!quit) {
+
+    Limiter limit;
+
+    while (!quit) { // TODO: нужно ограничить частоту цикла, так как процессор очень сильно нагружается
+        // TODO: сделать класс у которого будут методы --- засечь начало и подождать, если действия выполнились очень быстро
+
+        limit.storeStartTime();
+
         clock_t end_time = clock();
         if (end_time - begin_time > CLOCKS_PER_SEC * 30) {
             cur_table = std::make_pair(table_time, clock() + 5*CLOCKS_PER_SEC);
@@ -244,6 +291,7 @@ void GUI::get_coors_road () {
                 if (tmp_coors != -1) return;
             }
         }
+        limit.delay();
     }
 }
 
@@ -254,7 +302,14 @@ void GUI::get_coors_building () {
     //SDL_Rect dest;
     SDL_Event e;
     clock_t begin_time = clock();
+
+    Limiter limit;
+
     while (!quit) {
+        // TODO: также нужно ограничить частоту цикла с помощью того же класса
+
+        limit.storeStartTime();
+
         clock_t end_time = clock();
         if (end_time - begin_time > CLOCKS_PER_SEC * 30) {
             cur_table = std::make_pair(table_time, clock() + 5*CLOCKS_PER_SEC);
@@ -274,7 +329,7 @@ void GUI::get_coors_building () {
                 int x,y;
                 x = e.motion.x;
                 y = e.motion.y;
-                tmp_house = std::make_pair(x, y);
+                tmp_building = std::make_pair(x, y);
             }
             if (e.type == SDL_MOUSEBUTTONDOWN) {
 //                Mix_PlayChannel(-1, button_sound, 0);
@@ -285,17 +340,25 @@ void GUI::get_coors_building () {
                     render_type = old_render_type;
                     return;
                 }
-                tmp_coors = return_road(x, y);
+                tmp_coors = return_building(x, y);
                 if (tmp_coors != -1) return;
             }
         }
+
+        limit.delay();
     }
 }
 
 Event GUI::getTurn () {
     SDL_Event e;
     render_type = 0;
-    while (!quit) {
+
+    Limiter limit;
+
+    while (!quit) { // TODO: также нужно ограничить частоту цикла с помощью того же класса
+
+        limit.storeStartTime();
+
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) {
                 quit = true;
@@ -325,7 +388,19 @@ Event GUI::getTurn () {
                     q->set_y(p.second);
                     return event;
                 }
-                if (x > 200 && x < 480 && y > 300 && y < 482) { // деревня
+                if (x > 200 && x < 480 && y > 300 && y < 482) { // derevnia
+                    get_coors_building();
+                    if (render_type == 0) continue;
+                    auto p = buildings->vec[tmp_coors].get_model_coors();
+                    Event event;
+                    event.set_type(EventType::BUILD);
+                    auto q = event.mutable_buildinfo();
+                    q->set_buildingtype(1);
+                    q->set_x(p.first);
+                    q->set_y(p.second);
+                    return event;
+                }
+                if (x > 200 && x < 480 && y > 500 && y < 700) { // деревня
                     Event event;
                     event.set_type(EventType::ENDTURN);
                     auto q = event.mutable_buildinfo();
@@ -333,6 +408,9 @@ Event GUI::getTurn () {
                 }
             }
         }
+
+        limit.delay();
+
     }
     Event event;
     event.set_type(EventType::ENDGAME);
@@ -356,7 +434,7 @@ SDL_Texture *GUI::get_vert_road(int type) {
 }
 
 void GUI::add_road(std::pair<int, int> tmp, int player) {
-    std::lock_guard<std::mutex> lock(mu);
+    std::lock_guard<std::mutex> lock(mutex_for_roads);
     for (auto& e : roads->vec) {
         if (tmp.first == e.model_x && tmp.second == e.model_y) {
             e.built++;
@@ -444,23 +522,38 @@ GUI::~GUI() {
 }
 
 SDL_Texture *GUI::get_building(int i, int type) {
-    if (i == 0) return type ? house : house_cur;
-    if (i == 1) return type ? house1 : house1_cur;
-    if (i == 2) return type ? house2 : house2_cur;
+    if (i == 0) return !(type) ? house : house_cur;
+    if (i == 1) return !(type) ? house1 : house1_cur;
+    if (i == 2) return !(type) ? house2 : house2_cur;
 }
 
 void GUI::add_building(std::pair<int, int> tmp, int player) {
-    std::lock_guard<std::mutex> lock(mu);
-    for (auto e:buildings->vec) {
+    std::lock_guard<std::mutex> lock(mutex_for_roads);
+    for (auto& e:buildings->vec) {
         if (tmp.first == e.model_x && tmp.second == e.model_y) {
             e.built++;
-            e.texture = build_texture_arr[player];
-            e.cur_texture = cur_build_texture_arr[player];
+            //e.texture = build_texture_arr[player];
+            //e.cur_texture = cur_build_texture_arr[player];
             return;
         }
     }
 }
 
+
+
+// void GUI::add_road(std::pair<int, int> tmp, int player) {
+//     std::lock_guard<std::mutex> lock(mutex_for_roads);
+//     for (auto& e : roads->vec) {
+//         if (tmp.first == e.model_x && tmp.second == e.model_y) {
+//             e.built++;
+//             std::cout << player << std::endl;
+//             if (player != 0) {
+//                 e.texture = e.texture2;
+//             }
+//             return;
+//         }
+//     }
+// }
 
 Building_arr::Building_arr(GUI& gui) {
     SDL_Rect dest;
@@ -486,8 +579,10 @@ Building_arr::Building_arr(GUI& gui) {
             SDL_Texture *cur_texture = gui.get_building(0, 1);
             Obj tmp(X1 + j * DX / SCALE_X, Y1 + i * DY / SCALE_Y,
                     X2 + j * DX / SCALE_X, Y2 + i * DY / SCALE_Y,
-                    i * 2, 	j * 2 + 1,
+                   	(i + 1)/2,  j*2 , 
                     texture, nullptr, cur_texture, dest);
+            //tmp.built = true;
+            //std::cout << (i + 1)/2 << ' ' << j*2  << '\n';
             vec.push_back(tmp);
         }
     }
@@ -497,3 +592,4 @@ Building_arr::~Building_arr() = default;
 
 
 } // namespace GUI
+
