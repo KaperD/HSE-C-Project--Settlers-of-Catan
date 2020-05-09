@@ -119,14 +119,12 @@ public:
 
 class GameController final {
 public:
-    GameController(Board::Catan& model, GameClient& client, GUI::GUI& view, utility::Random& ran);
+    GameController(Board::Catan& model, GameClient& client, GUI::GUI& view, utility::Random& ran, const game::OrderInfo& info);
 
     GameController(const GameController&) = delete;
     GameController operator=(const GameController&) = delete;
 
     void RunGame();
-
-    bool ConnectToGame(int type, int val);
 
 
 private:

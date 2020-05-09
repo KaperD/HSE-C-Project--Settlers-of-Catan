@@ -69,8 +69,9 @@ int main() {
 
     GUI::GUI view;
     GameClient gameClient_(isLocal);
-    //TODO: добавить поддержку количества игроков, пока работает только для action == 1, т.е. для новой игры
-    Board::Catan wow(random, gameParams.second);
+
+    OrderInfo info = gameClient_.ConnectToGame(gameParams.first, gameParams.second);
+    Board::Catan wow(random, info.numberofplayers());
 
     view.load_textures();
     view.roads = new GUI::Road_arr(view);
@@ -78,11 +79,8 @@ int main() {
 
     std::thread update(GUI::upgrade, &view);
 
-    Controller::GameController gc(wow, gameClient_, view, random);
+    Controller::GameController gc(wow, gameClient_, view, random, info);
 
-    if (!gc.ConnectToGame(gameParams.first, gameParams.second)) {
-        return 0;
-    }
     std::thread music(GUI::play_music, &view);
 
     gc.RunGame();

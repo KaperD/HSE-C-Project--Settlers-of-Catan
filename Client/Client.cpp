@@ -119,3 +119,17 @@ bool GameClient::HasEvent() {
     return hasEvent.hasevent();
 }
 
+OrderInfo GameClient::ConnectToGame(int type, int val) {
+    if (type == 1) {
+        OrderInfo info = StartNewGame(val);
+        std::cout << "Game was created. Game id is: " << info.gameid() << std::endl;
+        return info;
+    } else if (type == 2) {
+        OrderInfo info = JoinGame(val);
+        std::cout << "Your turn is: " << (info.id() + 1) << std::endl;
+        return info;
+    } else {
+        throw NetworkException("Wrong params");
+    }
+}
+

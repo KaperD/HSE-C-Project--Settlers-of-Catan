@@ -253,10 +253,12 @@ void EndGameHandler::displayEvent(Event& event) {
 //===============GameController===============
 
 
-GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI& view, utility::Random& ran)
+GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI& view, utility::Random& ran, const OrderInfo& info)
     : gameModel_(model)
     , gameView_(view) 
-    , gameClient_(client) {
+    , gameClient_(client)
+    , myTurn_(info.id())
+    , numberOfPlayers_(info.numberofplayers()) {
 
     for (int k = 0; k < 7; ++k) {
         handlers_.push_back(nullptr);
@@ -373,61 +375,6 @@ void GameController::BeginGame() {
             }
         }
     }
-}
-
-bool GameController::ConnectToGame(int type, int val) {
-    if (type == 1) {
-        if (val != 3 && val != 4 && val != 2) {
-            std::cout << "Wrong number." << std::endl;
-            return false;
-        }
-        OrderInfo info = gameClient_.StartNewGame(val);
-        myTurn_ = info.id();
-        numberOfPlayers_ = info.numberofplayers();
-        std::cout << "Game was created. Game id is: " << info.gameid() << std::endl;
-        return true;
-    } else if (type == 2) {
-        OrderInfo info = gameClient_.JoinGame(val);
-        myTurn_ = info.id();
-        numberOfPlayers_ = info.numberofplayers();
-        std::cout << "Your turn is: " << (myTurn_ + 1) << std::endl;
-        return true;
-    } else {
-        return false;
-    }
-//    int action;
-
-//    while (true) {
-//        std::cout << "1 --- start new game" << std::endl << "2 --- join game" << std::endl << "3 --- exit" << std::endl;
-//        std::cin >> action;
-//        if (action == 1) {
-//            std::cout << "How many people will play? 3 or 4?" << std::endl;
-//            int players;
-//            std::cin >> players;
-//            if (players != 3 && players != 4) {
-//                std::cout << "Wrong number. Try again:" << std::endl;
-//                continue;
-//            }
-//            OrderInfo info = gameClient_.StartNewGame(players);
-//            myTurn_ = info.id();
-//            numberOfPlayers_ = info.numberofplayers();
-//            std::cout << "Game was created. Game id is: " << info.gameid() << std::endl;
-//            return true;
-//        } else if (action == 2) {
-//            std::cout << "Type game id to join" << std::endl;
-//            int gameId;
-//            std::cin >> gameId;
-//            OrderInfo info = gameClient_.JoinGame(gameId);
-//            myTurn_ = info.id();
-//            numberOfPlayers_ = info.numberofplayers();
-//            std::cout << "Your turn is: " << (myTurn_ + 1) << std::endl;
-//            return true;
-//        } else if (action == 3) {
-//            return false;
-//        } else {
-//            std::cout << "Wrong command. Try again:" << std::endl;
-//        }
-//    }
 }
 
 

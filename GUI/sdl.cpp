@@ -1,6 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-//#include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_mixer.h>
 #include <iostream>
 #include <thread>
 #include <ctime>
@@ -90,8 +90,11 @@ void GUI::load_textures() {
     cur_build_texture_arr[2] = house2_cur;
     sfx = nullptr;
     sfx = Mix_LoadWAV("image/music.wav");
+    Mix_VolumeChunk(sfx, MIX_MAX_VOLUME/2);
     button_sound = Mix_LoadWAV("image/button_sound.wav");
+    Mix_VolumeChunk(button_sound, MIX_MAX_VOLUME/2);
     build_sound = Mix_LoadWAV("image/build_sound.wav");
+    Mix_VolumeChunk(build_sound, MIX_MAX_VOLUME/8);
     if (sfx == nullptr)  std::cout << "Hhhh";
 }
 
@@ -108,7 +111,7 @@ void GUI::destroy_textures() { // TODO: Удалять всё, а не толь�
 }
 
 void GUI::render_background() const {
-    static SDL_Rect dest1;
+    SDL_Rect dest1;
     dest1.x = 0;
     dest1.y = 0;
     dest1.w = displayMode.w;
@@ -119,7 +122,7 @@ void GUI::render_background() const {
 }
 
 void GUI::render_tables() const {
-    static SDL_Rect dest;
+    SDL_Rect dest;
     dest.x = 200;
     dest.y = 98;
     dest.w = 480 - 200;
@@ -244,7 +247,7 @@ GUI::GUI() {
 
 
 void GUI::get_coors_road () {
-//    Mix_PlayChannel(-1, build_sound, 0);
+    Mix_PlayChannel(-1, build_sound, 0);
     int old_render_type = render_type;
     render_type = 1;
     //SDL_Rect dest;
@@ -279,7 +282,7 @@ void GUI::get_coors_road () {
                 tmp_road = std::make_pair(x, y);
             }
             if (e.type == SDL_MOUSEBUTTONDOWN) {
-//                Mix_PlayChannel(-1, button_sound, 0);
+                Mix_PlayChannel(-1, button_sound, 0);
                 int x, y;
                 SDL_GetMouseState(&x, &y); // Получить координаты мыши
                 if (x > 200 && x < 480 && y > 98 && y < 280) {
@@ -296,7 +299,7 @@ void GUI::get_coors_road () {
 }
 
 void GUI::get_coors_building () {
-//    Mix_PlayChannel(-1, build_sound, 0);
+    Mix_PlayChannel(-1, build_sound, 0);
     int old_render_type = render_type;
     render_type = 2;
     //SDL_Rect dest;
@@ -332,7 +335,7 @@ void GUI::get_coors_building () {
                 tmp_building = std::make_pair(x, y);
             }
             if (e.type == SDL_MOUSEBUTTONDOWN) {
-//                Mix_PlayChannel(-1, button_sound, 0);
+                Mix_PlayChannel(-1, button_sound, 0);
                 int x, y;
                 SDL_GetMouseState(&x, &y); // Получить координаты мыши
                 std::cout << "GGGG" << '\n';
@@ -373,7 +376,7 @@ Event GUI::getTurn () {
                 return event;
             }
             if (e.type == SDL_MOUSEBUTTONDOWN) {
-//                Mix_PlayChannel(-1, button_sound, 0);
+                Mix_PlayChannel(-1, button_sound, 0);
                 int x, y;
                 SDL_GetMouseState(&x, &y);
                 if (x > 200 && x < 480 && y > 98 && y < 280) { // дорога

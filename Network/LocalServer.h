@@ -16,6 +16,9 @@
 #include "EventQueue.h"
 #include "spinlock.h"
 
+
+namespace {
+
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
@@ -33,9 +36,6 @@ using game::Network;
 using game::GameId;
 using game::NumberOfPlayers;
 using game::Bool;
-
-
-namespace {
 
 constexpr int MaximumNumberOfGames = 100;
 constexpr int MaximumNumberOfPlayers = 4;
