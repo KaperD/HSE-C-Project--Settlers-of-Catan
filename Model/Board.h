@@ -52,7 +52,7 @@ class Cell {
 public:
     explicit Cell(BuildingType type);
 
-    [[nodiscard]] PlayerNum getPlayer() const;
+    PlayerNum getPlayer() const;
     void setPlayer(PlayerNum new_player);
 
     size_t getVertexNum() const;
