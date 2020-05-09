@@ -31,6 +31,7 @@ using game::Player;
 using game::Network;
 using game::GameId;
 using game::NumberOfPlayers;
+using game::Bool;
 
 
 namespace {
@@ -124,8 +125,6 @@ private:
         int playerid = event.playerid();
         std::cout << "SendEvent gameid " <<  request->gameid() << std::endl;
         Game& game = games.at(event.gameid());
-
-        //std::lock_guard<utility::spinlock> lock(games.at(gameId).spin);
         
         for (int k = 0; k < 3; ++k) {
             if (k == playerid) continue;
@@ -148,7 +147,6 @@ private:
         std::cout << "GetEvent playerid " <<  playerid << std::endl;
         Game& game = games.at(request->gameid());
 
-        //std::lock_guard<utility::spinlock> lock(games.at(gameId).spin);
         Event event = game.events_[playerid].front();
 
         if (event.type() == EventType::ENDGAME) {
@@ -158,6 +156,18 @@ private:
         }
 
         *response = std::move(event);
+
+        return Status::OK;
+    }
+
+
+    Status HasEvent(ServerContext* context, const Player* request, Bool* response) override {
+        int playerid = request->playerid();
+        std::cout << "HasEvent gameid " <<  request->gameid() << std::endl;
+        std::cout << "HasEvent playerid " <<  playerid << std::endl;
+        Game& game = games.at(request->gameid());
+
+        response->set_hasevent(!game.events_[playerid].empty());
 
         return Status::OK;
     }
@@ -172,7 +182,7 @@ private:
 
  
 void RunServer() {
-    std::string server_address("0.0.0.0:80");
+    std::string server_address("209.97.148.147:80");
     GameServerImpl service;
 
     ServerBuilder builder;

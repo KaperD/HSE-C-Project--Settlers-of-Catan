@@ -1,10 +1,6 @@
-#include <cstdlib>
 #include <ctime>
 #include <memory>
-#include <iostream>//for debug
-
 #include "Board.h"
-#include "random.h"
 
 namespace Board {
 
@@ -74,6 +70,22 @@ void Player::giveDevCard(DevelopmentCard dev_card) {
 
 void Player::delDevCard(DevelopmentCard dev_card) {
     dev_cards[dev_card]--;
+}
+
+int Player::getResourceNum(Resource re) const {
+    return cards[re];
+}
+
+int Player::getDevCardNum(DevelopmentCard dev_card) const {
+    return dev_cards[dev_card];
+}
+
+auto& Player::getResources() const {
+    return cards;
+}
+
+auto& Player::getDevCards() const {
+    return dev_cards;
 }
 
 //==============Cell==================
@@ -192,7 +204,7 @@ Road::Road(int x, int y, bool is_horizontal, bool is_even) : Cell(BuildingType::
 
 //================Hexagon==================
 
-Hexagon::Hexagon(int x, int y) : Cell(BuildingType::NONE) {
+Hexagon::Hexagon(int x, int y, int resource, int number) : Cell(BuildingType::NONE) {
     vertexes.emplace_back(x + 1, y + 2);
     vertexes.emplace_back(x + 1, y);
     vertexes.emplace_back(x + 1, y - 2);
@@ -200,14 +212,12 @@ Hexagon::Hexagon(int x, int y) : Cell(BuildingType::NONE) {
     vertexes.emplace_back(x - 1, y);
     vertexes.emplace_back(x - 1, y - 2);
 
-    int random_resource = utility::Random::getRandomNumberFromTo(1, TERRITORIESNUM);
-    re = static_cast<Resource>(random_resource);
-    robbers = false;
-    num = utility::Random::getRandomNumberFromTo(2, 12);
-    if (num == 7) num++;
+    re = static_cast<Resource>(resource);
+    num = number;
+    robbers = re == Resource::NONE;
 }
 
-void Hexagon::setRobbers() {
+void Hexagon::moveRobbers() {
     robbers = !robbers;
 }
 
@@ -225,7 +235,8 @@ bool Hexagon::robbersIsHere() const {
 
 //=================Catan====================
 
-Catan::Catan() : field(FIELDHEIGHT), players(4) {
+Catan::Catan(utility::Random& ran, int gamersNum_) : field(FIELDHEIGHT), players(4),
+                                                     gamersNum(gamersNum_), random(ran) {
 
     for (int i = 0; i < FIELDHEIGHT; i++) {
         for (int k = 0; k < FIELDWIDTH; k++) {
@@ -233,12 +244,14 @@ Catan::Catan() : field(FIELDHEIGHT), players(4) {
         }
     }
 
-    players[PlayerNum::NONE] = std::make_unique<Player>(PlayerNum::NONE);
-    players[PlayerNum::GAMER1] = std::make_unique<Player>(PlayerNum::GAMER1);
-    players[PlayerNum::GAMER2] = std::make_unique<Player>(PlayerNum::GAMER2);
-    players[PlayerNum::GAMER3] = std::make_unique<Player>(PlayerNum::GAMER3);
-    players[PlayerNum::GAMER3] = std::make_unique<Player>(PlayerNum::GAMER4);
+    for (int i = 0; i <= gamersNum; i++) {
+        auto playerID = playersIDs[i];
+        players[playerID] = std::make_unique<Player>(playerID);
+    }
     cur_player = PlayerNum::GAMER1;
+
+    auto randomResouresAndNumbers = random.generateResourcesAndNumbers();
+    auto curResourseAndNumber = std::begin(randomResouresAndNumbers);
 
     for (int i = 1; i < 4; i += 2) {
         for (int j = 5 - i; j < 16 + i; j++) {
@@ -246,8 +259,12 @@ Catan::Catan() : field(FIELDHEIGHT), players(4) {
                 cell(i, j) = std::make_unique<Road>(i, j, false, false);
                 cell(10 - i, j) = std::make_unique<Road>(10 - i, j, false, false);
             } else if (j % 2 == 0) {
-                hexes.push_back(std::make_unique<Hexagon>(i, j));
-                hexes.push_back(std::make_unique<Hexagon>(10 - i, j));
+                hexes.push_back(std::make_unique<Hexagon>(i, j, curResourseAndNumber->resource,
+                                                                curResourseAndNumber->number));
+                ++curResourseAndNumber;
+                hexes.push_back(std::make_unique<Hexagon>(10 - i, j, curResourseAndNumber->resource,
+                                                                     curResourseAndNumber->number));
+                ++curResourseAndNumber;
             }
         }
     }
@@ -270,12 +287,18 @@ Catan::Catan() : field(FIELDHEIGHT), players(4) {
         if (j % 4 == 0) {
             cell(5, j) = std::make_unique<Road>(5, j, false, false);
         } else if (j % 2 == 0) {
-            hexes.push_back(std::make_unique<Hexagon>(5, j));
+            hexes.push_back(std::make_unique<Hexagon>(5, j, curResourseAndNumber->resource,
+                                                            curResourseAndNumber->number));
+            ++curResourseAndNumber;
         }
     }
 
-    robbers_hex = utility::Random::getRandomNumberFromTo(1, TERRITORIESNUM);
-    hexes[robbers_hex]->setRobbers();
+    for (int i = 0; i < HEXESNUM; i++) {
+        if (hexes[i]->robbersIsHere()) {
+            robbers_hex = i;
+            break;
+        }
+    }
 
 }
 
@@ -296,14 +319,16 @@ bool Catan::isBeginning() const {
 }
 
 bool Catan::canBuild(BuildingType mod, int x, int y) const {
-    if (cell(x, y) == nullptr || cell(x, y)->getType() != mod) return false;
+    if (cell(x, y) == nullptr) return false;
+
+    if (mod == BuildingType::CITY)
+        return cell(x, y)->getType() == BuildingType::VILLAGE && cell(x, y)->getPlayer() == cur_player;
+
+    if (cell(x, y)->getType() != mod) return false;
 
     size_t lenV = cell(x, y)->getVertexNum();
     size_t lenR = cell(x, y)->getRoadsNum();
 
-    if (mod == BuildingType::CITY) {
-        return cell(x, y)->getPlayer() == cur_player;
-    }
 
     if (cell(x, y)->getPlayer() != PlayerNum::NONE) return false;
 
@@ -373,15 +398,16 @@ void Catan::settle(BuildingType s, int x, int y) {
         players[cur_player]->getResource(Resource::CLAY, 1);
         players[cur_player]->getResource(Resource::WOOL, 1);
         players[cur_player]->getResource(Resource::WHEAT, 1);
-        cell(x, y)->setBuildingType(BuildingType::CITY);
         cell(x, y)->setPlayer(cur_player);
+        players[cur_player]->giveVictoryPoints(1);
     } else if (s == BuildingType::CITY) {
         players[cur_player]->getResource(Resource::ORE, 3);
         players[cur_player]->getResource(Resource::WHEAT, 2);
+        cell(x, y)->setBuildingType(BuildingType::CITY);
+        players[cur_player]->giveVictoryPoints(2);
     } else {
         players[cur_player]->getResource(Resource::TREE, 1);
         players[cur_player]->getResource(Resource::CLAY, 1);
-
         cell(x, y)->setPlayer(cur_player);
 
         updateRoadsRecord();
@@ -389,7 +415,7 @@ void Catan::settle(BuildingType s, int x, int y) {
 }
 
 int Catan::findRoadsRecord(const std::unique_ptr<Cell> &v) {
-    if (v == nullptr) return -1;
+    if (v == nullptr) return -1; //на самом деле не нужно, так как check гарантирует отсутсвие nullptr в соседях
     if (v->getPlayer() != cur_player && v->getPlayer() != PlayerNum::NONE) return -1;
     if (v->marked) return 0;
 
@@ -471,19 +497,19 @@ void Catan::updateRoadsRecord() {
 }
 
 void Catan::setRobbers(int hex_num) {
-    hexes[robbers_hex]->setRobbers();
-    hexes[hex_num]->setRobbers();
+    hexes[robbers_hex]->moveRobbers();
+    hexes[hex_num]->moveRobbers();
     robbers_hex = hex_num;
 
     int x, y;
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < HEXVERTNUM; i++) {
         x = hexes[hex_num]->getVertex(i).first;
         y = hexes[hex_num]->getVertex(i).second;
         PlayerNum player = cell(x, y)->getPlayer();
         if (player != PlayerNum::NONE && player != cur_player) {
             bool is_get = false;
             for (int intRE = 1; intRE < TERRITORIESNUM + 1; intRE++) {
-                Resource re = static_cast<Resource>(intRE);
+                auto re = static_cast<Resource>(intRE);
                 if (players[player]->checkResourceNum(re) > 0) {
                     players[player]->getResource(re, 1);
                     players[cur_player]->giveResource(re, 1);
@@ -496,8 +522,24 @@ void Catan::setRobbers(int hex_num) {
     }
 }
 
+int Catan::getRobbersIndx() const {
+    return robbers_hex;
+}
+
 void Catan::changeCurPlayer(PlayerNum new_player) {
     cur_player = new_player;
+}
+
+void Catan::nextPlayer() {
+    int curInd = 0;
+    for (int i = 1; i <= gamersNum; i++) {
+        if (playersIDs[i] == cur_player) curInd = i;
+    }
+    if (curInd == gamersNum) {
+        cur_player = PlayerNum::GAMER1;
+        return;
+    }
+    cur_player = playersIDs[curInd + 1];
 }
 
 PlayerNum Catan::getCurPlayer() const {
@@ -507,7 +549,7 @@ PlayerNum Catan::getCurPlayer() const {
 void Catan::giveResources(int cubes_num) {
     for (int i = 0; i < HEXESNUM; i++) {
         if (cubes_num != hexes[i]->getNum() || hexes[i]->robbersIsHere()) continue;
-        for (int j = 0; j < 7; j++) {
+        for (int j = 0; j < HEXVERTNUM; j++) {
             int vx = hexes[i]->getVertex(j).first;
             int vy = hexes[i]->getVertex(j).second;
             if (cell(vx, vy)->getPlayer() != PlayerNum::NONE) {
@@ -521,6 +563,14 @@ void Catan::giveResources(int cubes_num) {
     }
 }
 
+int Catan::getPlayerResNum(PlayerNum playerID, Resource re) const {
+    return players[playerID]->getResourceNum(re);
+}
+
+const std::unordered_map<Resource, int>& Catan::getPlayerResources(PlayerNum playerID) const {
+    return players[playerID]->getResources();
+}
+
 bool Catan::trade(Resource re_for_trade, Resource need_re) {
     if (getPlayerCardNum(re_for_trade) < 4) {
         return false;
@@ -530,13 +580,38 @@ bool Catan::trade(Resource re_for_trade, Resource need_re) {
     return true;
 }
 
+void Catan::tradeWith(PlayerNum customerID, Resource re_for_trade, int tradeReNum, Resource need_re, int needReNum) {
+    players[customerID]->getResource(need_re, needReNum);
+    players[customerID]->giveResource(re_for_trade, tradeReNum);
+
+    players[cur_player]->getResource(re_for_trade, tradeReNum);
+    players[cur_player]->giveResource(need_re, needReNum);
+}
+
+int Catan::getPlayerDevCardNum(PlayerNum playerID, DevelopmentCard devCard) const {
+    return players[playerID]->getDevCardNum(devCard);
+}
+
+const std::unordered_map<DevelopmentCard, int>& Catan::getPlayerDevCards(PlayerNum playerID) const {
+    return players[playerID]->getDevCards();
+}
+
+std::vector<int> Catan::getVictoryPoints() const {
+    std::vector<int> VP;
+    for (int i = 1; i <= gamersNum; i++) {
+        auto playerID = playersIDs[i];
+        VP.push_back(players[playerID]->getVictoryPoints());
+    }
+    return VP;
+}
+
 bool Catan::buildDevCard() {
     if (getPlayerCardNum(Resource::ORE) < 1 ||
         getPlayerCardNum(Resource::WHEAT) < 1 ||
         getPlayerCardNum(Resource::WOOL) < 1) {
         return false;
     }
-    auto card = static_cast<DevelopmentCard>(utility::Random::getRandomNumberFromTo(1, 5));
+    auto card = static_cast<DevelopmentCard>(random.getRandomNumberFromTo(1, 5));
     players[cur_player]->giveDevCard(card);
     return true;
 }
@@ -556,8 +631,8 @@ void Catan::playDevCard(DevelopmentCard card, int extraData) {
         return;
     }
     if (card == DevelopmentCard::INVENTION) {
-        Resource re1 = static_cast<Resource>(utility::Random::getRandomNumberFromTo(1, TERRITORIESNUM));
-        Resource re2 = static_cast<Resource>(utility::Random::getRandomNumberFromTo(1, TERRITORIESNUM));
+        auto re1 = static_cast<Resource>(random.getRandomNumberFromTo(1, TERRITORIESNUM));
+        auto re2 = static_cast<Resource>(random.getRandomNumberFromTo(1, TERRITORIESNUM));
         players[cur_player]->giveResource(re1, 1);
         players[cur_player]->giveResource(re2, 1);
         return;
@@ -610,9 +685,10 @@ void Catan::setKnightRecord(int new_record) {
 }
 
 bool Catan::isFinished() {
-    return players[PlayerNum::GAMER1]->getVictoryPoints() == 10 ||
-           players[PlayerNum::GAMER2]->getVictoryPoints() == 10 ||
-           players[PlayerNum::GAMER3]->getVictoryPoints() == 10;
+    for(int i = 1; i <= gamersNum; i++) {
+        if (players[playersIDs[i]]->getVictoryPoints() >= 10) return true;
+    }
+    return false;
 }
 
 }
