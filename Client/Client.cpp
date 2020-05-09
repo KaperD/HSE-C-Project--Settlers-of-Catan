@@ -36,7 +36,7 @@ GameClient::GameClient(const std::shared_ptr<Channel>& channel)
 
 //35.193.120.72:80
 
-GameClient::GameClient() : stub_(Network::NewStub(grpc::CreateChannel("35.193.120.72:80",
+GameClient::GameClient() : stub_(Network::NewStub(grpc::CreateChannel("209.97.148.147:80",
                           grpc::InsecureChannelCredentials()))), player_() {
 
 }
