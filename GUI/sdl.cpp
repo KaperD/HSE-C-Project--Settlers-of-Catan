@@ -118,11 +118,11 @@ void GUI::load_textures(utility::Random& random) {
     
 
 
-//    sfx = nullptr;
-//    sfx = Mix_LoadWAV("image/music.wav");
-//    button_sound = Mix_LoadWAV("image/button_sound.wav");
-//    build_sound = Mix_LoadWAV("image/build_sound.wav");
-//    if (sfx == nullptr)  std::cout << "Hhhh";
+   sfx = nullptr;
+   sfx = Mix_LoadWAV("image/music.wav");
+   button_sound = Mix_LoadWAV("image/button_sound.wav");
+   build_sound = Mix_LoadWAV("image/build_sound.wav");
+    if (sfx == nullptr)  std::cout << "Hhhh";
 }
 
 void GUI::destroy_textures() { // TODO: Удалять всё, а не только часть
@@ -205,7 +205,7 @@ void GUI::render_buildings() {
     std::lock_guard<std::mutex> lock(mutex_for_roads);
     for (auto e: buildings->vec) {
         if (e.built) {
-
+             
             SDL_RenderCopy(ren, texture_arr_building[e.built][e.colour], nullptr, &e.dest);
         }
     }
@@ -535,19 +535,25 @@ GUI::~GUI() {
 
 void GUI::add_building(std::pair<int, int> tmp, int player) {
     std::lock_guard<std::mutex> lock(mutex_for_roads);
+    std::cerr << "11111111111111\n";
     for (auto& e:buildings->vec) {
         if (tmp.first == e.model_x && tmp.second == e.model_y) {
+            std::cerr << "11111111111111\n";
             e.built++;
             // TODO: непонятно, зачем ++, можно сделать bool
             // TODO: добавить зданиям метод, который принимает номер игрока и ставит для себя нужную текстуру, или же делать это здесь
             //e.texture = build_texture_arr[player];
             //e.cur_texture = cur_build_texture_arr[player];
             // TODO: можно сделать, чтобы для уже построеных зданий cur_texture был пустым, чтобы они не подсвечивались при наведении
+            std::cerr << "11111111111111\n";
             e.colour = (Colour)player;
+            std::cerr << "11111111111111\n";
             if (e.built > 1) e.built = 1;
+            std::cerr << "11111111111111\n";
             return;
         }
     }
+    std::cerr << "11111111111111\n";
 }
 
 
