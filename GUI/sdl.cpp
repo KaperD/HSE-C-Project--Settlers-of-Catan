@@ -130,9 +130,6 @@ void GUI::destroy_textures() { // TODO: Удалять всё, а не толь�
         SDL_DestroyTexture(i);
     }
     Mix_CloseAudio();
-    SDL_DestroyTexture(road);
-    SDL_DestroyTexture(road1);
-    SDL_DestroyTexture(road2);
     SDL_DestroyTexture(back_ground);
     SDL_DestroyTexture(back);
 }
