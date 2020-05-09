@@ -5,6 +5,7 @@
 #include <mutex>
 #include <set>
 #include <queue>
+#include <string>
 
 #include <grpc/grpc.h>
 #include <grpcpp/server.h>
@@ -14,6 +15,9 @@
 #include "game.grpc.pb.h"
 #include "EventQueue.h"
 #include "spinlock.h"
+
+
+namespace {
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -33,11 +37,11 @@ using game::GameId;
 using game::NumberOfPlayers;
 using game::Bool;
 
-
-namespace {
-
 constexpr int MaximumNumberOfGames = 100;
 constexpr int MaximumNumberOfPlayers = 4;
+
+} // namespace
+
 
 struct Game {
     Game() : events_(MaximumNumberOfPlayers) { }
@@ -59,7 +63,6 @@ struct Game {
     utility::spinlock spin;
 };
 
-} // namespace
 
 class GameServerImpl final : public Network::Service {
 public:
@@ -125,7 +128,7 @@ private:
         int playerid = event.playerid();
         std::cout << "SendEvent gameid " <<  request->gameid() << std::endl;
         Game& game = games.at(event.gameid());
-        
+
         for (int k = 0; k < 3; ++k) {
             if (k == playerid) continue;
             game.events_[k].push(event);
@@ -141,7 +144,7 @@ private:
     }
 
 
-    Status GetEvent(ServerContext* context, const Player* request, Event* response) override { 
+    Status GetEvent(ServerContext* context, const Player* request, Event* response) override {
         int playerid = request->playerid();
         std::cout << "GetEvent gameid " <<  request->gameid() << std::endl;
         std::cout << "GetEvent playerid " <<  playerid << std::endl;
@@ -180,23 +183,34 @@ private:
     int numberOfMadeGames = 0;
 };
 
- 
-void RunServer() {
-    std::string server_address("209.97.148.147:80");
+
+class LocalServer {
+public:
+    LocalServer() {
+        builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+        builder.RegisterService(&service);
+        server = builder.BuildAndStart();
+    }
+
+    void runServer() {
+        server->Wait();
+    }
+
+    void terminate() {
+        server->Shutdown();
+    }
+
+private:
+    std::unique_ptr<Server> server;
     GameServerImpl service;
-
+    std::string server_address = "0.0.0.0:50051";
     ServerBuilder builder;
+};
 
-    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
-    builder.RegisterService(&service);
-    std::unique_ptr<Server> server(builder.BuildAndStart());
-
-    server->Wait();
+void RunServer(LocalServer* serv, bool needRun) {
+    if (needRun) {
+        serv->runServer();
+    }
 }
 
-int main() {
-    RunServer();
-    
-     
-    return 0;
-}
+
