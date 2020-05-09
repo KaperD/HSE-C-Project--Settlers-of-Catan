@@ -50,9 +50,9 @@ enum class BuildingType {
 
 class Cell {
 public:
-    Cell(BuildingType type);
+    explicit Cell(BuildingType type);
 
-    PlayerNum getPlayer() const;
+    [[nodiscard]] PlayerNum getPlayer() const;
     void setPlayer(PlayerNum new_player);
 
     size_t getVertexNum() const;
@@ -88,7 +88,7 @@ class Hexagon : public Cell {
 public:
     Hexagon(int x, int y, int resource, int number);
 
-    void setRobbers();
+    void moveRobbers();
     Resource getResource() const;
     int getNum() const;
     bool robbersIsHere() const;
@@ -113,6 +113,10 @@ public:
 
     int getVictoryPoints() const;
     int getKnightsNum() const;
+    int getResourceNum(Resource re) const;
+    int getDevCardNum(DevelopmentCard dev_card) const;
+    auto& getResources() const;
+    auto& getDevCards() const;
 
     int checkResourceNum(Resource re);
 
@@ -120,14 +124,13 @@ private:
     PlayerNum id;
     int victory_points = 0;
     int knights = 0;
-    std::unordered_map<Resource, int> cards;
-    std::unordered_map<DevelopmentCard, int> dev_cards;
+    mutable std::unordered_map<Resource, int> cards;
+    mutable std::unordered_map<DevelopmentCard, int> dev_cards;
 };
 
 class Catan {
 public:
-    //TODO: Gamers Number in constructor
-    Catan(utility::Random& ran);
+    Catan(utility::Random& ran, int gamersNum_);
 
     void settle(BuildingType s, int x, int y);
     void giveResources(int cubes_num);
@@ -135,7 +138,8 @@ public:
 
     //возвращает true, если торговля прошла успешно, false, если не хватило ресурсов на обмен
     bool trade(Resource re_for_trade, Resource need_re);
-    //TODO: bool tradeWith(PlayerNum, Resource, Resource, int) function
+    //TODO: доработать логику торговли с другими игроками, сейчас пока сыро
+    void tradeWith(PlayerNum customerID, Resource re_for_trade, int tradeReNum, Resource need_re, int needReNum);
 
 
     //возвращает true или false аналогично торговле
@@ -145,10 +149,16 @@ public:
     bool canBuild(BuildingType mod, int x, int y) const;
     bool checkCards(BuildingType building);
 
+    int getPlayerResNum(PlayerNum playerID, Resource re) const;
+    int getPlayerDevCardNum(PlayerNum playerID, DevelopmentCard devCard) const;
+    const std::unordered_map<Resource, int>& getPlayerResources(PlayerNum playerID) const;
+    const std::unordered_map<DevelopmentCard, int>& getPlayerDevCards(PlayerNum playerID) const;
+    std::vector<int> getVictoryPoints() const;
     const std::unique_ptr<Cell>& getFieldCell(int x, int y) const;
     const std::unique_ptr<Hexagon>& getHex(int indx) const;
-    void changeCurPlayer(PlayerNum new_player);
     PlayerNum getCurPlayer() const;
+
+    void changeCurPlayer(PlayerNum new_player);
 
     int getRoadsRecord() const;
     PlayerNum getRoadsRecordHolder() const;
@@ -164,15 +174,23 @@ public:
 private:
     std::vector<std::vector<std::unique_ptr<Cell>>> field;
     std::vector<std::unique_ptr<Hexagon>> hexes;
-    std::unordered_map<PlayerNum, std::unique_ptr<Player>> players;
-    int robbers_hex;
-    PlayerNum cur_player;
+    mutable std::unordered_map<PlayerNum, std::unique_ptr<Player>> players;
+    int robbers_hex = 17;
+    PlayerNum cur_player = PlayerNum::NONE;
+    int gamersNum = 0;
     bool is_beginning = true;
 
     PlayerNum last_roads_record_holder = PlayerNum::NONE;
     int roads_record = 4;
     PlayerNum last_knights_record_holder = PlayerNum::NONE;
     int knights_record = 2;
+
+    //TODO: static_cast<enum class> VS vector<enum class>
+    std::vector<PlayerNum> playersIDs = {
+            PlayerNum::NONE, PlayerNum::GAMER1,
+            PlayerNum::GAMER2, PlayerNum::GAMER3,
+            PlayerNum::GAMER4
+    };
 
     int findRoadsRecord(const std::unique_ptr<Cell>& v);
     void updateRoadsRecord();
