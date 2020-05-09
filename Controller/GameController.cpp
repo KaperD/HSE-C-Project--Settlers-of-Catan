@@ -148,7 +148,6 @@ void MarketHandler::displayEvent(Event& event) {
 }
 
 
-
 //===============BuildHandler===============
 
 void BuildHandler::processEvent(Event& event, bool needSend) {
@@ -175,10 +174,16 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
         if (type == Board::BuildingType::ROAD) {
             roadIsSet = true;
             gameView_.add_road({x_, y_}, Player - 1);
+            gameView_.update_points(gameModel_.Catan::getVictoryPoints());
         }
         if (type == Board::BuildingType::VILLAGE) {
             villageIsSet = true;
             gameView_.add_building({x_, y_}, Player - 1);
+            gameView_.update_points(gameModel_.Catan::getVictoryPoints());
+        }
+        if (type == Board::BuildingType::CITY) {
+            gameView_.add_building({x_, y_}, Player - 1);
+            gameView_.update_points(gameModel_.Catan::getVictoryPoints());
         }
         //displayEvent(event);
         if (needSend) {
@@ -281,6 +286,10 @@ void GameController::RunGame() {
     bool quit = false;
     while (!quit) {
         if (currentTurn_ == myTurn_) {
+            if (gameView_.getAction() == GUI::Action::DICE) {
+                gameView_.add_dice(4, 5);
+                SDL_Delay(1000);
+            }
             while (true) {
                 Event event = gameView_.getTurn();
                 int x = event.type();
@@ -344,8 +353,13 @@ void GameController::BeginGame() {
         }
 
         if (currentTurn_ == myTurn_) {
+            if (gameView_.getAction() == GUI::Action::DICE) {
+                    gameView_.add_dice(4, 5);
+                    SDL_Delay(1000);
+                }
             while (true) {
                 // start() Засекается время начала
+                
                 Event event = gameView_.getTurn();
                 int x = event.type();
                 if (x == EventType::BUILD) {

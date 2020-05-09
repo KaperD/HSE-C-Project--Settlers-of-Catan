@@ -7,6 +7,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_ttf.h>
 #include <iostream>
 #include <random>
 #include <time.h>
@@ -23,12 +24,19 @@ void play_music(GUI* gui);
 
 
 enum Colour {
-    YELLOW,
-    BLUE,
     RED,
     GREEN,
+    BLUE,
+    YELLOW,
     NONE
 };
+
+
+enum class Action {
+    DICE,
+    CARD
+};
+
 
 class Obj {
 public:
@@ -87,6 +95,13 @@ enum Rode {
     SCALE_X = 100000
 };
 
+enum Resourses {
+    WOOL,
+    WOOD,
+    BRIKCS,
+    CORN,
+    ORE
+};
 
 class GUI {
 public:
@@ -102,18 +117,22 @@ public:
     std::pair<SDL_Texture*, int> cur_table;
     SDL_Texture *back, *back_ground, *oct, *cur_road, *cur_road1,
             *cur_road2, *table, *table_1, *table_2,
-            *table_time, *house_cur, *house1_cur;
+            *table_time, *house_cur, *house1_cur, *svitok;
     SDL_Texture* arr[6];
     SDL_Texture* build_texture_arr[3];
     SDL_Texture* cur_build_texture_arr[3];
 
-    std::vector<SDL_Texture *> texture_arr_building[2];
+    std::vector<SDL_Texture *> texture_arr_building[3];
     std::vector<SDL_Texture *> cur_texture_arr_building;
 
     std::vector<SDL_Texture *> texture_arr_road[3];
     std::vector<SDL_Texture *> cur_texture_arr_road;
 
+    std::vector<SDL_Texture *> dice;
+    std::vector<SDL_Texture *> tables_arr;
+
     bool quit = false;
+    int  end_time_dice = 0;
     SDL_Texture* field_arr[19]{};
     int tmp_sound = 0;
     int render_type{};
@@ -123,6 +142,9 @@ public:
     void load_textures(utility::Random& random);
 
     int tmp_coors{};
+
+    int dice1;
+    int dice2;
 
 
 
@@ -134,6 +156,9 @@ public:
     void render_field();
     void render_roads();
     void render_buildings();
+    Action getAction();
+    void render_dice();
+    void add_dice(int x, int y);
     void render_tables_time() const;
     void make_render();
     void get_coors_road();
@@ -157,6 +182,23 @@ public:
     SDL_Texture *get_road(int x, int type);
 
     SDL_Texture *get_vert_road(int type);
+
+    std::vector<int> players_points;
+    std::vector<std::string> players_names;
+    int cur_player = 0;
+
+    void update_player(int x);
+
+    void render_text() const;
+
+    void update_points(std::vector<int> vec);
+
+    void update_resourses(Resourses x, int value, int player);
+    std::vector<std::vector<int>> resourses;
+
+    void render_const_table() const;
+    void add_player_name(int x, std::string s);
+
 };
 
 } // namespace GUI
