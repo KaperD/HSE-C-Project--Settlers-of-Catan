@@ -73,7 +73,7 @@ int main() {
     OrderInfo info = gameClient_.ConnectToGame(gameParams.first, gameParams.second);
     Board::Catan wow(random, info.numberofplayers());
 
-    view.load_textures();
+    view.load_textures(random);
     view.roads = new GUI::Road_arr(view);
     view.buildings = new GUI::Building_arr(view);
 

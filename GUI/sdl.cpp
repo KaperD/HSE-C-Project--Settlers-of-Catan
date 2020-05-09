@@ -5,6 +5,7 @@
 #include <thread>
 #include <ctime>
 #include <cassert>
+#include <random.h>
 #include "sdl.h"
 
 namespace GUI {
@@ -50,15 +51,31 @@ void play_music(GUI* gui) {
     }
 }
 
-void GUI::load_textures() {
-    for (int i = 0; i < 19; ++i) {
-        field_arr[i] = rand()%6;
-    }
+void GUI::load_textures(utility::Random& random) {
+    auto randomResouresAndNumbers = random.generateResourcesAndNumbers();
     std::string s = "image/oct .bmp";
-    for (int i = 0; i < 6; ++i) {
-        s[9] = i + '0';
-        arr[i] = IMG_LoadTexture(ren, s.c_str());
+
+    for (int i = 0; i < 19; ++i) {
+        int resource = randomResouresAndNumbers[i].resource;
+        int number = randomResouresAndNumbers[i].number;
+        s[9] = resource + '0'; // TODO: Числа в названиях файлов должны соответствовать enum в модели
+
+
+        SDL_Surface* numberImg = IMG_Load("image/number2.bmp"); // TODO: Вместо 2 нужно ставить число number, кроме случая, когда число 0, в этом случае не нужно изображение чилса
+
+        SDL_Surface* hex = IMG_Load(s.c_str());
+        SDL_Rect dest;
+        dest.x = numberImg->w / 3 + 36;
+        dest.y = numberImg->h / 3 + 78;
+        dest.w = static_cast<int>(static_cast<double>(numberImg->w) * 0.5);
+        dest.h = static_cast<int>(static_cast<double>(numberImg->h) * 0.5);
+        if (SDL_BlitScaled(numberImg, NULL, hex, &dest) != 0) {
+            std::cout << "Wrong Blit" << std::endl;
+        }
+        field_arr[i] = SDL_CreateTextureFromSurface(ren, hex);
+        SDL_FreeSurface(hex);
     }
+
     back_ground = IMG_LoadTexture(ren, "image/back_ground.bmp");
     back = IMG_LoadTexture(ren, "image/back.bmp");
     road = IMG_LoadTexture(ren, "image/cur_road.bmp");
@@ -99,7 +116,7 @@ void GUI::load_textures() {
 }
 
 void GUI::destroy_textures() { // TODO: Удалять всё, а не только часть
-    for (auto & i : arr) {
+    for (auto & i : field_arr) {
         SDL_DestroyTexture(i);
     }
     Mix_CloseAudio();
@@ -152,7 +169,7 @@ void GUI::render_field() {
         dest.y += 150;
         for (int q = 0; q < k; ++q){
             dest.x += 100*sqrt(3);
-            SDL_RenderCopy(ren, arr[field_arr[it++]], nullptr, &dest); //Копируем в рендер персонажа
+            SDL_RenderCopy(ren, field_arr[it++], nullptr, &dest); //Копируем в рендер персонажа
         }
         dest.x-= 100*sqrt(3)*k;
         if (i < 2) {k+=1;dest.x-= 50*sqrt(3);}
@@ -256,10 +273,9 @@ void GUI::get_coors_road () {
 
     Limiter limit;
 
-    while (!quit) { // TODO: нужно ограничить частоту цикла, так как процессор очень сильно нагружается
-        // TODO: сделать класс у которого будут методы --- засечь начало и подождать, если действия выполнились очень быстро
+    while (!quit) {
 
-        limit.storeStartTime();
+        limit.storeStartTime(); // засекает начало итерации
 
         clock_t end_time = clock();
         if (end_time - begin_time > CLOCKS_PER_SEC * 30) {
@@ -294,7 +310,9 @@ void GUI::get_coors_road () {
                 if (tmp_coors != -1) return;
             }
         }
-        limit.delay();
+
+        limit.delay(); // Ждет, если операции выполнились слишком быстро
+
     }
 }
 
@@ -309,7 +327,6 @@ void GUI::get_coors_building () {
     Limiter limit;
 
     while (!quit) {
-        // TODO: также нужно ограничить частоту цикла с помощью того же класса
 
         limit.storeStartTime();
 
@@ -349,6 +366,7 @@ void GUI::get_coors_building () {
         }
 
         limit.delay();
+
     }
 }
 
@@ -358,7 +376,7 @@ Event GUI::getTurn () {
 
     Limiter limit;
 
-    while (!quit) { // TODO: также нужно ограничить частоту цикла с помощью того же класса
+    while (!quit) {
 
         limit.storeStartTime();
 
@@ -441,6 +459,9 @@ void GUI::add_road(std::pair<int, int> tmp, int player) {
     for (auto& e : roads->vec) {
         if (tmp.first == e.model_x && tmp.second == e.model_y) {
             e.built++;
+            // TODO: непонятно, зачем ++, можно сделать bool
+            // TODO: добавить дорогам метод, который принимает номер игрока и ставит для себя нужную текстуру, или же делать это здесь
+            // TODO: можно сделать, чтобы для уже построеных дорог cur_texture был пустым, чтобы они не подсвечивались при наведении
             std::cout << player << std::endl;
             if (player != 0) {
                 e.texture = e.texture2;
@@ -534,9 +555,11 @@ void GUI::add_building(std::pair<int, int> tmp, int player) {
     std::lock_guard<std::mutex> lock(mutex_for_roads);
     for (auto& e:buildings->vec) {
         if (tmp.first == e.model_x && tmp.second == e.model_y) {
-            e.built++;
+            e.built++; // TODO: непонятно, зачем ++, можно сделать bool
+            // TODO: добавить зданиям метод, который принимает номер игрока и ставит для себя нужную текстуру, или же делать это здесь
             //e.texture = build_texture_arr[player];
             //e.cur_texture = cur_build_texture_arr[player];
+            // TODO: можно сделать, чтобы для уже построеных зданий cur_texture был пустым, чтобы они не подсвечивались при наведении
             return;
         }
     }

@@ -111,17 +111,16 @@ public:
             *cur_road2, *table, *table_1, *table_2,
             *table_time, *house, *house1, *house2,
             *house_cur, *house1_cur, *house2_cur, *Vova, *Vova1, *Vova2;
-    SDL_Texture* arr[6];
     SDL_Texture* build_texture_arr[3];
     SDL_Texture* cur_build_texture_arr[3];
     bool quit = false;
-    int field_arr[19]{};
+    SDL_Texture* field_arr[19]{};
     int tmp_sound = 0;
     int render_type{};
     SDL_Renderer *ren;
     SDL_DisplayMode displayMode{};
     SDL_Window *win;
-    void load_textures();
+    void load_textures(utility::Random& random);
 
     int tmp_coors{};
 

@@ -259,6 +259,7 @@ GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI
     , gameClient_(client)
     , myTurn_(info.id())
     , numberOfPlayers_(info.numberofplayers()) {
+    std::cout << "My turn is " << myTurn_ << ", numOfPl " << numberOfPlayers_ << std::endl;
 
     for (int k = 0; k < 7; ++k) {
         handlers_.push_back(nullptr);
