@@ -13,6 +13,7 @@ constexpr int VERTEXNUM = 54;
 constexpr int FIELDHEIGHT = 11;
 constexpr int FIELDWIDTH = 21;
 constexpr int HEXESNUM = 19;
+constexpr int HEXVERTNUM = 6;
 
 enum class PlayerNum {
     NONE,
@@ -157,8 +158,10 @@ public:
     const std::unique_ptr<Cell>& getFieldCell(int x, int y) const;
     const std::unique_ptr<Hexagon>& getHex(int indx) const;
     PlayerNum getCurPlayer() const;
+    int getRobbersIndx() const;
 
     void changeCurPlayer(PlayerNum new_player);
+    void nextPlayer();
 
     int getRoadsRecord() const;
     PlayerNum getRoadsRecordHolder() const;

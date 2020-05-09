@@ -1,7 +1,6 @@
 #include <ctime>
 #include <memory>
 #include "Board.h"
-#include "random.h"
 
 namespace Board {
 
@@ -293,6 +292,14 @@ Catan::Catan(utility::Random& ran, int gamersNum_) : field(FIELDHEIGHT), players
             ++curResourseAndNumber;
         }
     }
+
+    for (int i = 0; i < HEXESNUM; i++) {
+        if (hexes[i]->robbersIsHere()) {
+            robbers_hex = i;
+            break;
+        }
+    }
+
 }
 
 const std::unique_ptr<Cell>& Catan::getFieldCell(int x, int y) const {
@@ -493,9 +500,8 @@ void Catan::setRobbers(int hex_num) {
     hexes[hex_num]->moveRobbers();
     robbers_hex = hex_num;
 
-    //тут происходит ленивый рандом, даём текущему игроку "случайный" ресурс у "случайного" игрока около гекса
     int x, y;
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < HEXVERTNUM; i++) {
         x = hexes[hex_num]->getVertex(i).first;
         y = hexes[hex_num]->getVertex(i).second;
         PlayerNum player = cell(x, y)->getPlayer();
@@ -515,8 +521,24 @@ void Catan::setRobbers(int hex_num) {
     }
 }
 
+int Catan::getRobbersIndx() const {
+    return robbers_hex;
+}
+
 void Catan::changeCurPlayer(PlayerNum new_player) {
     cur_player = new_player;
+}
+
+void Catan::nextPlayer() {
+    int curInd = 0;
+    for (int i = 1; i <= gamersNum; i++) {
+        if (playersIDs[i] == cur_player) curInd = i;
+    }
+    if (curInd == gamersNum) {
+        cur_player = PlayerNum::GAMER1;
+        return;
+    }
+    cur_player = playersIDs[curInd + 1];
 }
 
 PlayerNum Catan::getCurPlayer() const {
@@ -526,7 +548,7 @@ PlayerNum Catan::getCurPlayer() const {
 void Catan::giveResources(int cubes_num) {
     for (int i = 0; i < HEXESNUM; i++) {
         if (cubes_num != hexes[i]->getNum() || hexes[i]->robbersIsHere()) continue;
-        for (int j = 0; j < 7; j++) {
+        for (int j = 0; j < HEXVERTNUM; j++) {
             int vx = hexes[i]->getVertex(j).first;
             int vy = hexes[i]->getVertex(j).second;
             if (cell(vx, vy)->getPlayer() != PlayerNum::NONE) {
