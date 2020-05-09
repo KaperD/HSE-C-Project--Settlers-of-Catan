@@ -69,7 +69,8 @@ int main() {
 
     GUI::GUI view;
     GameClient gameClient_(isLocal);
-    Board::Catan wow(random);
+    //TODO: добавить поддержку количества игроков, пока работает только для action == 1, т.е. для новой игры
+    Board::Catan wow(random, gameParams.second);
 
     view.load_textures();
     view.roads = new GUI::Road_arr(view);
