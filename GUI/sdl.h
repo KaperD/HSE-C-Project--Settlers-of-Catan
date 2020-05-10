@@ -131,6 +131,16 @@ public:
     std::vector<SDL_Texture *> dice;
     std::vector<SDL_Texture *> tables_arr;
 
+    void render_begining_menu();
+
+    int get_place_of_game();
+
+    int get_type_of_game();
+
+    int get_num_of_players();
+
+    int get_game_id();
+
     bool quit = false;
     int  end_time_dice = 0;
     SDL_Texture* field_arr[19]{};

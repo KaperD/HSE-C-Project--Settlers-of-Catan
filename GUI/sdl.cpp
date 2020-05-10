@@ -168,7 +168,8 @@ void GUI::render_background() const {
     dest1.h = displayMode.h;
     assert(ren != nullptr); // TODO: гонка данных --- ren
     SDL_RenderCopy(ren, back_ground, nullptr, &dest1); //Копируем в рендер фон // TODO: гонка данных --- ren
-    SDL_RenderCopy(ren, back, nullptr, &dest1); //Копируем в рендер фон // TODO: гонка данных --- ren
+    if (render_type <= 10)
+        SDL_RenderCopy(ren, back, nullptr, &dest1); //Копируем в рендер фон // TODO: гонка данных --- ren
 }
 
 void GUI::render_dice() {
@@ -480,18 +481,122 @@ void GUI::render_const_table() const {
     }
 }
 
+void GUI::render_begining_menu(){
+    SDL_Rect dest;
+    dest.x = 1000;
+    dest.y = 98;
+    dest.w = 540*1.2;
+    dest.h = 960*1.2;
+    if (render_type == 11) {
+        SDL_RenderCopy(ren, tables_arr[1], nullptr,&dest);
+        SDL_Color color = { 255, 255, 255, 255 };
+        SDL_Texture *image = Text("Local Game","sample.ttf",
+            color, 32, ren);
+        int iW, iH;
+        SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
+        dest.x = 1030;
+        dest.y = 210;
+        dest.w = iW;
+        dest.h = iH;
+        SDL_RenderCopy(ren, image, nullptr, &dest);
+
+        image = Text("Game On Server","sample.ttf",
+            color, 32, ren);
+        SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
+        dest.y = 240;
+        dest.w = iW;
+        dest.h = iH;
+        SDL_RenderCopy(ren, image, nullptr, &dest);
+    } else if (render_type == 12) {
+        SDL_RenderCopy(ren, tables_arr[2], nullptr,&dest);
+        SDL_Color color = { 255, 255, 255, 255 };
+        SDL_Texture *image = Text("Start New Game","sample.ttf",
+            color, 32, ren);
+        int iW, iH;
+        SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
+        dest.x = 1030;
+        dest.y = 210;
+        dest.w = iW;
+        dest.h = iH;
+        SDL_RenderCopy(ren, image, nullptr, &dest);
+
+        image = Text("Join Game","sample.ttf",
+            color, 32, ren);
+        SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
+        dest.y = 240;
+        dest.w = iW;
+        dest.h = iH;
+        SDL_RenderCopy(ren, image, nullptr, &dest);
+
+        image = Text("Exit","sample.ttf",
+            color, 32, ren);
+        SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
+        dest.y = 270;
+        dest.w = iW;
+        dest.h = iH;
+        SDL_RenderCopy(ren, image, nullptr, &dest);
+    } else if (render_type == 13) {
+        SDL_RenderCopy(ren, tables_arr[2], nullptr,&dest);
+        SDL_Color color = { 255, 255, 255, 255 };
+        SDL_Texture *image = Text("2 Players","sample.ttf",
+            color, 32, ren);
+        int iW, iH;
+        SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
+        dest.x = 1030;
+        dest.y = 210;
+        dest.w = iW;
+        dest.h = iH;
+        SDL_RenderCopy(ren, image, nullptr, &dest);
+
+        image = Text("3 Players","sample.ttf",
+            color, 32, ren);
+        SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
+        dest.y = 240;
+        dest.w = iW;
+        dest.h = iH;
+        SDL_RenderCopy(ren, image, nullptr, &dest);
+
+        image = Text("4 Players","sample.ttf",
+            color, 32, ren);
+        SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
+        dest.y = 270;
+        dest.w = iW;
+        dest.h = iH;
+        SDL_RenderCopy(ren, image, nullptr, &dest);
+    } else if (render_type == 14) {
+        SDL_RenderCopy(ren, tables_arr[1], nullptr,&dest);
+        SDL_Color color = { 255, 255, 255, 255 };
+        SDL_Texture *image = Text("Type Game Id","sample.ttf",
+            color, 32, ren);
+        int iW, iH;
+        SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
+        dest.x = 1030; 
+        dest.y = 210;
+        dest.w = iW;
+        dest.h = iH;
+        SDL_RenderCopy(ren, image, nullptr, &dest);
+
+        //TODO: написать функцию ввода текста
+
+    }
+}
 
 void GUI::make_render() { // TODO: гонка данных --- ren
     SDL_RenderClear(ren);
     render_background();
-    render_field();
-    render_roads();
-    render_buildings();
-    render_tables();
-    render_tables_time();
-    render_dice();
-    render_const_table();
-    render_text();
+    if (render_type <= 10) {
+        render_field();
+        render_roads();
+        render_buildings();
+        render_tables();
+        render_tables_time();
+        render_dice();
+        render_const_table();
+        render_text();
+    } else {
+        render_begining_menu();
+    }
+    
 }
    
 
@@ -909,6 +1014,130 @@ void GUI::update_resourses(Resourses x, int value, int player) {
 
 void GUI::add_player_name(int x, std::string s) {
     players_names[x] = s;
+}
+
+int GUI::get_place_of_game() {
+    render_type = 11;
+    SDL_Event e;
+    Limiter limit;
+    while (!quit) {
+        limit.storeStartTime();
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_MOUSEBUTTONDOWN) {
+                Mix_PlayChannel(-1, button_sound, 0);
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                if (x > 1161 && x < 1423 && y > 136 && y < 317) { // дорога
+                    return 1;
+                }
+                if (x > 1161 && x < 1423 && y > 373 && y < 552) { // derevnia
+                    return 2;
+                }
+            }
+        }
+        limit.delay();
+    }
+}
+
+int GUI::get_type_of_game() {
+    render_type = 12;
+    SDL_Event e;
+    Limiter limit;
+    while (!quit) {
+        limit.storeStartTime();
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_MOUSEBUTTONDOWN) {
+                Mix_PlayChannel(-1, button_sound, 0);
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                if (x > 1161 && x < 1423 && y > 136 && y < 317) { // дорога
+                    return 1;
+                }
+                if (x > 1161 && x < 1423 && y > 373 && y < 552) { // derevnia
+                    return 2;
+                }
+                if (x > 1161 && x < 1423 && y > 610 && y < 790) { // деревня
+                    return 3;
+                }
+            }
+        }
+        limit.delay();
+    }
+}
+
+int GUI::get_num_of_players() {
+    render_type = 13;
+    SDL_Event e;
+    Limiter limit;
+    while (!quit) {
+        limit.storeStartTime();
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_MOUSEBUTTONDOWN) {
+                Mix_PlayChannel(-1, button_sound, 0);
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                if (x > 1161 && x < 1423 && y > 136 && y < 317) { // дорога
+                    return 1;
+                }
+                if (x > 1161 && x < 1423 && y > 373 && y < 552) { // derevnia
+                    return 2;
+                }
+                if (x > 1161 && x < 1423 && y > 610 && y < 790) { // деревня
+                    return 3;
+                }
+            }
+        }
+        limit.delay();
+    }
+}
+
+int GUI::get_game_id() {
+    render_type = 14;
+    int value = 0;
+    SDL_Event e;
+    Limiter limit;
+    while (!quit) {
+        limit.storeStartTime();
+        while (SDL_PollEvent(&e)) {
+            if(e.type == SDL_KEYDOWN) {
+                if (e.key.keysym.sym == SDLK_0) {
+                    value*=10;
+                    value+=0;
+                } else if (e.key.keysym.sym == SDLK_1) {
+                    value*=10;
+                    value+=1;
+                } else if (e.key.keysym.sym == SDLK_2) {
+                    value*=10;
+                    value+=2;
+                } else if (e.key.keysym.sym == SDLK_3) {
+                    value*=10;
+                    value+=3;
+                } else if (e.key.keysym.sym == SDLK_4) {
+                    value*=10;
+                    value+=4;
+                } else if (e.key.keysym.sym == SDLK_5) {
+                    value*=10;
+                    value+=5;
+                } else if (e.key.keysym.sym == SDLK_6) {
+                    value*=10;
+                    value+=6;
+                } else if (e.key.keysym.sym == SDLK_7) {
+                    value*=10;
+                    value+=0;
+                } else if (e.key.keysym.sym == SDLK_8) {
+                    value*=10;
+                    value+=8;
+                } else if (e.key.keysym.sym == SDLK_9) {
+                    value*=10;
+                    value+=9;
+                } else if (e.key.keysym.sym == SDLK_KP_ENTER) {
+                    return value;
+                }
+            }
+        }
+        limit.delay();
+    }
+
 }
 
 } // namespace GUI
