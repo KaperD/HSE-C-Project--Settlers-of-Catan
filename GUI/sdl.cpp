@@ -491,7 +491,7 @@ void GUI::make_render() { // TODO: гонка данных --- ren
     render_tables_time();
     render_dice();
     render_const_table();
-    render_text();
+//    render_text();
 }
    
 
@@ -652,7 +652,34 @@ void GUI::get_coors_building () {
     }
 }
 
-Event GUI::getTurn () {
+Event GUI::FirstStage() {
+    render_type = 5;
+    SDL_Event e;
+
+    Limiter limit;
+    Event event;
+
+    while(true){
+        limit.storeStartTime();
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_MOUSEBUTTONDOWN) {
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                if (x > 200 && x < 480 && y > 98 && y < 280) {
+                    event.set_type(EventType::DICE);
+                    return event;
+                }
+                if (x > 200 && x < 480 && y > 300 && y < 482) {
+                    event.set_type(EventType::CARD); // TODO: нужно сразу здесь вызвать функцию, которая получит вид карты
+                    return event;
+                }
+            }
+        }
+        limit.delay();
+    }
+}
+
+Event GUI::ThirdStage () {
     SDL_Event e;
     render_type = 0;
 
@@ -692,7 +719,7 @@ Event GUI::getTurn () {
                     q->set_y(p.second);
                     return event;
                 }
-                if (x > 161 && x < 423 && y > 373 && y < 552) { // derevnia
+                if (x > 161 && x < 423 && y > 373 && y < 552) { // деревня
                     get_coors_building();
                     if (render_type == 0) continue;
                     auto p = buildings->vec[tmp_coors].get_model_coors();
@@ -704,7 +731,7 @@ Event GUI::getTurn () {
                     q->set_y(p.second);
                     return event;
                 }
-                if (x > 161 && x < 423 && y > 610 && y < 790) { // деревня
+                if (x > 161 && x < 423 && y > 610 && y < 790) { // конец хода
                     Event event;
                     event.set_type(EventType::ENDTURN);
                     auto q = event.mutable_buildinfo();
@@ -719,21 +746,6 @@ Event GUI::getTurn () {
     Event event;
     event.set_type(EventType::ENDGAME);
     return event;
-}
-
-Action GUI::getAction() {
-    render_type = 5;
-    SDL_Event e;
-    while(true){
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_MOUSEBUTTONDOWN) {
-                int x, y;
-                SDL_GetMouseState(&x, &y);
-                if (x > 200 && x < 480 && y > 98 && y < 280) return Action::DICE;
-                if (x > 200 && x < 480 && y > 300 && y < 482) return Action::CARD;
-            }
-        }
-    }
 }
 
 void GUI::add_dice(int x, int y) {
@@ -909,6 +921,22 @@ void GUI::update_resourses(Resourses x, int value, int player) {
 
 void GUI::add_player_name(int x, std::string s) {
     players_names[x] = s;
+}
+
+Event GUI::getEvent() {
+    static int gameStage = 0;
+    Event event;
+    if (gameStage == 0) {
+        event = FirstStage();
+        if (event.type() == EventType::DICE) ++gameStage;
+        return event;
+//    } else if (gameStage == 1) {
+
+    } else {
+        event = ThirdStage();
+        if (event.type() == EventType::ENDTURN) gameStage = 0;
+        return event;
+    }
 }
 
 } // namespace GUI

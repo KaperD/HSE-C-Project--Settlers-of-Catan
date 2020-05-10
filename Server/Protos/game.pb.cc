@@ -293,7 +293,8 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_game_2eproto::offsets[] PROTOB
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  PROTOBUF_FIELD_OFFSET(::game::Dice, number_),
+  PROTOBUF_FIELD_OFFSET(::game::Dice, number1_),
+  PROTOBUF_FIELD_OFFSET(::game::Dice, number2_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::game::Market, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -320,8 +321,8 @@ static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOB
   { 38, -1, sizeof(::game::Event)},
   { 51, -1, sizeof(::game::Card)},
   { 57, -1, sizeof(::game::Dice)},
-  { 63, -1, sizeof(::game::Market)},
-  { 70, -1, sizeof(::game::Build)},
+  { 64, -1, sizeof(::game::Market)},
+  { 71, -1, sizeof(::game::Build)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
@@ -351,18 +352,19 @@ const char descriptor_table_protodef_game_2eproto[] PROTOBUF_SECTION_VARIABLE(pr
   "game.DiceH\000\022\"\n\nmarketInfo\030\006 \001(\0132\014.game.M"
   "arketH\000\022 \n\tbuildInfo\030\007 \001(\0132\013.game.BuildH"
   "\000B\013\n\tEventInfo\"\030\n\004Card\022\020\n\010cardType\030\001 \001(\005"
-  "\"\026\n\004Dice\022\016\n\006number\030\001 \001(\005\"9\n\006Market\022\030\n\020re"
-  "quiredResource\030\001 \001(\005\022\025\n\rownedResource\030\002 "
-  "\001(\005\"3\n\005Build\022\024\n\014buildingType\030\001 \001(\005\022\t\n\001x\030"
-  "\002 \001(\005\022\t\n\001y\030\003 \001(\005*_\n\tEventType\022\010\n\004CARD\020\000\022"
-  "\010\n\004DICE\020\001\022\n\n\006MARKET\020\002\022\t\n\005BUILD\020\003\022\013\n\007ENDT"
-  "URN\020\004\022\r\n\tNEXTPHASE\020\005\022\013\n\007ENDGAME\020\0062\351\001\n\007Ne"
-  "twork\0228\n\014StartNewGame\022\025.game.NumberOfPla"
-  "yers\032\017.game.OrderInfo\"\000\022+\n\010JoinGame\022\014.ga"
-  "me.GameId\032\017.game.OrderInfo\"\000\022&\n\tSendEven"
-  "t\022\013.game.Event\032\n.game.Void\"\000\022\'\n\010GetEvent"
-  "\022\014.game.Player\032\013.game.Event\"\000\022&\n\010HasEven"
-  "t\022\014.game.Player\032\n.game.Bool\"\000b\006proto3"
+  "\"(\n\004Dice\022\017\n\007number1\030\001 \001(\005\022\017\n\007number2\030\002 \001"
+  "(\005\"9\n\006Market\022\030\n\020requiredResource\030\001 \001(\005\022\025"
+  "\n\rownedResource\030\002 \001(\005\"3\n\005Build\022\024\n\014buildi"
+  "ngType\030\001 \001(\005\022\t\n\001x\030\002 \001(\005\022\t\n\001y\030\003 \001(\005*_\n\tEv"
+  "entType\022\010\n\004CARD\020\000\022\010\n\004DICE\020\001\022\n\n\006MARKET\020\002\022"
+  "\t\n\005BUILD\020\003\022\013\n\007ENDTURN\020\004\022\r\n\tNEXTPHASE\020\005\022\013"
+  "\n\007ENDGAME\020\0062\351\001\n\007Network\0228\n\014StartNewGame\022"
+  "\025.game.NumberOfPlayers\032\017.game.OrderInfo\""
+  "\000\022+\n\010JoinGame\022\014.game.GameId\032\017.game.Order"
+  "Info\"\000\022&\n\tSendEvent\022\013.game.Event\032\n.game."
+  "Void\"\000\022\'\n\010GetEvent\022\014.game.Player\032\013.game."
+  "Event\"\000\022&\n\010HasEvent\022\014.game.Player\032\n.game"
+  ".Bool\"\000b\006proto3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_game_2eproto_deps[1] = {
 };
@@ -382,7 +384,7 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_gam
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_game_2eproto_once;
 static bool descriptor_table_game_2eproto_initialized = false;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_game_2eproto = {
-  &descriptor_table_game_2eproto_initialized, descriptor_table_protodef_game_2eproto, "game.proto", 957,
+  &descriptor_table_game_2eproto_initialized, descriptor_table_protodef_game_2eproto, "game.proto", 975,
   &descriptor_table_game_2eproto_once, descriptor_table_game_2eproto_sccs, descriptor_table_game_2eproto_deps, 11, 0,
   schemas, file_default_instances, TableStruct_game_2eproto::offsets,
   file_level_metadata_game_2eproto, 11, file_level_enum_descriptors_game_2eproto, file_level_service_descriptors_game_2eproto,
@@ -2276,12 +2278,16 @@ Dice::Dice(const Dice& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
       _internal_metadata_(nullptr) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  number_ = from.number_;
+  ::memcpy(&number1_, &from.number1_,
+    static_cast<size_t>(reinterpret_cast<char*>(&number2_) -
+    reinterpret_cast<char*>(&number1_)) + sizeof(number2_));
   // @@protoc_insertion_point(copy_constructor:game.Dice)
 }
 
 void Dice::SharedCtor() {
-  number_ = 0;
+  ::memset(&number1_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&number2_) -
+      reinterpret_cast<char*>(&number1_)) + sizeof(number2_));
 }
 
 Dice::~Dice() {
@@ -2307,7 +2313,9 @@ void Dice::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  number_ = 0;
+  ::memset(&number1_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&number2_) -
+      reinterpret_cast<char*>(&number1_)) + sizeof(number2_));
   _internal_metadata_.Clear();
 }
 
@@ -2318,10 +2326,17 @@ const char* Dice::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::inter
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
     CHK_(ptr);
     switch (tag >> 3) {
-      // int32 number = 1;
+      // int32 number1 = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 8)) {
-          number_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          number1_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // int32 number2 = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
+          number2_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -2351,10 +2366,16 @@ failure:
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 number = 1;
-  if (this->number() != 0) {
+  // int32 number1 = 1;
+  if (this->number1() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(1, this->_internal_number(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(1, this->_internal_number1(), target);
+  }
+
+  // int32 number2 = 2;
+  if (this->number2() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(2, this->_internal_number2(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -2373,11 +2394,18 @@ size_t Dice::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // int32 number = 1;
-  if (this->number() != 0) {
+  // int32 number1 = 1;
+  if (this->number1() != 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
-        this->_internal_number());
+        this->_internal_number1());
+  }
+
+  // int32 number2 = 2;
+  if (this->number2() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
+        this->_internal_number2());
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -2411,8 +2439,11 @@ void Dice::MergeFrom(const Dice& from) {
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from.number() != 0) {
-    _internal_set_number(from._internal_number());
+  if (from.number1() != 0) {
+    _internal_set_number1(from._internal_number1());
+  }
+  if (from.number2() != 0) {
+    _internal_set_number2(from._internal_number2());
   }
 }
 
@@ -2437,7 +2468,8 @@ bool Dice::IsInitialized() const {
 void Dice::InternalSwap(Dice* other) {
   using std::swap;
   _internal_metadata_.Swap(&other->_internal_metadata_);
-  swap(number_, other->number_);
+  swap(number1_, other->number1_);
+  swap(number2_, other->number2_);
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata Dice::GetMetadata() const {

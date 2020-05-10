@@ -71,7 +71,8 @@ message Card {
 }
 
 message Dice {
-    int32 number = 1;
+    int32 number1 = 1;
+    int32 number2 = 2;
 }
 
 message Market {
