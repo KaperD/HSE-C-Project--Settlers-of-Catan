@@ -174,21 +174,7 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
     if (gameModel_.canBuild(type, x_, y_)) {
         std::cout << "YES" << '\n';
         gameModel_.settle(type, x_, y_);
-        if (type == Board::BuildingType::ROAD) {
-            roadIsSet = true;
-            gameView_.add_road({x_, y_}, Player - 1);
-            gameView_.update_points(gameModel_.Catan::getVictoryPoints());
-        }
-        if (type == Board::BuildingType::VILLAGE) {
-            villageIsSet = true;
-            gameView_.add_building({x_, y_}, Player - 1);
-            gameView_.update_points(gameModel_.Catan::getVictoryPoints());
-        }
-        if (type == Board::BuildingType::CITY) {
-            gameView_.add_building({x_, y_}, Player - 1);
-            gameView_.update_points(gameModel_.Catan::getVictoryPoints());
-        }
-        //displayEvent(event);
+        displayEvent(event);
         if (needSend) {
             sendEvent(event);
         }
@@ -196,10 +182,20 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
 }
 
 void BuildHandler::displayEvent(Event& event) {
-
-    /*
-    Построить, обновить очки игрока
-    */
+    auto type = static_cast<Board::BuildingType>(buildingType_);
+    int Player = event.playerid();
+    if (type == Board::BuildingType::ROAD) {
+        roadIsSet = true;
+        gameView_.add_road({x_, y_}, Player);
+    }
+    if (type == Board::BuildingType::VILLAGE) {
+        villageIsSet = true;
+        gameView_.add_building({x_, y_}, Player);
+    }
+    if (type == Board::BuildingType::CITY) {
+        gameView_.add_building({x_, y_}, Player);
+    }
+    gameView_.update_points(gameModel_.Catan::getVictoryPoints());
 }
 
 

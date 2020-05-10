@@ -166,7 +166,6 @@ public:
     void render_field();
     void render_roads();
     void render_buildings();
-    Action getAction();
     void render_dice();
     void add_dice(int x, int y);
     void render_tables_time() const;
@@ -175,7 +174,10 @@ public:
     void get_coors_building();
 
 
-    ::game::Event getTurn();
+    ::game::Event FirstStage();
+    ::game::Event ThirdStage();
+
+    ::game::Event getEvent();
 
     void add_road(std::pair<int, int> tmp, int player);
 

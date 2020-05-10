@@ -590,9 +590,9 @@ void GUI::make_render() { // TODO: гонка данных --- ren
         render_buildings();
         render_tables();
         render_tables_time();
-        render_dice();
+        //render_dice();
         render_const_table();
-        render_text();
+        //render_text();
     } else {
         render_begining_menu();
     }
@@ -757,7 +757,7 @@ void GUI::get_coors_building () {
     }
 }
 
-Event GUI::getTurn () {
+Event GUI::ThirdStage () {
     SDL_Event e;
     render_type = 0;
 
@@ -826,18 +826,30 @@ Event GUI::getTurn () {
     return event;
 }
 
-Action GUI::getAction() {
+::game::Event GUI::FirstStage() {
     render_type = 5;
     SDL_Event e;
+
+    Limiter limit;
+    Event event;
+
     while(true){
+        limit.storeStartTime();
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_MOUSEBUTTONDOWN) {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
-                if (x > 200 && x < 480 && y > 98 && y < 280) return Action::DICE;
-                if (x > 200 && x < 480 && y > 300 && y < 482) return Action::CARD;
+                if (x > 200 && x < 480 && y > 98 && y < 280) {
+                    event.set_type(EventType::DICE);
+                    return event;
+                }
+                if (x > 200 && x < 480 && y > 300 && y < 482) {
+                    event.set_type(EventType::CARD); // TODO: нужно сразу здесь вызвать функцию, которая получит вид карты
+                    return event;
+                }
             }
         }
+        limit.delay();
     }
 }
 
@@ -1138,6 +1150,22 @@ int GUI::get_game_id() {
         limit.delay();
     }
 
+}
+
+::game::Event GUI::getEvent() {
+    static int gameStage = 0;
+    Event event;
+    if (gameStage == 0) {
+        event = FirstStage();
+        if (event.type() == EventType::DICE) ++gameStage;
+        return event;
+//    } else if (gameStage == 1) {
+
+    } else {
+        event = ThirdStage();
+        if (event.type() == EventType::ENDTURN) gameStage = 0;
+        return event;
+    }
 }
 
 } // namespace GUI
