@@ -79,7 +79,7 @@ void GUI::load_textures(utility::Random& random) {
 
     back_ground = IMG_LoadTexture(ren, "image/back_ground.bmp");
     back = IMG_LoadTexture(ren, "image/back.bmp");
-    
+
     (cur_texture_arr_road).push_back(IMG_LoadTexture(ren, "image/cur_road.bmp"));
     (cur_texture_arr_road).push_back(IMG_LoadTexture(ren, "image/cur_road1.bmp"));
     (cur_texture_arr_road).push_back(IMG_LoadTexture(ren, "image/cur_road2.bmp"));
@@ -99,7 +99,7 @@ void GUI::load_textures(utility::Random& random) {
     (cur_texture_arr_building).push_back(IMG_LoadTexture(ren, "image/cur_house.bmp"));
     (cur_texture_arr_building).push_back(IMG_LoadTexture(ren, "image/cur_house1.bmp"));
     (cur_texture_arr_building).push_back(nullptr);
-   
+
     (texture_arr_building[0]).push_back(IMG_LoadTexture(ren, "image/house_yellow.bmp"));
     (texture_arr_building[0]).push_back(IMG_LoadTexture(ren, "image/house_red.bmp"));
     (texture_arr_building[0]).push_back(IMG_LoadTexture(ren, "image/house_green.bmp"));
@@ -144,10 +144,10 @@ void GUI::load_textures(utility::Random& random) {
     players_names.push_back("AKBAR");
 
 
-   sfx = nullptr;
-   sfx = Mix_LoadWAV("image/music.wav");
-   button_sound = Mix_LoadWAV("image/button_sound.wav");
-   build_sound = Mix_LoadWAV("image/build_sound.wav");
+    sfx = nullptr;
+    sfx = Mix_LoadWAV("image/music.wav");
+    button_sound = Mix_LoadWAV("image/button_sound.wav");
+    build_sound = Mix_LoadWAV("image/build_sound.wav");
     if (sfx == nullptr)  std::cout << "Hhhh";
 }
 
@@ -168,7 +168,8 @@ void GUI::render_background() const {
     dest1.h = displayMode.h;
     assert(ren != nullptr); // TODO: гонка данных --- ren
     SDL_RenderCopy(ren, back_ground, nullptr, &dest1); //Копируем в рендер фон // TODO: гонка данных --- ren
-    SDL_RenderCopy(ren, back, nullptr, &dest1); //Копируем в рендер фон // TODO: гонка данных --- ren
+    if (render_type <= 10)
+        SDL_RenderCopy(ren, back, nullptr, &dest1); //Копируем в рендер фон // TODO: гонка данных --- ren
 }
 
 void GUI::render_dice() {
@@ -198,7 +199,7 @@ void GUI::render_tables() const {
         SDL_RenderCopy(ren, tables_arr[2], nullptr,&dest);
     if (render_type == 1 || render_type == 2)
         SDL_RenderCopy(ren, tables_arr[0], nullptr,&dest);
-    if (render_type == 5) 
+    if (render_type == 5)
         SDL_RenderCopy(ren, tables_arr[1], nullptr,&dest);
     dest.x = 1380;
     dest.y = 0;
@@ -280,15 +281,15 @@ void GUI::render_tables_time() const {
 
 
 SDL_Texture* Text(const std::string &message, const std::string &fontFile,
-        SDL_Color color, int fontSize, SDL_Renderer *renderer)
+                  SDL_Color color, int fontSize, SDL_Renderer *renderer)
 {
-        TTF_Font *font = TTF_OpenFont(fontFile.c_str(), fontSize);
-    
-        SDL_Surface *surf = TTF_RenderText_Blended(font, message.c_str(), color);
-        SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surf);
-        SDL_FreeSurface(surf);
-        TTF_CloseFont(font);
-        return texture;
+    TTF_Font *font = TTF_OpenFont(fontFile.c_str(), fontSize);
+
+    SDL_Surface *surf = TTF_RenderText_Blended(font, message.c_str(), color);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surf);
+    SDL_FreeSurface(surf);
+    TTF_CloseFont(font);
+    return texture;
 }
 
 void GUI::render_text() const {
@@ -296,7 +297,7 @@ void GUI::render_text() const {
         SDL_Rect dest;
         SDL_Color color = { 255, 255, 255, 255 };
         SDL_Texture *image = Text("Build Road","sample.ttf",
-            color, 32, ren);
+                                  color, 32, ren);
         int iW, iH;
         SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
         dest.x = (423 + 161 - iW)/2;
@@ -305,7 +306,7 @@ void GUI::render_text() const {
         dest.h = iH;
         SDL_RenderCopy(ren, image, nullptr, &dest);
         image = Text("Build","sample.ttf",
-            color, 32, ren);
+                     color, 32, ren);
         SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
         dest.x = (423 + 161 - iW)/2;
         dest.y = (373 + 552 - iH)/2 - (552 - 373) / 4 + 10;
@@ -313,7 +314,7 @@ void GUI::render_text() const {
         dest.h = iH;
         SDL_RenderCopy(ren, image, nullptr, &dest);
         image = Text("Settlement","sample.ttf",
-            color, 32, ren);
+                     color, 32, ren);
         SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
         dest.x = (423 + 161 - iW)/2;
         dest.y = (373 + 552 - iH)/2 + (552 - 373) / 4 - 10;
@@ -322,7 +323,7 @@ void GUI::render_text() const {
         SDL_RenderCopy(ren, image, nullptr, &dest);
 
         image = Text("End Turn","sample.ttf",
-            color, 32, ren);
+                     color, 32, ren);
         SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
         dest.x = (423 + 161 - iW)/2;
         dest.y = (610 + 790 - iH)/2;
@@ -335,7 +336,7 @@ void GUI::render_text() const {
         SDL_Rect dest;
         SDL_Color color = { 255, 255, 255, 255 };
         SDL_Texture *image = Text("Go Back","sample.ttf",
-            color, 32, ren);
+                                  color, 32, ren);
         int iW, iH;
         SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
         dest.x = (423 + 161 - iW)/2;
@@ -348,7 +349,7 @@ void GUI::render_text() const {
         SDL_Rect dest;
         SDL_Color color = { 255, 255, 255, 255 };
         SDL_Texture *image = Text("Roll The Dice","sample.ttf",
-            color, 32, ren);
+                                  color, 32, ren);
         int iW, iH;
         SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
         dest.x = (423 + 161 - iW)/2;
@@ -358,7 +359,7 @@ void GUI::render_text() const {
         SDL_RenderCopy(ren, image, nullptr, &dest);
 
         image = Text("Play A Card","sample.ttf",
-            color, 32, ren);
+                     color, 32, ren);
         SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
         dest.x = (423 + 161 - iW)/2;
         dest.y = (373 + 552 - iH)/2;
@@ -366,14 +367,14 @@ void GUI::render_text() const {
         dest.h = iH;
         SDL_RenderCopy(ren, image, nullptr, &dest);
     }
-    
+
 }
 
 void GUI::render_const_table() const {
     SDL_Rect dest;
     SDL_Color color = { 255, 255, 255, 255 };
     SDL_Texture *image = Text("WOOL","sample.ttf",
-        color, 32, ren);
+                              color, 32, ren);
     int iW, iH;
     SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
     dest.x = 1500;
@@ -383,7 +384,7 @@ void GUI::render_const_table() const {
     SDL_RenderCopy(ren, image, nullptr, &dest);
 
     image = Text(std::to_string(resourses[cur_player][(int)WOOL]),"sample.ttf",
-        color, 32, ren);
+                 color, 32, ren);
     SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
     dest.x = 1650;
     dest.y = 210;
@@ -392,7 +393,7 @@ void GUI::render_const_table() const {
     SDL_RenderCopy(ren, image, nullptr, &dest);
 
     image = Text("WOOD","sample.ttf",
-        color, 32, ren);
+                 color, 32, ren);
     SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
     dest.x = 1500;
     dest.y = 240;
@@ -400,7 +401,7 @@ void GUI::render_const_table() const {
     dest.h = iH;
     SDL_RenderCopy(ren, image, nullptr, &dest);
     image = Text(std::to_string(resourses[cur_player][(int)WOOD]),"sample.ttf",
-        color, 32, ren);
+                 color, 32, ren);
     SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
     dest.x = 1650;
     dest.y = 240;
@@ -409,7 +410,7 @@ void GUI::render_const_table() const {
     SDL_RenderCopy(ren, image, nullptr, &dest);
 
     image = Text("BRIKCS","sample.ttf",
-        color, 32, ren);
+                 color, 32, ren);
     SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
     dest.x = 1500;
     dest.y = 270;
@@ -417,7 +418,7 @@ void GUI::render_const_table() const {
     dest.h = iH;
     SDL_RenderCopy(ren, image, nullptr, &dest);
     image = Text(std::to_string(resourses[cur_player][(int)BRIKCS]),"sample.ttf",
-        color, 32, ren);
+                 color, 32, ren);
     SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
     dest.x = 1650;
     dest.y = 270;
@@ -426,7 +427,7 @@ void GUI::render_const_table() const {
     SDL_RenderCopy(ren, image, nullptr, &dest);
 
     image = Text("CORN","sample.ttf",
-        color, 32, ren);
+                 color, 32, ren);
     SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
     dest.x = 1500;
     dest.y = 300;
@@ -434,7 +435,7 @@ void GUI::render_const_table() const {
     dest.h = iH;
     SDL_RenderCopy(ren, image, nullptr, &dest);
     image = Text(std::to_string(resourses[cur_player][(int)CORN]),"sample.ttf",
-        color, 32, ren);
+                 color, 32, ren);
     SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
     dest.x = 1650;
     dest.y = 300;
@@ -443,7 +444,7 @@ void GUI::render_const_table() const {
     SDL_RenderCopy(ren, image, nullptr, &dest);
 
     image = Text("ORE","sample.ttf",
-        color, 32, ren);
+                 color, 32, ren);
     SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
     dest.x = 1500;
     dest.y = 330;
@@ -451,7 +452,7 @@ void GUI::render_const_table() const {
     dest.h = iH;
     SDL_RenderCopy(ren, image, nullptr, &dest);
     image = Text(std::to_string(resourses[cur_player][(int)ORE]),"sample.ttf",
-        color, 32, ren);
+                 color, 32, ren);
     SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
     dest.x = 1650;
     dest.y = 330;
@@ -461,7 +462,7 @@ void GUI::render_const_table() const {
 
     for(int i = 0; i < players_points.size(); ++i) {
         image = Text(players_names[i],"sample.ttf",
-        color, 32, ren);
+                     color, 32, ren);
         SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
         dest.x = 1500;
         dest.y = 400 + 30 * i;
@@ -469,7 +470,7 @@ void GUI::render_const_table() const {
         dest.h = iH;
         SDL_RenderCopy(ren, image, nullptr, &dest);
         image = Text(std::to_string(players_points[i]),"sample.ttf",
-            color, 32, ren);
+                     color, 32, ren);
         SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
         dest.x = 1650;
         dest.y = 400 + 30 * i;
@@ -480,20 +481,124 @@ void GUI::render_const_table() const {
     }
 }
 
+void GUI::render_begining_menu(){
+    SDL_Rect dest;
+    dest.x = 1000;
+    dest.y = 98;
+    dest.w = 540*1.2;
+    dest.h = 960*1.2;
+    if (render_type == 11) {
+        SDL_RenderCopy(ren, tables_arr[1], nullptr,&dest);
+        SDL_Color color = { 255, 255, 255, 255 };
+        SDL_Texture *image = Text("Local Game","sample.ttf",
+                                  color, 32, ren);
+        int iW, iH;
+        SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
+        dest.x = 1030;
+        dest.y = 210;
+        dest.w = iW;
+        dest.h = iH;
+        SDL_RenderCopy(ren, image, nullptr, &dest);
+
+        image = Text("Game On Server","sample.ttf",
+                     color, 32, ren);
+        SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
+        dest.y = 240;
+        dest.w = iW;
+        dest.h = iH;
+        SDL_RenderCopy(ren, image, nullptr, &dest);
+    } else if (render_type == 12) {
+        SDL_RenderCopy(ren, tables_arr[2], nullptr,&dest);
+        SDL_Color color = { 255, 255, 255, 255 };
+        SDL_Texture *image = Text("Start New Game","sample.ttf",
+                                  color, 32, ren);
+        int iW, iH;
+        SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
+        dest.x = 1030;
+        dest.y = 210;
+        dest.w = iW;
+        dest.h = iH;
+        SDL_RenderCopy(ren, image, nullptr, &dest);
+
+        image = Text("Join Game","sample.ttf",
+                     color, 32, ren);
+        SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
+        dest.y = 240;
+        dest.w = iW;
+        dest.h = iH;
+        SDL_RenderCopy(ren, image, nullptr, &dest);
+
+        image = Text("Exit","sample.ttf",
+                     color, 32, ren);
+        SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
+        dest.y = 270;
+        dest.w = iW;
+        dest.h = iH;
+        SDL_RenderCopy(ren, image, nullptr, &dest);
+    } else if (render_type == 13) {
+        SDL_RenderCopy(ren, tables_arr[2], nullptr,&dest);
+        SDL_Color color = { 255, 255, 255, 255 };
+        SDL_Texture *image = Text("2 Players","sample.ttf",
+                                  color, 32, ren);
+        int iW, iH;
+        SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
+        dest.x = 1030;
+        dest.y = 210;
+        dest.w = iW;
+        dest.h = iH;
+        SDL_RenderCopy(ren, image, nullptr, &dest);
+
+        image = Text("3 Players","sample.ttf",
+                     color, 32, ren);
+        SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
+        dest.y = 240;
+        dest.w = iW;
+        dest.h = iH;
+        SDL_RenderCopy(ren, image, nullptr, &dest);
+
+        image = Text("4 Players","sample.ttf",
+                     color, 32, ren);
+        SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
+        dest.y = 270;
+        dest.w = iW;
+        dest.h = iH;
+        SDL_RenderCopy(ren, image, nullptr, &dest);
+    } else if (render_type == 14) {
+        SDL_RenderCopy(ren, tables_arr[1], nullptr,&dest);
+        SDL_Color color = { 255, 255, 255, 255 };
+        SDL_Texture *image = Text("Type Game Id","sample.ttf",
+                                  color, 32, ren);
+        int iW, iH;
+        SDL_QueryTexture(image, NULL, NULL, &iW, &iH);
+        dest.x = 1030;
+        dest.y = 210;
+        dest.w = iW;
+        dest.h = iH;
+        SDL_RenderCopy(ren, image, nullptr, &dest);
+
+        //TODO: написать функцию ввода текста
+
+    }
+}
 
 void GUI::make_render() { // TODO: гонка данных --- ren
     SDL_RenderClear(ren);
     render_background();
-    render_field();
-    render_roads();
-    render_buildings();
-    render_tables();
-    render_tables_time();
-    render_dice();
-    render_const_table();
-//    render_text();
+    if (render_type <= 10) {
+        render_field();
+        render_roads();
+        render_buildings();
+        render_tables();
+        render_tables_time();
+        render_dice();
+        render_const_table();
+        render_text();
+    } else {
+        render_begining_menu();
+    }
+
 }
-   
+
 
 
 void upgrade(GUI* g) {
@@ -536,7 +641,7 @@ GUI::GUI() {
     a.push_back(0);
     a.push_back(0);
     a.push_back(0);
-    
+
     resourses.push_back(a);
     resourses.push_back(a);
     resourses.push_back(a);
@@ -601,7 +706,7 @@ void GUI::get_coors_road () {
 void GUI::get_coors_building () {
     Mix_PlayChannel(-1, build_sound, 0);
     int old_render_type = render_type;
-    render_type = 2;            
+    render_type = 2;
     //SDL_Rect dest;
     SDL_Event e;
     clock_t begin_time = clock();
@@ -652,34 +757,7 @@ void GUI::get_coors_building () {
     }
 }
 
-Event GUI::FirstStage() {
-    render_type = 5;
-    SDL_Event e;
-
-    Limiter limit;
-    Event event;
-
-    while(true){
-        limit.storeStartTime();
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_MOUSEBUTTONDOWN) {
-                int x, y;
-                SDL_GetMouseState(&x, &y);
-                if (x > 200 && x < 480 && y > 98 && y < 280) {
-                    event.set_type(EventType::DICE);
-                    return event;
-                }
-                if (x > 200 && x < 480 && y > 300 && y < 482) {
-                    event.set_type(EventType::CARD); // TODO: нужно сразу здесь вызвать функцию, которая получит вид карты
-                    return event;
-                }
-            }
-        }
-        limit.delay();
-    }
-}
-
-Event GUI::ThirdStage () {
+Event GUI::getTurn () {
     SDL_Event e;
     render_type = 0;
 
@@ -719,7 +797,7 @@ Event GUI::ThirdStage () {
                     q->set_y(p.second);
                     return event;
                 }
-                if (x > 161 && x < 423 && y > 373 && y < 552) { // деревня
+                if (x > 161 && x < 423 && y > 373 && y < 552) { // derevnia
                     get_coors_building();
                     if (render_type == 0) continue;
                     auto p = buildings->vec[tmp_coors].get_model_coors();
@@ -731,7 +809,7 @@ Event GUI::ThirdStage () {
                     q->set_y(p.second);
                     return event;
                 }
-                if (x > 161 && x < 423 && y > 610 && y < 790) { // конец хода
+                if (x > 161 && x < 423 && y > 610 && y < 790) { // деревня
                     Event event;
                     event.set_type(EventType::ENDTURN);
                     auto q = event.mutable_buildinfo();
@@ -746,6 +824,21 @@ Event GUI::ThirdStage () {
     Event event;
     event.set_type(EventType::ENDGAME);
     return event;
+}
+
+Action GUI::getAction() {
+    render_type = 5;
+    SDL_Event e;
+    while(true){
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_MOUSEBUTTONDOWN) {
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                if (x > 200 && x < 480 && y > 98 && y < 280) return Action::DICE;
+                if (x > 200 && x < 480 && y > 300 && y < 482) return Action::CARD;
+            }
+        }
+    }
 }
 
 void GUI::add_dice(int x, int y) {
@@ -896,7 +989,7 @@ Building_arr::Building_arr(GUI& gui) {
             dest.h = 80;
             Obj tmp(X1 + j * DX / SCALE_X, Y1 + i * DY / SCALE_Y,
                     X2 + j * DX / SCALE_X, Y2 + i * DY / SCALE_Y,
-                   	(i + 1)/2,  j*2 , 
+                    (i + 1)/2,  j*2 ,
                     NONE, dest, 0);
             //tmp.built = true;
             //std::cout << (i + 1)/2 << ' ' << j*2  << '\n';
@@ -923,22 +1016,128 @@ void GUI::add_player_name(int x, std::string s) {
     players_names[x] = s;
 }
 
-Event GUI::getEvent() {
-    static int gameStage = 0;
-    Event event;
-    if (gameStage == 0) {
-        event = FirstStage();
-        if (event.type() == EventType::DICE) ++gameStage;
-        return event;
-//    } else if (gameStage == 1) {
-
-    } else {
-        event = ThirdStage();
-        if (event.type() == EventType::ENDTURN) gameStage = 0;
-        return event;
+int GUI::get_place_of_game() {
+    render_type = 11;
+    SDL_Event e;
+    Limiter limit;
+    while (!quit) {
+        limit.storeStartTime();
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_MOUSEBUTTONDOWN) {
+                Mix_PlayChannel(-1, button_sound, 0);
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                if (x > 1161 && x < 1423 && y > 136 && y < 317) { // дорога
+                    return 1;
+                }
+                if (x > 1161 && x < 1423 && y > 373 && y < 552) { // derevnia
+                    return 2;
+                }
+            }
+        }
+        limit.delay();
     }
 }
 
+int GUI::get_type_of_game() {
+    render_type = 12;
+    SDL_Event e;
+    Limiter limit;
+    while (!quit) {
+        limit.storeStartTime();
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_MOUSEBUTTONDOWN) {
+                Mix_PlayChannel(-1, button_sound, 0);
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                if (x > 1161 && x < 1423 && y > 136 && y < 317) { // дорога
+                    return 1;
+                }
+                if (x > 1161 && x < 1423 && y > 373 && y < 552) { // derevnia
+                    return 2;
+                }
+                if (x > 1161 && x < 1423 && y > 610 && y < 790) { // деревня
+                    return 3;
+                }
+            }
+        }
+        limit.delay();
+    }
+}
+
+int GUI::get_num_of_players() {
+    render_type = 13;
+    SDL_Event e;
+    Limiter limit;
+    while (!quit) {
+        limit.storeStartTime();
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_MOUSEBUTTONDOWN) {
+                Mix_PlayChannel(-1, button_sound, 0);
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                if (x > 1161 && x < 1423 && y > 136 && y < 317) { // дорога
+                    return 1;
+                }
+                if (x > 1161 && x < 1423 && y > 373 && y < 552) { // derevnia
+                    return 2;
+                }
+                if (x > 1161 && x < 1423 && y > 610 && y < 790) { // деревня
+                    return 3;
+                }
+            }
+        }
+        limit.delay();
+    }
+}
+
+int GUI::get_game_id() {
+    render_type = 14;
+    int value = 0;
+    SDL_Event e;
+    Limiter limit;
+    while (!quit) {
+        limit.storeStartTime();
+        while (SDL_PollEvent(&e)) {
+            if(e.type == SDL_KEYDOWN) {
+                if (e.key.keysym.sym == SDLK_0) {
+                    value*=10;
+                    value+=0;
+                } else if (e.key.keysym.sym == SDLK_1) {
+                    value*=10;
+                    value+=1;
+                } else if (e.key.keysym.sym == SDLK_2) {
+                    value*=10;
+                    value+=2;
+                } else if (e.key.keysym.sym == SDLK_3) {
+                    value*=10;
+                    value+=3;
+                } else if (e.key.keysym.sym == SDLK_4) {
+                    value*=10;
+                    value+=4;
+                } else if (e.key.keysym.sym == SDLK_5) {
+                    value*=10;
+                    value+=5;
+                } else if (e.key.keysym.sym == SDLK_6) {
+                    value*=10;
+                    value+=6;
+                } else if (e.key.keysym.sym == SDLK_7) {
+                    value*=10;
+                    value+=0;
+                } else if (e.key.keysym.sym == SDLK_8) {
+                    value*=10;
+                    value+=8;
+                } else if (e.key.keysym.sym == SDLK_9) {
+                    value*=10;
+                    value+=9;
+                } else if (e.key.keysym.sym == SDLK_KP_ENTER) {
+                    return value;
+                }
+            }
+        }
+        limit.delay();
+    }
+
+}
+
 } // namespace GUI
-
-
