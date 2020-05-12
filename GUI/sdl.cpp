@@ -55,27 +55,35 @@ void play_music(GUI* gui) {
 void GUI::load_textures(utility::Random& random, GUI& gui) {
     auto randomResouresAndNumbers = random.generateResourcesAndNumbers();
     std::string s = "image/oct .bmp";
+    
     std::vector<SDL_Texture *> v1;
     std::vector<SDL_Texture *> v2;
     std::vector<SDL_Texture *> v3;
 
     for (int i = 0; i < 19; ++i) {
+        std::string ss = "image/number";
         int resource = randomResouresAndNumbers[i].resource;
         int number = randomResouresAndNumbers[i].number;
         s[9] = resource + '0'; // TODO: Числа в названиях файлов должны соответствовать enum в модели
 
+        ss = ss + std::to_string(number);
+        ss = ss + ".bmp";
+        SDL_Surface* numberImg = nullptr;
 
-        SDL_Surface* numberImg = IMG_Load("image/number2.bmp"); // TODO: Вместо 2 нужно ставить число number, кроме случая, когда число 0, в этом случае не нужно изображение чилса
-
+        if (number) numberImg = IMG_Load(ss.c_str()); // TODO: Вместо 2 нужно ставить число number, кроме случая, когда число 0, в этом случае не нужно изображение чилса
+        
+        std::cerr << ss;
         SDL_Surface* hex = IMG_Load(s.c_str());
-        SDL_Rect dest;
-        dest.x = numberImg->w / 3 + 36;
-        dest.y = numberImg->h / 3 + 78;
-        dest.w = static_cast<int>(static_cast<double>(numberImg->w) * 0.5);
-        dest.h = static_cast<int>(static_cast<double>(numberImg->h) * 0.5);
-        if (SDL_BlitScaled(numberImg, nullptr, hex, &dest) != 0) {
-            std::cout << "Wrong Blit" << std::endl;
-        }
+        if (number) {
+            SDL_Rect dest;
+            dest.x = 1000/2 - static_cast<int>(static_cast<double>(numberImg->w) * 0.5) / 2;
+            dest.y = 1154/2 - static_cast<int>(static_cast<double>(numberImg->h) * 0.5) / 2;
+            dest.w = static_cast<int>(static_cast<double>(numberImg->w) * 0.5);
+            dest.h = static_cast<int>(static_cast<double>(numberImg->h) * 0.5);
+            if (SDL_BlitScaled(numberImg, nullptr, hex, &dest) != 0) {
+                std::cout << "Wrong Blit" << std::endl;
+            }
+        }   
         if (i < 14) {
             if (i % 2 == 0) v1.push_back(SDL_CreateTextureFromSurface(ren, hex));
             else v2.push_back(SDL_CreateTextureFromSurface(ren, hex));
@@ -468,15 +476,10 @@ void GUI::make_render() { // TODO: гонка данных --- ren
         render_tables_time();
         render_dice();
         render_text();
+        render_text();
     } else {
         render_begining_menu();
     }
-    SDL_Rect dest;
-    dest.x = 1380;
-    dest.y = 0;
-    dest.w = 540;
-    dest.h = 960;
-    SDL_RenderCopy(ren, ppp, nullptr, &dest);   
 }
 
 
@@ -901,9 +904,6 @@ void GUI::update_points(std::vector<int> vec) {
 
 void GUI::update_resourses(std::vector<int> v) {
     resourses = v;
-    for (auto &e : resourses) {
-        e--;
-    }
     SDL_BlitSurface(svitok_up, nullptr, svitok_up1, nullptr);
     make_texture_const_table(resourses, *svitok_up1, texture_svitok_up, 0);
 }
