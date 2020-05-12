@@ -590,9 +590,9 @@ void GUI::make_render() { // TODO: гонка данных --- ren
         render_buildings();
         render_tables();
         render_tables_time();
-        //render_dice();
+        render_dice();
         render_const_table();
-        //render_text();
+        render_text();
     } else {
         render_begining_menu();
     }

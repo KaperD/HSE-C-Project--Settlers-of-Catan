@@ -294,6 +294,7 @@ void GameController::RunGame() {
                     Event end;
                     end.set_type(EventType::ENDGAME);
                     gameClient_.SendEvent(end);
+                    gameView_.quit = true;
                     quit = true;
                     break;
                 }
