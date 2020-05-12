@@ -1,6 +1,5 @@
 #include "gtest/gtest.h"
 #include "../Board.h"
-#include "../Utility/random.h"
 
 using utility::Random;
 using namespace Board;
@@ -200,6 +199,27 @@ TEST(RoadsRecord, cycle_level3_boss) {
 
     ASSERT_EQ(board.getRoadsRecordHolder(), PlayerNum::GAMER1);
     ASSERT_EQ(board.getRoadsRecord(), 16);
+}
+
+TEST(RoadsRecord, cycle_level_death) { //СМЕРТЬ
+    Random random;
+    Catan board(random, 2);
+    board.settle(BuildingType::VILLAGE, 4 ,8);
+    board.settle(BuildingType::ROAD, 5, 8);
+    board.settle(BuildingType::ROAD, 6, 9);
+    board.settle(BuildingType::ROAD, 6, 11);
+    //board.settle(BuildingType::ROAD, 5, 12);
+    board.settle(BuildingType::ROAD, 4, 9);
+    board.settle(BuildingType::ROAD, 4, 11);
+    board.settle(BuildingType::ROAD, 4, 13);
+    board.settle(BuildingType::ROAD, 4, 15);
+
+    board.settle(BuildingType::ROAD, 5, 16);
+    board.settle(BuildingType::ROAD, 6, 13);
+    board.settle(BuildingType::ROAD, 6, 15);
+
+    ASSERT_EQ(board.getRoadsRecordHolder(), PlayerNum::GAMER1);
+    ASSERT_EQ(board.getRoadsRecord(), 10);
 }
 
 TEST(RoadsRecord, dynamic) {

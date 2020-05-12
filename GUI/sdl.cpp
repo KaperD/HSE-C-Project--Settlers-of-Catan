@@ -79,7 +79,7 @@ void GUI::load_textures(utility::Random& random, GUI& gui) {
 
     back_ground = IMG_LoadTexture(ren, "image/back_ground.bmp");
     back = IMG_LoadTexture(ren, "image/back.bmp");
-    
+
     (cur_texture_arr_road).push_back(IMG_LoadTexture(ren, "image/cur_road.bmp"));
     (cur_texture_arr_road).push_back(IMG_LoadTexture(ren, "image/cur_road1.bmp"));
     (cur_texture_arr_road).push_back(IMG_LoadTexture(ren, "image/cur_road2.bmp"));
@@ -99,7 +99,7 @@ void GUI::load_textures(utility::Random& random, GUI& gui) {
     (cur_texture_arr_building).push_back(IMG_LoadTexture(ren, "image/cur_house.bmp"));
     (cur_texture_arr_building).push_back(IMG_LoadTexture(ren, "image/cur_house1.bmp"));
     (cur_texture_arr_building).push_back(nullptr);
-   
+
     (texture_arr_building[0]).push_back(IMG_LoadTexture(ren, "image/house_yellow.bmp"));
     (texture_arr_building[0]).push_back(IMG_LoadTexture(ren, "image/house_red.bmp"));
     (texture_arr_building[0]).push_back(IMG_LoadTexture(ren, "image/house_green.bmp"));
@@ -148,7 +148,6 @@ void GUI::load_textures(utility::Random& random, GUI& gui) {
     players_names.push_back("KEK");
     players_names.push_back("ALLAH");
     players_names.push_back("AKBAR");
-
 
     
     SDL_Rect dest;
@@ -275,7 +274,7 @@ void GUI::render_tables() const {
         SDL_RenderCopy(ren, tables_arr[2], nullptr,&dest);
     if (render_type == 1 || render_type == 2)
         SDL_RenderCopy(ren, tables_arr[0], nullptr,&dest);
-    if (render_type == 5) 
+    if (render_type == 5)
         SDL_RenderCopy(ren, tables_arr[1], nullptr,&dest);
 }
 
@@ -339,6 +338,7 @@ void GUI::render_tables_time() const {
     dest.h = 280 - 98;
     if (clock() < cur_table.second) SDL_RenderCopy(ren, cur_table.first, nullptr, &dest);
 }
+
 
 
 
@@ -461,7 +461,7 @@ void GUI::make_render() { // TODO: гонка данных --- ren
     dest.h = 960;
     SDL_RenderCopy(ren, ppp, nullptr, &dest);   
 }
-   
+
 
 
 void upgrade(GUI* g) {
@@ -557,7 +557,7 @@ void GUI::get_coors_road () {
 void GUI::get_coors_building () {
     Mix_PlayChannel(-1, build_sound, 0);
     int old_render_type = render_type;
-    render_type = 2;            
+    render_type = 2;
     //SDL_Rect dest;
     SDL_Event e;
     clock_t begin_time = clock();
@@ -608,7 +608,7 @@ void GUI::get_coors_building () {
     }
 }
 
-Event GUI::getTurn () {
+Event GUI::ThirdStage () {
     SDL_Event e;
     render_type = 0;
 
@@ -677,18 +677,30 @@ Event GUI::getTurn () {
     return event;
 }
 
-Action GUI::getAction() {
+::game::Event GUI::FirstStage() {
     render_type = 5;
     SDL_Event e;
+
+    Limiter limit;
+    Event event;
+
     while(true){
+        limit.storeStartTime();
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_MOUSEBUTTONDOWN) {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
-                if (x > 200 && x < 480 && y > 98 && y < 280) return Action::DICE;
-                if (x > 200 && x < 480 && y > 300 && y < 482) return Action::CARD;
+                if (x > 200 && x < 480 && y > 98 && y < 280) {
+                    event.set_type(EventType::DICE);
+                    return event;
+                }
+                if (x > 200 && x < 480 && y > 300 && y < 482) {
+                    event.set_type(EventType::CARD); // TODO: нужно сразу здесь вызвать функцию, которая получит вид карты
+                    return event;
+                }
             }
         }
+        limit.delay();
     }
 }
 
@@ -1007,6 +1019,20 @@ int GUI::get_game_id() {
 
 }
 
+::game::Event GUI::getEvent() {
+    static int gameStage = 0;
+    Event event;
+    if (gameStage == 0) {
+        event = FirstStage();
+        if (event.type() == EventType::DICE) ++gameStage;
+        return event;
+//    } else if (gameStage == 1) {
+
+    } else {
+        event = ThirdStage();
+        if (event.type() == EventType::ENDTURN) gameStage = 0;
+        return event;
+    }
+}
+
 } // namespace GUI
-
-

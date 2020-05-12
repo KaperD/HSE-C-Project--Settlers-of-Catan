@@ -1399,15 +1399,25 @@ class Dice :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kNumberFieldNumber = 1,
+    kNumber1FieldNumber = 1,
+    kNumber2FieldNumber = 2,
   };
-  // int32 number = 1;
-  void clear_number();
-  ::PROTOBUF_NAMESPACE_ID::int32 number() const;
-  void set_number(::PROTOBUF_NAMESPACE_ID::int32 value);
+  // int32 number1 = 1;
+  void clear_number1();
+  ::PROTOBUF_NAMESPACE_ID::int32 number1() const;
+  void set_number1(::PROTOBUF_NAMESPACE_ID::int32 value);
   private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_number() const;
-  void _internal_set_number(::PROTOBUF_NAMESPACE_ID::int32 value);
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_number1() const;
+  void _internal_set_number1(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // int32 number2 = 2;
+  void clear_number2();
+  ::PROTOBUF_NAMESPACE_ID::int32 number2() const;
+  void set_number2(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_number2() const;
+  void _internal_set_number2(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
   // @@protoc_insertion_point(class_scope:game.Dice)
@@ -1415,7 +1425,8 @@ class Dice :
   class _Internal;
 
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
-  ::PROTOBUF_NAMESPACE_ID::int32 number_;
+  ::PROTOBUF_NAMESPACE_ID::int32 number1_;
+  ::PROTOBUF_NAMESPACE_ID::int32 number2_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_game_2eproto;
 };
@@ -2200,24 +2211,44 @@ inline void Card::set_cardtype(::PROTOBUF_NAMESPACE_ID::int32 value) {
 
 // Dice
 
-// int32 number = 1;
-inline void Dice::clear_number() {
-  number_ = 0;
+// int32 number1 = 1;
+inline void Dice::clear_number1() {
+  number1_ = 0;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 Dice::_internal_number() const {
-  return number_;
+inline ::PROTOBUF_NAMESPACE_ID::int32 Dice::_internal_number1() const {
+  return number1_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 Dice::number() const {
-  // @@protoc_insertion_point(field_get:game.Dice.number)
-  return _internal_number();
+inline ::PROTOBUF_NAMESPACE_ID::int32 Dice::number1() const {
+  // @@protoc_insertion_point(field_get:game.Dice.number1)
+  return _internal_number1();
 }
-inline void Dice::_internal_set_number(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void Dice::_internal_set_number1(::PROTOBUF_NAMESPACE_ID::int32 value) {
   
-  number_ = value;
+  number1_ = value;
 }
-inline void Dice::set_number(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_number(value);
-  // @@protoc_insertion_point(field_set:game.Dice.number)
+inline void Dice::set_number1(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_number1(value);
+  // @@protoc_insertion_point(field_set:game.Dice.number1)
+}
+
+// int32 number2 = 2;
+inline void Dice::clear_number2() {
+  number2_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 Dice::_internal_number2() const {
+  return number2_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 Dice::number2() const {
+  // @@protoc_insertion_point(field_get:game.Dice.number2)
+  return _internal_number2();
+}
+inline void Dice::_internal_set_number2(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  number2_ = value;
+}
+inline void Dice::set_number2(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_number2(value);
+  // @@protoc_insertion_point(field_set:game.Dice.number2)
 }
 
 // -------------------------------------------------------------------

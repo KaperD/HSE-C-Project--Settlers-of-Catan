@@ -3,7 +3,6 @@
 
 #include "gtest/gtest.h"
 #include "../Board.h"
-#include "../Utility/random.h"
 
 using utility::Random;
 using namespace Board;
