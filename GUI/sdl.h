@@ -154,7 +154,7 @@ public:
 
     bool quit = false;
     int  end_time_dice = 0;
-    SDL_Texture* field_arr[19]{};
+    std::vector<SDL_Texture *> field_arr;
     int tmp_sound = 0;
     int render_type;
     SDL_Renderer *ren;

@@ -55,6 +55,9 @@ void play_music(GUI* gui) {
 void GUI::load_textures(utility::Random& random, GUI& gui) {
     auto randomResouresAndNumbers = random.generateResourcesAndNumbers();
     std::string s = "image/oct .bmp";
+    std::vector<SDL_Texture *> v1;
+    std::vector<SDL_Texture *> v2;
+    std::vector<SDL_Texture *> v3;
 
     for (int i = 0; i < 19; ++i) {
         int resource = randomResouresAndNumbers[i].resource;
@@ -73,10 +76,24 @@ void GUI::load_textures(utility::Random& random, GUI& gui) {
         if (SDL_BlitScaled(numberImg, nullptr, hex, &dest) != 0) {
             std::cout << "Wrong Blit" << std::endl;
         }
-        field_arr[i] = SDL_CreateTextureFromSurface(ren, hex);
+        if (i < 14) {
+            if (i % 2 == 0) v1.push_back(SDL_CreateTextureFromSurface(ren, hex));
+            else v2.push_back(SDL_CreateTextureFromSurface(ren, hex));
+        } else {
+            v3.push_back(SDL_CreateTextureFromSurface(ren, hex));
+        }
         SDL_FreeSurface(hex);
     }
-
+    field_arr = v1;
+    for (auto e: v3) {
+        field_arr.push_back(e);
+    }
+    for (int i = 4; i < v2.size(); ++i) {
+        field_arr.push_back(v2[i]);
+    }
+    for (int i = 0; i < 4; ++i) {
+        field_arr.push_back(v2[i]);
+    }
     back_ground = IMG_LoadTexture(ren, "image/back_ground.bmp");
     back = IMG_LoadTexture(ren, "image/back.bmp");
 
