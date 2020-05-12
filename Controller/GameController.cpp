@@ -169,7 +169,7 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
     std::cout << x_ << ' ' << y_ << ' ' << static_cast<int>(Board::BuildingType::ROAD) << '\n';
 
     if (true) {
-        std::cout << "YES" << '\n';
+        std::cout << "YES" << ' ' << x_ << ' ' << y_  << ' ' << (int)type << '\n';
         gameModel_.settle(type, x_, y_);
         if (type == Board::BuildingType::ROAD) {
             roadIsSet = true;
@@ -178,10 +178,12 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
         }
         if (type == Board::BuildingType::VILLAGE) {
             villageIsSet = true;
+            std::cerr << "kek"; 
             gameView_.add_building({x_, y_}, Player - 1);
             gameView_.update_points(gameModel_.Catan::getVictoryPoints());
         }
         if (type == Board::BuildingType::CITY) {
+            std::cerr << "lol"; 
             gameView_.add_building({x_, y_}, Player - 1);
             gameView_.update_points(gameModel_.Catan::getVictoryPoints());
         }
