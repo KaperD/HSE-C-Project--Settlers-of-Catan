@@ -476,6 +476,7 @@ void GUI::make_render() { // TODO: гонка данных --- ren
         render_tables_time();
         render_dice();
         render_text();
+        render_text();
     } else {
         render_begining_menu();
     }
@@ -903,9 +904,6 @@ void GUI::update_points(std::vector<int> vec) {
 
 void GUI::update_resourses(std::vector<int> v) {
     resourses = v;
-    for (auto &e : resourses) {
-        e--;
-    }
     SDL_BlitSurface(svitok_up, nullptr, svitok_up1, nullptr);
     make_texture_const_table(resourses, *svitok_up1, texture_svitok_up, 0);
 }

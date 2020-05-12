@@ -170,7 +170,7 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
 
     auto type = static_cast<Board::BuildingType>(buildingType_);
     std::cout << x_ << ' ' << y_ << ' ' << static_cast<int>(Board::BuildingType::ROAD) << '\n';
-    if (gameModel_.canBuild(type, x_, y_)) {
+    if (gameModel_.checkCards(type), gameModel_.canBuild(type, x_, y_)) {
         std::cout << "YES" << '\n';
         gameModel_.settle(type, x_, y_);
         displayEvent(event);
@@ -196,10 +196,13 @@ void BuildHandler::displayEvent(Event& event) {
     }
     gameView_.update_points(gameModel_.Catan::getVictoryPoints());
     std::vector<int> v;
-    const std::unordered_map<Board::Resource, int> m = gameModel_.getPlayerResources((Board::PlayerNum)Player);
+    const std::unordered_map<Board::Resource, int> m = gameModel_.getPlayerResources(static_cast<Board::PlayerNum>(Player + 1));
+    std::cout << "Player " << Player << "resources" << std::endl;
     for(auto e: m) {
+        std::cout << e.second << std::endl;
         v.push_back(e.second);
     }
+    std::cout << v.size() << std::endl;
     gameView_.update_resourses(v);
 }
 
@@ -284,8 +287,7 @@ GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI
 void GameController::RunGame() {
     std::cout << myTurn_ << std::endl;
 
-
-//    BeginGame();
+    BeginGame();
 
     bool quit = false;
     while (!quit) {
@@ -299,6 +301,7 @@ void GameController::RunGame() {
                     Event end;
                     end.set_type(EventType::ENDGAME);
                     gameClient_.SendEvent(end);
+                    gameView_.quit = true;
                     quit = true;
                     break;
                 }
@@ -353,32 +356,43 @@ void GameController::BeginGame() {
 
         if (currentTurn_ == myTurn_) {
             while (true) {
-                // start() Засекается время начала
-                
                 Event event = gameView_.ThirdStage();
                 int x = event.type();
                 if (x == EventType::BUILD) {
                     handlers_[x]->processEvent(event, true);
                 } else if (x == EventType::ENDTURN) {
                     if (roadIsSet && villageIsSet) {
+                        roadIsSet = false;
+                        villageIsSet = false;
                         handlers_[x]->processEvent(event, true);
                         break;
                     }
+                } else if (x == EventType::ENDGAME) {
+                    handlers_[x]->processEvent(event, true);
+                    gameView_.quit = true;
+                    break;
                 }
-                // update() // вывести текущее состояние
-                // delay() // подождать, если действия выполнелись слишком быстро
             }
         } else {
-            while (!roadIsSet || !villageIsSet) {
+            while (true) {
+                if (!gameClient_.HasEvent()) {
+                    std::cout << "I'm sleeping" << std::endl;
+                    std::this_thread::sleep_for(std::chrono::seconds(1));
+                    continue;
+                }
                 Event event = gameClient_.GetEvent();
                 int x = event.type();
                 if (x == EventType::BUILD) {
-                    handlers_[x]->processEvent(event, true);
+                    handlers_[x]->processEvent(event, false);
                 } else if (x == EventType::ENDTURN) {
                     if (roadIsSet && villageIsSet) {
-                        handlers_[x]->processEvent(event, true);
+                        handlers_[x]->processEvent(event, false);
                         break;
                     }
+                } else if (x == EventType::ENDGAME) {
+                    handlers_[x]->processEvent(event, false);
+                    gameView_.quit = true;
+                    break;
                 }
             }
         }
