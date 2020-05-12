@@ -480,15 +480,6 @@ void GUI::make_render() { // TODO: гонка данных --- ren
     } else {
         render_begining_menu();
     }
-<<<<<<< Updated upstream
-=======
-    SDL_Rect dest;
-    dest.x = 1380;
-    dest.y = 0;
-    dest.w = 540;
-    dest.h = 960;
-    SDL_RenderCopy(ren, ppp, nullptr, &dest);
->>>>>>> Stashed changes
 }
 
 
