@@ -170,7 +170,7 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
 
     auto type = static_cast<Board::BuildingType>(buildingType_);
     std::cout << x_ << ' ' << y_ << ' ' << static_cast<int>(Board::BuildingType::ROAD) << '\n';
-    if (gameModel_.checkCards(type), gameModel_.canBuild(type, x_, y_)) {
+    if (gameModel_.checkCards(type) && gameModel_.canBuild(type, x_, y_)) {
         std::cout << "YES" << '\n';
         gameModel_.settle(type, x_, y_);
         displayEvent(event);
