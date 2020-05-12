@@ -50,13 +50,15 @@ class DiceHandler : public Handler {
 public:
     DiceHandler(Board::Catan& model, GUI::GUI& view, GameClient& client, utility::Random& ran)
     : Handler(model, view, client)
-    , number_(0)
+    , number1_(0)
+    , number2_(0)
     , random_(ran) { }
     void processEvent(::game::Event& event, bool needSend) override;
     void displayEvent(::game::Event& event) override;
     using Handler::sendEvent;
 private:
-    int number_;
+    int number1_;
+    int number2_;
     utility::Random& random_;
 };
 
@@ -129,6 +131,7 @@ public:
 
 private:
     void BeginGame();
+
     std::vector<std::unique_ptr<Handler>> handlers_;
     Board::Catan& gameModel_;
     GUI::GUI& gameView_;

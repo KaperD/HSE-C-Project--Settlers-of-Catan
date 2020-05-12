@@ -96,16 +96,27 @@ enum Rode {
 };
 
 enum Resourses {
-    WOOL,
+    WOOL, //овцы
+    ORE,
+    BRICKS, //глина
     WOOD,
-    BRIKCS,
-    CORN,
-    ORE
+    CORN //пшеница
 };
+
+class Inscription {
+    public:
+        SDL_Rect dest;
+        SDL_Texture *texture;
+        explicit Inscription(GUI& gui, int _x, int _y,const std::string &s);
+        Inscription() = default;
+    };
+
 
 class GUI {
 public:
-    std::mutex mutex_for_roads {};
+
+    
+    std::mutex mutex_for_roads {};  
     std::mutex mutex_for_buildings {};
     std::mutex mutex_for_ren {};
 
@@ -131,23 +142,43 @@ public:
     std::vector<SDL_Texture *> dice;
     std::vector<SDL_Texture *> tables_arr;
 
+    void render_begining_menu();
+
+    int get_place_of_game();
+
+    int get_type_of_game();
+
+    int get_num_of_players();
+
+    int get_game_id();
+
     bool quit = false;
     int  end_time_dice = 0;
-    SDL_Texture* field_arr[19]{};
+    std::vector<SDL_Texture *> field_arr;
     int tmp_sound = 0;
-    int render_type{};
+    int render_type;
     SDL_Renderer *ren;
     SDL_DisplayMode displayMode{};
     SDL_Window *win;
-    void load_textures(utility::Random& random);
+    void load_textures(utility::Random& random, GUI& gui);
 
     int tmp_coors{};
 
-    int dice1;
-    int dice2;
+    int dice1 = 0;
+    int dice2 = 0;
 
+    SDL_Texture *ppp;
+    
 
-
+    SDL_Color color = { 243, 195, 79, 255 };
+    SDL_Color color_const_table = { 79, 51, 14, 255 };
+    SDL_Texture* Text(const std::string &message);
+    SDL_Surface *svitok_up, *svitok_down;
+    SDL_Surface *svitok_up1, *svitok_down1;
+    SDL_Texture *texture_svitok_up, *texture_svitok_down;
+    SDL_Texture *dice_shadow;
+    std::vector<SDL_Texture *> table_shadow;
+    void make_texture_const_table(std::vector<int> vec, SDL_Surface x, SDL_Texture *&ans, int type);
     GUI();
     ~GUI();
     void destroy_textures();
@@ -156,7 +187,6 @@ public:
     void render_field();
     void render_roads();
     void render_buildings();
-    Action getAction();
     void render_dice();
     void add_dice(int x, int y);
     void render_tables_time() const;
@@ -164,8 +194,15 @@ public:
     void get_coors_road();
     void get_coors_building();
 
+    Inscription _build_road, _build, _settlement, _end_turn, _go_back,
+                 _roll_the_dice, _play_a_card,_local_game, _game_on_server, 
+                 _start_new_game, _join_game, _exit, _2_Players, _3_Players,
+                _4_Players, _type_game_id;
 
-    ::game::Event getTurn();
+    ::game::Event FirstStage();
+    ::game::Event ThirdStage();
+
+    ::game::Event getEvent();
 
     void add_road(std::pair<int, int> tmp, int player);
 
@@ -191,12 +228,14 @@ public:
 
     void render_text() const;
 
+    int num_players = 4;
+
     void update_points(std::vector<int> vec);
 
-    void update_resourses(Resourses x, int value, int player);
-    std::vector<std::vector<int>> resourses;
+    void update_resourses(std::vector<int> vec);
+    std::vector<int> resourses;
 
-    void render_const_table() const;
+    void render_const_table();
     void add_player_name(int x, std::string s);
 
 };

@@ -78,24 +78,28 @@ void DiceHandler::processEvent(Event& event, bool needSend) {
     gameModel_.changeCurPlayer(currentPlayer_);
 
     auto diceInfo = event.mutable_diceinfo();
-    number_ = diceInfo->number();
+    number1_ = diceInfo->number1();
 
-    if (number_== 0) {
-        number_ = random_.getRandomNumberFromTo(1, 6) + random_.getRandomNumberFromTo(1, 6);
-        diceInfo->set_number(number_);
+    if (number1_== 0) {
+        number1_ = random_.getRandomNumberFromTo(1, 6);
+        number2_ = random_.getRandomNumberFromTo(1, 6);
+        diceInfo->set_number1(number1_);
+        diceInfo->set_number2(number2_);
     }
 
-    if (number_ <= 0 || number_ > 12) {
+    int numberSum = number1_ + number2_;
+
+    if (numberSum <= 0 || numberSum > 12) {
         throw std::logic_error("Wrong dice number");
     }
 
-    if (number_ == 7) {
+    if (numberSum == 7) {
         int hexNum = 0;
         // hexNum = запросить у View
-        gameModel_.setRobbers(hexNum);
+        //gameModel_.setRobbers(hexNum);
         // изменить hexNum у View
     } else {
-        gameModel_.giveResources(number_);
+        gameModel_.giveResources(numberSum);
     }
     displayEvent(event);
     if (needSend) {
@@ -104,9 +108,8 @@ void DiceHandler::processEvent(Event& event, bool needSend) {
 }
 
 void DiceHandler::displayEvent(Event& event) {
-    /*
-    Вывести изменения ресурсов и выпавшее число
-    */
+    gameView_.add_dice(number1_, number2_);
+    //
 }
 
 
@@ -167,25 +170,10 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
 
     auto type = static_cast<Board::BuildingType>(buildingType_);
     std::cout << x_ << ' ' << y_ << ' ' << static_cast<int>(Board::BuildingType::ROAD) << '\n';
-
-    if (true) {
+    if (gameModel_.canBuild(type, x_, y_)) {
         std::cout << "YES" << '\n';
         gameModel_.settle(type, x_, y_);
-        if (type == Board::BuildingType::ROAD) {
-            roadIsSet = true;
-            gameView_.add_road({x_, y_}, Player - 1);
-            gameView_.update_points(gameModel_.Catan::getVictoryPoints());
-        }
-        if (type == Board::BuildingType::VILLAGE) {
-            villageIsSet = true;
-            gameView_.add_building({x_, y_}, Player - 1);
-            gameView_.update_points(gameModel_.Catan::getVictoryPoints());
-        }
-        if (type == Board::BuildingType::CITY) {
-            gameView_.add_building({x_, y_}, Player - 1);
-            gameView_.update_points(gameModel_.Catan::getVictoryPoints());
-        }
-        //displayEvent(event);
+        displayEvent(event);
         if (needSend) {
             sendEvent(event);
         }
@@ -193,10 +181,26 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
 }
 
 void BuildHandler::displayEvent(Event& event) {
-
-    /*
-    Построить, обновить очки игрока
-    */
+    auto type = static_cast<Board::BuildingType>(buildingType_);
+    int Player = event.playerid();
+    if (type == Board::BuildingType::ROAD) {
+        roadIsSet = true;
+        gameView_.add_road({x_, y_}, Player);
+    }
+    if (type == Board::BuildingType::VILLAGE) {
+        villageIsSet = true;
+        gameView_.add_building({x_, y_}, Player);
+    }
+    if (type == Board::BuildingType::CITY) {
+        gameView_.add_building({x_, y_}, Player);
+    }
+    gameView_.update_points(gameModel_.Catan::getVictoryPoints());
+    std::vector<int> v;
+    const std::unordered_map<Board::Resource, int> m = gameModel_.getPlayerResources((Board::PlayerNum)Player);
+    for(auto e: m) {
+        v.push_back(e.second);
+    }
+    gameView_.update_resourses(v);
 }
 
 
@@ -286,14 +290,9 @@ void GameController::RunGame() {
     bool quit = false;
     while (!quit) {
         if (currentTurn_ == myTurn_) {
-            if (gameView_.getAction() == GUI::Action::DICE) {
-                gameView_.add_dice(4, 5);
-                SDL_Delay(1000);
-            }
             while (true) {
-                Event event = gameView_.getTurn();
+                Event event = gameView_.getEvent();
                 int x = event.type();
-                std::cout << "gdsgs" << x << std::endl;
                 event.set_playerid(myTurn_);
                 handlers_[x]->processEvent(event, true);
                 if (gameModel_.isFinished()) {
@@ -353,14 +352,10 @@ void GameController::BeginGame() {
         }
 
         if (currentTurn_ == myTurn_) {
-            if (gameView_.getAction() == GUI::Action::DICE) {
-                    gameView_.add_dice(4, 5);
-                    SDL_Delay(1000);
-                }
             while (true) {
                 // start() Засекается время начала
                 
-                Event event = gameView_.getTurn();
+                Event event = gameView_.ThirdStage();
                 int x = event.type();
                 if (x == EventType::BUILD) {
                     handlers_[x]->processEvent(event, true);
