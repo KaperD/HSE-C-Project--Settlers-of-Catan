@@ -195,6 +195,12 @@ void BuildHandler::displayEvent(Event& event) {
         gameView_.add_building({x_, y_}, Player);
     }
     gameView_.update_points(gameModel_.Catan::getVictoryPoints());
+    std::vector<int> v;
+    const std::unordered_map<Board::Resource, int> m = gameModel_.getPlayerResources((Board::PlayerNum)Player);
+    for(auto e: m) {
+        v.push_back(e.second);
+    }
+    gameView_.update_resourses(v);
 }
 
 
