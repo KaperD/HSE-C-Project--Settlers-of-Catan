@@ -480,6 +480,13 @@ void GUI::make_render() { // TODO: гонка данных --- ren
     } else {
         render_begining_menu();
     }
+
+    SDL_Rect dest;
+    dest.x = 1380;
+    dest.y = 0;
+    dest.w = 540;
+    dest.h = 960;
+
 }
 
 
