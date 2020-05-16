@@ -47,8 +47,6 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     std::string s = "image/oct .bmp";
     
     std::vector<SDL_Texture *> v1;
-    std::vector<SDL_Texture *> v2;
-    std::vector<SDL_Texture *> v3;
 
     std::vector<int> sameOrderWithModel = {0, 2, 4, 6, 8, 10, 12, 14, 15, 16, 17, 18, 7, 9, 11, 13, 1, 3, 5};
     for (int k = 0; k < 19; ++k) {
@@ -64,7 +62,7 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
 
         if (number) numberImg = IMG_Load(ss.c_str()); // TODO: Вместо 2 нужно ставить число number, кроме случая, когда число 0, в этом случае не нужно изображение чилса
         
-        std::cerr << ss;
+        //std::cerr << ss;
         SDL_Surface* hex = IMG_Load(s.c_str());
         if (number) {
             SDL_Rect dest;
@@ -75,24 +73,8 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
             if (SDL_BlitScaled(numberImg, nullptr, hex, &dest) != 0) {
                 std::cout << "Wrong Blit" << std::endl;
             }
-        }   
-        if (i < 14) {
-            if (i % 2 == 0) v1.push_back(SDL_CreateTextureFromSurface(ren, hex));
-            else v2.push_back(SDL_CreateTextureFromSurface(ren, hex));
-        } else {
-            v3.push_back(SDL_CreateTextureFromSurface(ren, hex));
         }
-        SDL_FreeSurface(hex);
-    }
-    field_arr = v1;
-    for (auto e: v3) {
-        field_arr.push_back(e);
-    }
-    for (int i = 4; i < static_cast<int>(v2.size()); ++i) {
-        field_arr.push_back(v2[i]);
-    }
-    for (int i = 0; i < 4; ++i) {
-        field_arr.push_back(v2[i]);
+        field_arr.push_back(SDL_CreateTextureFromSurface(ren, hex));
     }
     back_ground = IMG_LoadTexture(ren, "image/back_ground.bmp");
     back = IMG_LoadTexture(ren, "image/back.bmp");
