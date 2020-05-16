@@ -49,6 +49,9 @@ void CardHandler::processEvent(Event& event, bool needSend) {
 
     currentPlayer_ = event.playerid();
     cardType_ = event.cardinfo().cardtype();
+    if (needSend) {
+
+    }
     /*
     if (gameModel_.hasCard(currentPlayer_, cardType_)) {
         gameModel_.playCard(currentPlayer_, cardType_);
@@ -61,7 +64,7 @@ void CardHandler::processEvent(Event& event, bool needSend) {
 }
 
 void CardHandler::displayEvent(Event& event) {
-    // TODO
+    static_cast<void>(event);
 }
 
 
@@ -95,7 +98,7 @@ void DiceHandler::processEvent(Event& event, bool needSend) {
     }
 
     if (numberSum == 7) {
-        int hexNum = 0;
+        //int hexNum = 0;
         // hexNum = запросить у View
         //gameModel_.setRobbers(hexNum);
         // изменить hexNum у View
@@ -111,6 +114,7 @@ void DiceHandler::processEvent(Event& event, bool needSend) {
 }
 
 void DiceHandler::displayEvent(Event& event) {
+    static_cast<void>(event);
     gameView_.addDice(number1_, number2_);
     std::vector<int> v;
     const std::unordered_map<Board::Resource, int> m = gameModel_.getPlayerResources(static_cast<Board::PlayerNum>(myTurn_ + 1));
@@ -155,9 +159,7 @@ void MarketHandler::processEvent(Event& event, bool needSend) {
 }
 
 void MarketHandler::displayEvent(Event& event) {
-    /*
-    Вывести изменения ресурсов
-    */
+    static_cast<void>(event);
 }
 
 
@@ -233,9 +235,7 @@ void EndTurnHandler::processEvent(Event& event, bool needSend) {
 }
 
 void EndTurnHandler::displayEvent(Event& event) {
-    /*
-    Убрать некоторый интерфейс
-    */
+    static_cast<void>(event);
 }
 
 
@@ -247,13 +247,14 @@ void NextPhaseHandler::processEvent(Event& event, bool needSend) {
         throw std::logic_error("Wrong type");
     }
     displayEvent(event);
+    if (needSend) {
+
+    }
 }
 
 void NextPhaseHandler::displayEvent(Event& event) {
     //gameView_.update();
-    /*
-    Отобразить новые кнопки
-    */
+    static_cast<void>(event);
 }
 
 
@@ -272,6 +273,7 @@ void EndGameHandler::processEvent(Event& event, bool needSend) {
 
 void EndGameHandler::displayEvent(Event& event) {
     gameView_.quit.store(true);
+    static_cast<void>(event);
 }
 
 

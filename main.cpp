@@ -74,8 +74,8 @@ int main() {
     Board::Catan wow(random, info.numberofplayers());
 
     view.loadTextures(random, view);
-    view.roads = new GUI::Road_arr(view);
-    view.buildings = new GUI::Building_arr(view);
+    view.roads = new GUI::Road_arr();
+    view.buildings = new GUI::Building_arr();
 
     std::thread update(GUI::upgrade, &view);
 

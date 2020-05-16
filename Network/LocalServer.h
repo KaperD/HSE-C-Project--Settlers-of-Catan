@@ -74,6 +74,7 @@ public:
 
 private:
     Status StartNewGame(::grpc::ServerContext* context, const NumberOfPlayers* request, OrderInfo* response) override {
+        static_cast<void>(context);
         std::cout << "New game " << request->numberofplayers() << std::endl;
         std::lock_guard<utility::spinlock> lock(spin);
 
@@ -107,6 +108,7 @@ private:
 
 
     Status JoinGame(::grpc::ServerContext* context, const GameId* request, OrderInfo* response) override {
+        static_cast<void>(context);
         Game& game = games.at(request->gameid());
         std::lock_guard<utility::spinlock> lock(game.spin);
 
@@ -127,6 +129,8 @@ private:
 
 
     Status SendEvent(::grpc::ServerContext* context, const Event* request, Void* response) override {
+        static_cast<void>(context);
+        static_cast<void>(response);
         Event event = *request;
         int playerid = event.playerid();
         std::cout << "SendEvent gameid " <<  request->gameid() << std::endl;
@@ -148,6 +152,7 @@ private:
 
 
     Status GetEvent(ServerContext* context, const Player* request, Event* response) override {
+        static_cast<void>(context);
         int playerid = request->playerid();
         std::cout << "GetEvent gameid " <<  request->gameid() << std::endl;
         std::cout << "GetEvent playerid " <<  playerid << std::endl;
@@ -168,6 +173,7 @@ private:
 
 
     Status HasEvent(ServerContext* context, const Player* request, Bool* response) override {
+        static_cast<void>(context);
         int playerid = request->playerid();
         std::cout << "HasEvent gameid " <<  request->gameid() << std::endl;
         std::cout << "HasEvent playerid " <<  playerid << std::endl;

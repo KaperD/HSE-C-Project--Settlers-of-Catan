@@ -85,11 +85,11 @@ public:
             gui_y2(y2), model_x(x), model_y(y),
             colour(_colour), dest(_dest), type(_type){};
 
-    double gui_x1, gui_y1, gui_x2, gui_y2;
+    double gui_x1, gui_x2, gui_y1, gui_y2;
     int model_x, model_y;
-    SDL_Rect dest;
     int built = 0;
     Colour colour;
+    SDL_Rect dest;
     int type = 0;
     bool is(int x, int y) const;
     std::pair<int, int> get_model_coors();
@@ -97,14 +97,14 @@ public:
 
 class Building_arr {
 public:
-    explicit Building_arr(GUI& gui);
+    Building_arr();
     ~Building_arr();
     std::vector<Obj> vec;
 };
 
 class Road_arr {
 public:
-    explicit Road_arr(GUI& gui);
+    Road_arr();
     ~Road_arr();
     std::vector<Obj> vec;
 };

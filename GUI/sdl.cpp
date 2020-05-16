@@ -86,7 +86,7 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     for (auto e: v3) {
         field_arr.push_back(e);
     }
-    for (int i = 4; i < v2.size(); ++i) {
+    for (int i = 4; i < static_cast<int>(v2.size()); ++i) {
         field_arr.push_back(v2[i]);
     }
     for (int i = 0; i < 4; ++i) {
@@ -164,10 +164,6 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     players_names.push_back("ALLAH");
     players_names.push_back("AKBAR");
 
-    
-    SDL_Rect dest;
-    dest.x = 0;
-    dest.y = 0;
     svitok_up = nullptr;
     svitok_down = nullptr;
     svitok_up = SDL_LoadBMP("image/svitok_up.bmp");
@@ -656,7 +652,6 @@ Event GUI::ThirdStage () {
                 if (x > 161 && x < 423 && y > 610 && y < 790) { // деревня
                     Event event;
                     event.set_type(EventType::ENDTURN);
-                    auto q = event.mutable_buildinfo();
                     return event;
                 }
             }
@@ -729,18 +724,18 @@ void GUI::addRoad(std::pair<int, int> tmp, int player) {
 }
 
 int GUI::returnRoad(int x, int y) const {
-    for (int i = 0; i < roads->vec.size(); ++i)
+    for (int i = 0; i < static_cast<int>(roads->vec.size()); ++i)
         if (roads->vec[i].is(x, y)) return i;
     return -1;
 }
 
 int GUI::returnBuilding(int x, int y) const {
-    for (int i = 0; i < buildings->vec.size(); ++i)
+    for (int i = 0; i < static_cast<int>(buildings->vec.size()); ++i)
         if (buildings->vec[i].is(x, y)) return i;
     return -1;
 }
 
-Road_arr::Road_arr(GUI& gui) {
+Road_arr::Road_arr() {
     SDL_Rect dest;
     for (int i = 0; i < 5; ++i){
         int a = 0;
@@ -812,7 +807,7 @@ void GUI::addBuilding(std::pair<int, int> tmp, int player) {
     std::cerr << "kek"; 
 }
 
-Building_arr::Building_arr(GUI& gui) {
+Building_arr::Building_arr() {
     SDL_Rect dest;
     for (int i = 0; i < 17; ++i) {
         int a = 0;
@@ -952,6 +947,7 @@ int GUI::getPlaceOfGame() {
         }
         limit.delay();
     }
+    return 1;
 }
 
 int GUI::getTypeOfGame() {
@@ -978,6 +974,7 @@ int GUI::getTypeOfGame() {
         }
         limit.delay();
     }
+    return 1;
 }
 
 int GUI::getNumOfPlayers() {
@@ -1004,6 +1001,7 @@ int GUI::getNumOfPlayers() {
         }
         limit.delay();
     }
+    return 1;
 }
 
 int GUI::getGameId() {
@@ -1052,7 +1050,7 @@ int GUI::getGameId() {
         }
         limit.delay();
     }
-
+    return 0;
 }
 
 ::game::Event GUI::getEvent() {
