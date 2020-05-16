@@ -50,7 +50,9 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     std::vector<SDL_Texture *> v2;
     std::vector<SDL_Texture *> v3;
 
-    for (int i = 0; i < 19; ++i) {
+    std::vector<int> sameOrderWithModel = {0, 2, 4, 6, 8, 10, 12, 14, 15, 16, 17, 18, 7, 9, 11, 13, 1, 3, 5};
+    for (int k = 0; k < 19; ++k) {
+        int i = sameOrderWithModel[k];
         std::string ss = "image/number";
         int resource = randomResouresAndNumbers[i].resource;
         int number = randomResouresAndNumbers[i].number;
