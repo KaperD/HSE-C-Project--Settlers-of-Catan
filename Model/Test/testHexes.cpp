@@ -5,7 +5,7 @@ using utility::Random;
 using namespace Board;
 
 TEST(HexesTest, HexDesert) {
-    Random random;
+    Random random(time(nullptr));
     Catan board(random, 4);
     int desert_cnt = 0;
     for (int i = 0; i < HEXESNUM; i++) {
@@ -17,7 +17,7 @@ TEST(HexesTest, HexDesert) {
 }
 
 TEST(HexesTest, giveResourcesTest) {
-    Random random;
+    Random random(time(nullptr));
     Catan board(random, 2);
     board.settle(BuildingType::VILLAGE, 6, 0);
     board.settle(BuildingType::ROAD, 5, 0);
@@ -50,7 +50,7 @@ TEST(HexesTest, giveResourcesTest) {
 }
 
 TEST(HexesTest, setRobbersTest) {
-    Random random;
+    Random random(time(nullptr));
     Catan board(random, 2);
     board.settle(BuildingType::VILLAGE, 2, 10);
     board.settle(BuildingType::ROAD, 2, 11);
