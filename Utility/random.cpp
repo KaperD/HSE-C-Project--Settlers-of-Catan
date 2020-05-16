@@ -10,7 +10,7 @@ int utility::Random::getRandomNumberFromTo(int from, int to) {
 
 utility::Random::Random(unsigned int seed) : cells(19), random_(std::random_device()()) {
     std::mt19937 generator(seed);
-    std::ofstream fout("RandomLog.txt", std::ios_base::app);
+    std::ofstream fout("RandomLog.txt", std::ios_base::app); // TODO: перед релизом изменить папку на /usr/share/CatanImages/
     fout << seed << '\n';
 
     std::vector<int> numbers = {2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12};

@@ -257,12 +257,14 @@ void EndGameHandler::processEvent(Event& event, bool needSend) {
     if (event.type() != EventType::ENDGAME) {
         throw std::logic_error("Wrong type");
     }
+    displayEvent(event);
     if (needSend) {
         sendEvent(event);
     }
 }
 
 void EndGameHandler::displayEvent(Event& event) {
+    gameView_.quit.store(true);
 }
 
 
@@ -314,7 +316,6 @@ void GameController::RunGame() {
                 }
                 if (x == EventType::ENDGAME) {
                     quit = true;
-                    gameView_.quit.store(true);
                     break;
                 } else if (x == EventType::ENDTURN) {
                     break;
@@ -337,7 +338,6 @@ void GameController::RunGame() {
                 }
                 if (x == EventType::ENDGAME) {
                     quit = true;
-                    gameView_.quit.store(true);
                     break;
                 } else if (x == EventType::ENDTURN) {
                     break;
@@ -373,7 +373,6 @@ void GameController::BeginGame() {
                     }
                 } else if (x == EventType::ENDGAME) {
                     handlers_[x]->processEvent(event, true);
-                    gameView_.quit.store(true);
                     break;
                 }
             }
@@ -395,7 +394,6 @@ void GameController::BeginGame() {
                     }
                 } else if (x == EventType::ENDGAME) {
                     handlers_[x]->processEvent(event, false);
-                    gameView_.quit.store(true);
                     break;
                 }
             }
