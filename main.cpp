@@ -73,7 +73,7 @@ int main() {
     OrderInfo info = gameClient_.ConnectToGame(gameParams.first, gameParams.second);
     Board::Catan wow(random, info.numberofplayers());
 
-    view.load_textures(random, view);
+    view.loadTextures(random, view);
     view.roads = new GUI::Road_arr(view);
     view.buildings = new GUI::Building_arr(view);
 
@@ -81,7 +81,7 @@ int main() {
 
     Controller::GameController gc(wow, gameClient_, view, random, info);
 
-    std::thread music(GUI::play_music, &view);
+    std::thread music(GUI::playMusic, &view);
 
     gc.RunGame();
 

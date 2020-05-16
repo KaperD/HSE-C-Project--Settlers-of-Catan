@@ -109,7 +109,7 @@ void DiceHandler::processEvent(Event& event, bool needSend) {
 }
 
 void DiceHandler::displayEvent(Event& event) {
-    gameView_.add_dice(number1_, number2_);
+    gameView_.addDice(number1_, number2_);
     //
 }
 
@@ -186,16 +186,16 @@ void BuildHandler::displayEvent(Event& event) {
     int Player = event.playerid();
     if (type == Board::BuildingType::ROAD) {
         roadIsSet = true;
-        gameView_.add_road({x_, y_}, Player);
+        gameView_.addRoad({x_, y_}, Player);
     }
     if (type == Board::BuildingType::VILLAGE) {
         villageIsSet = true;
-        gameView_.add_building({x_, y_}, Player);
+        gameView_.addBuilding({x_, y_}, Player);
     }
     if (type == Board::BuildingType::CITY) {
-        gameView_.add_building({x_, y_}, Player);
+        gameView_.addBuilding({x_, y_}, Player);
     }
-    gameView_.update_points(gameModel_.Catan::getVictoryPoints());
+    gameView_.updatePoints(gameModel_.Catan::getVictoryPoints());
     std::vector<int> v;
     const std::unordered_map<Board::Resource, int> m = gameModel_.getPlayerResources(static_cast<Board::PlayerNum>(Player + 1));
     std::cout << "Player " << Player << "resources" << std::endl;
@@ -204,7 +204,7 @@ void BuildHandler::displayEvent(Event& event) {
         v.push_back(e.second);
     }
     std::cout << v.size() << std::endl;
-    gameView_.update_resourses(v);
+    gameView_.updateResourses(v);
 }
 
 
