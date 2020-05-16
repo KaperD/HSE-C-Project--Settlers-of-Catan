@@ -745,6 +745,7 @@ class OrderInfo :
     kIdFieldNumber = 1,
     kNumberOfPlayersFieldNumber = 2,
     kGameIdFieldNumber = 3,
+    kSeedFieldNumber = 4,
   };
   // int32 id = 1;
   void clear_id();
@@ -773,6 +774,15 @@ class OrderInfo :
   void _internal_set_gameid(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
+  // uint32 seed = 4;
+  void clear_seed();
+  ::PROTOBUF_NAMESPACE_ID::uint32 seed() const;
+  void set_seed(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_seed() const;
+  void _internal_set_seed(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  public:
+
   // @@protoc_insertion_point(class_scope:game.OrderInfo)
  private:
   class _Internal;
@@ -781,6 +791,7 @@ class OrderInfo :
   ::PROTOBUF_NAMESPACE_ID::int32 id_;
   ::PROTOBUF_NAMESPACE_ID::int32 numberofplayers_;
   ::PROTOBUF_NAMESPACE_ID::int32 gameid_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 seed_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_game_2eproto;
 };
@@ -1864,6 +1875,26 @@ inline void OrderInfo::_internal_set_gameid(::PROTOBUF_NAMESPACE_ID::int32 value
 inline void OrderInfo::set_gameid(::PROTOBUF_NAMESPACE_ID::int32 value) {
   _internal_set_gameid(value);
   // @@protoc_insertion_point(field_set:game.OrderInfo.gameId)
+}
+
+// uint32 seed = 4;
+inline void OrderInfo::clear_seed() {
+  seed_ = 0u;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 OrderInfo::_internal_seed() const {
+  return seed_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 OrderInfo::seed() const {
+  // @@protoc_insertion_point(field_get:game.OrderInfo.seed)
+  return _internal_seed();
+}
+inline void OrderInfo::_internal_set_seed(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  
+  seed_ = value;
+}
+inline void OrderInfo::set_seed(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _internal_set_seed(value);
+  // @@protoc_insertion_point(field_set:game.OrderInfo.seed)
 }
 
 // -------------------------------------------------------------------

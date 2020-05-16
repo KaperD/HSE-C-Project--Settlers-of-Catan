@@ -65,12 +65,12 @@ int main() {
     LocalServer localServer;
     std::thread server(RunServer, &localServer, isLocal);
 
-    utility::Random random;
-
-    GUI::GUI view;
     GameClient gameClient_(isLocal);
 
     OrderInfo info = gameClient_.ConnectToGame(gameParams.first, gameParams.second);
+    utility::Random random(info.seed());
+
+    GUI::GUI view(info.id(), info.numberofplayers());
     Board::Catan wow(random, info.numberofplayers());
 
     view.loadTextures(random, view);

@@ -32,12 +32,12 @@ using ::game::Event;
 using ::game::EventType;
 
 void playMusic(GUI* gui) {
-    while (!gui->quit) {
+    while (!gui->quit.load()) {
         std::cout << "MUSIC" << std::endl;
         Mix_PlayChannel(-1, gui->sfx, 0);
         for (int i = 0; i < 18000; ++i) {
-            if (gui->quit) return;
-            SDL_Delay(1000);
+            if (gui->quit.load()) return;
+            std::this_thread::sleep_for(std::chrono::seconds(1));
         }
     }
 }
@@ -395,28 +395,8 @@ void GUI::renderText() const {
 }
 
 
-void GUI::makeTextureConstTable(std::vector<int> vec, SDL_Surface x, SDL_Texture *&ans, int type) {
-    TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
-    SDL_Surface * buff = new SDL_Surface(x);
-    SDL_Rect dest;
-    dest.x = 280 + 90;
-    dest.y = 200;
-    dest.h = 100;
-    dest.w = 100;
-    if (type) dest.y = 30;
-    for (auto e: vec) {     
-        SDL_Surface *surf = TTF_RenderText_Blended(font, std::to_string(e).c_str(), color_const_table);
-        SDL_BlitSurface(surf, nullptr, buff, &dest);
-        dest.y += 30;
-    }
-    ans = nullptr;
-    ans = SDL_CreateTextureFromSurface(ren, buff);
-    if (ans == nullptr) std::cerr << "PIZDA";
-    TTF_CloseFont(font);
-}
-
-
 void GUI::renderConstTable(){
+    std::lock_guard<std::mutex> lock(mutex_for_table);
     SDL_Rect dest;
     dest.x = 1380;
     dest.y = 0;
@@ -483,10 +463,10 @@ void upgrade(GUI* g) {
 
     while (true) {
         frameStart = SDL_GetTicks();
-        // TODO: сделать mutex и захватывать его с помощью std::lock_guard
+
         g->makeRender();
         SDL_RenderPresent(g->ren);
-        if (g->quit) return;
+        if (g->quit.load()) return;
 
         frameTime = static_cast<int>(SDL_GetTicks() - frameStart);
         if (frameDelay > frameTime) {
@@ -495,7 +475,7 @@ void upgrade(GUI* g) {
     }
 }
 
-GUI::GUI() {
+GUI::GUI(int player, int numberOfPlayers) : cur_player(player), num_players(numberOfPlayers) {
     SDL_Init( SDL_INIT_EVERYTHING );
     SDL_Init(SDL_INIT_AUDIO);
     SDL_Init(SDL_INIT_VIDEO);
@@ -521,7 +501,7 @@ void GUI::getCoorsRoad() {
 
     Limiter limit;
 
-    while (!quit) {
+    while (!quit.load()) {
 
         limit.storeStartTime(); // засекает начало итерации
 
@@ -533,10 +513,10 @@ void GUI::getCoorsRoad() {
         }
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) {
-                quit = true;
+                quit.store(true);
             }
             if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE) {
-                quit = true;
+                quit.store(true);
                 break;
             }
             if( e.type == SDL_MOUSEMOTION ) {
@@ -574,7 +554,7 @@ void GUI::getCoorsBuilding () {
 
     Limiter limit;
 
-    while (!quit) {
+    while (!quit.load()) {
 
         limit.storeStartTime();
 
@@ -586,11 +566,11 @@ void GUI::getCoorsBuilding () {
         }
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) {
-                quit = true;
+                quit.store(true);
             }
 
             if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE) {
-                quit = true;
+                quit.store(true);
                 break;
             }
             if( e.type == SDL_MOUSEMOTION ) {
@@ -624,19 +604,19 @@ Event GUI::ThirdStage () {
 
     Limiter limit;
 
-    while (!quit) {
+    while (!quit.load()) {
 
         limit.storeStartTime();
 
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) {
-                quit = true;
+                quit.store(true);
                 Event event;
                 event.set_type(EventType::ENDGAME);
                 return event;
             }
             if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE) {
-                quit = true;
+                quit.store(true);
                 Event event;
                 event.set_type(EventType::ENDGAME);
                 return event;
@@ -702,6 +682,9 @@ Event GUI::ThirdStage () {
                 SDL_GetMouseState(&x, &y);
                 if (x > 200 && x < 480 && y > 98 && y < 280) {
                     event.set_type(EventType::DICE);
+                    auto nums = event.mutable_diceinfo();
+                    nums->set_number1(0);
+                    nums->set_number1(0);
                     return event;
                 }
                 if (x > 200 && x < 480 && y > 300 && y < 482) {
@@ -870,16 +853,75 @@ void GUI::updatePlayer(int x) {
 }
 
 void GUI::updatePoints(std::vector<int> vec) {
+    std::lock_guard<std::mutex> lock(mutex_for_table);
     players_points = vec;
+    svitok_down = nullptr;
+    svitok_down = SDL_LoadBMP("image/svitok_down.bmp");
 
-    SDL_BlitSurface(svitok_down, nullptr, svitok_down1, nullptr);
-    makeTextureConstTable(players_points, *svitok_down1, texture_svitok_down, 1);
+    TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
+
+    SDL_Rect dest1={150, 200, 0, 0};
+    SDL_Surface *surf = nullptr;
+
+    dest1.y = 30;
+    for (auto e: players_names) {
+        surf = TTF_RenderText_Blended(font, e.c_str(), color_const_table);
+        SDL_BlitSurface(surf, nullptr, svitok_down, &dest1);
+        dest1.y += 30;
+    }
+
+    TTF_CloseFont(font);
+
+    makeTextureConstTable(players_points, *svitok_down, texture_svitok_down, 1);
 }
 
 void GUI::updateResourses(std::vector<int> v) {
+    std::lock_guard<std::mutex> lock(mutex_for_table);
     resourses = v;
-    SDL_BlitSurface(svitok_up, nullptr, svitok_up1, nullptr);
-    makeTextureConstTable(resourses, *svitok_up1, texture_svitok_up, 0);
+
+    svitok_up = nullptr;
+    svitok_up = SDL_LoadBMP("image/svitok_up.bmp");
+
+    TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
+    SDL_Surface *surf = TTF_RenderText_Blended(font, "WOOL", color_const_table);
+    SDL_Rect dest1={150, 200, 0, 0};
+
+    SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
+    dest1.y += 30;
+    surf = TTF_RenderText_Blended(font, "WOOD", color_const_table);
+    SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
+    dest1.y += 30;
+    surf = TTF_RenderText_Blended(font, "BRICKS", color_const_table);
+    SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
+    dest1.y += 30;
+    surf = TTF_RenderText_Blended(font, "CORN", color_const_table);
+    SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
+    dest1.y += 30;
+    surf = TTF_RenderText_Blended(font, "ORE", color_const_table);
+    SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
+    TTF_CloseFont(font);
+
+    makeTextureConstTable(resourses, *svitok_up, texture_svitok_up, 0);
+}
+
+void GUI::makeTextureConstTable(std::vector<int> vec, SDL_Surface& x, SDL_Texture *&ans, int type) {
+    TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
+    SDL_Surface * buff = new SDL_Surface(x);
+    SDL_Rect dest;
+    dest.x = 280 + 90;
+    dest.y = 200;
+    dest.h = 100;
+    dest.w = 100;
+    if (type) dest.y = 30;
+    for (auto e: vec) {
+        SDL_Surface *surf = TTF_RenderText_Blended(font, std::to_string(e).c_str(), color_const_table);
+        SDL_BlitSurface(surf, nullptr, buff, &dest);
+        dest.y += 30;
+    }
+    ans = nullptr;
+    ans = SDL_CreateTextureFromSurface(ren, buff);
+    if (ans == nullptr) std::cerr << "PIZDA";
+    TTF_CloseFont(font);
 }
 
 void GUI::addPlayerName(int x, std::string s) {
@@ -890,7 +932,7 @@ int GUI::getPlaceOfGame() {
     render_type = 11;
     SDL_Event e;
     Limiter limit;
-    while (!quit) {
+    while (!quit.load()) {
         limit.storeStartTime();
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_MOUSEBUTTONDOWN) {
@@ -913,7 +955,7 @@ int GUI::getTypeOfGame() {
     render_type = 12;
     SDL_Event e;
     Limiter limit;
-    while (!quit) {
+    while (!quit.load()) {
         limit.storeStartTime();
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_MOUSEBUTTONDOWN) {
@@ -939,7 +981,7 @@ int GUI::getNumOfPlayers() {
     render_type = 13;
     SDL_Event e;
     Limiter limit;
-    while (!quit) {
+    while (!quit.load()) {
         limit.storeStartTime();
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_MOUSEBUTTONDOWN) {
@@ -966,7 +1008,7 @@ int GUI::getGameId() {
     int value = 0;
     SDL_Event e;
     Limiter limit;
-    while (!quit) {
+    while (!quit.load()) {
         limit.storeStartTime();
         while (SDL_PollEvent(&e)) {
             if(e.type == SDL_KEYDOWN) {

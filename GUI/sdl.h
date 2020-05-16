@@ -8,6 +8,7 @@
 #include <random>
 #include <time.h>
 #include <mutex>
+#include <atomic>
 
 #include "game.pb.h"
 
@@ -119,11 +120,11 @@ public:
 
 class GUI {
 public:
-
-    
+    GUI(int player, int numberOfPlayers);
+    ~GUI();
     std::mutex mutex_for_roads {};  
     std::mutex mutex_for_buildings {};
-    std::mutex mutex_for_ren {};
+    std::mutex mutex_for_table {};
 
     Road_arr *roads = nullptr;
     Building_arr *buildings = nullptr;
@@ -157,7 +158,7 @@ public:
 
     int getGameId();
 
-    bool quit = false;
+    std::atomic<bool> quit { false };
     int  end_time_dice = 0;
     std::vector<SDL_Texture *> field_arr;
     int tmp_sound = 0;
@@ -183,9 +184,7 @@ public:
     SDL_Texture *texture_svitok_up, *texture_svitok_down;
     SDL_Texture *dice_shadow;
     std::vector<SDL_Texture *> table_shadow;
-    void makeTextureConstTable(std::vector<int> vec, SDL_Surface x, SDL_Texture *&ans, int type);
-    GUI();
-    ~GUI();
+    void makeTextureConstTable(std::vector<int> vec, SDL_Surface& x, SDL_Texture *&ans, int type);
     void destroyTextures();
     void renderBackground() const;
     void renderTables() const;
