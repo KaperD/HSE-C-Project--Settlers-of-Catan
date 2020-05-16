@@ -7,7 +7,7 @@ using namespace Board;
 
 
 TEST(canBuildTest, simpleVillageCase) {
-    Random random;
+    Random random(3);
     Catan board(random, 3);
     board.settle(BuildingType::VILLAGE, 8, 6);
     board.settle(BuildingType::ROAD, 8, 7);
@@ -17,7 +17,7 @@ TEST(canBuildTest, simpleVillageCase) {
 }
 
 TEST(canBuildTest, nearEnemyVillageCase) {
-    Random random;
+    Random random(3);
     Catan board(random, 3);
     board.settle(BuildingType::VILLAGE, 8, 6);
     board.settle(BuildingType::ROAD, 8, 7);
@@ -27,7 +27,7 @@ TEST(canBuildTest, nearEnemyVillageCase) {
 }
 
 TEST(canBuildTest, afterBeginningVillageCase) {
-    Random random;
+    Random random(3);
     Catan board(random, 3);
     board.settle(BuildingType::VILLAGE, 8, 6);
     board.settle(BuildingType::ROAD, 8, 7);
@@ -38,7 +38,7 @@ TEST(canBuildTest, afterBeginningVillageCase) {
 }
 
 TEST(canBuildTest, simpleCityCase) {
-    Random random;
+    Random random(3);
     Catan board(random, 3);
     board.settle(BuildingType::VILLAGE, 8, 6);
     board.changeCurPlayer(PlayerNum::GAMER2);
@@ -48,7 +48,7 @@ TEST(canBuildTest, simpleCityCase) {
 }
 
 TEST(canBuildTest, simpleRoadCase) {
-    Random random;
+    Random random(3);
     Catan board(random, 3);
     board.settle(BuildingType::VILLAGE, 8, 6);
     board.settle(BuildingType::ROAD, 8, 7);
@@ -60,7 +60,7 @@ TEST(canBuildTest, simpleRoadCase) {
 }
 
 TEST(canBuildTest, fromRulesRoadCase) {
-    Random random;
+    Random random(3);
     Catan board(random, 3);
     board.settle(BuildingType::VILLAGE, 8, 6);
     board.settle(BuildingType::ROAD, 7, 6);

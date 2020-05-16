@@ -112,17 +112,14 @@ void DiceHandler::processEvent(Event& event, bool needSend) {
 
 void DiceHandler::displayEvent(Event& event) {
     gameView_.addDice(number1_, number2_);
-    int Player = event.playerid();
-    if (Player == gameView_.cur_player) {
-        std::vector<int> v;
-        const std::unordered_map<Board::Resource, int> m = gameModel_.getPlayerResources(static_cast<Board::PlayerNum>(Player + 1));
-        for(auto e: m) {
-            std::cout << e.second << std::endl;
-            v.push_back(e.second);
-        }
-        std::cout << v.size() << std::endl;
-        gameView_.updateResourses(v);
+    std::vector<int> v;
+    const std::unordered_map<Board::Resource, int> m = gameModel_.getPlayerResources(static_cast<Board::PlayerNum>(myTurn_ + 1));
+    for(auto e: m) {
+        std::cout << e.second << std::endl;
+        v.push_back(e.second);
     }
+    std::cout << v.size() << std::endl;
+    gameView_.updateResourses(v);
 }
 
 
@@ -208,7 +205,7 @@ void BuildHandler::displayEvent(Event& event) {
         gameView_.addBuilding({x_, y_}, Player);
     }
     gameView_.updatePoints(gameModel_.Catan::getVictoryPoints());
-    if (Player == gameView_.cur_player) {
+    if (Player == myTurn_) {
         std::vector<int> v;
         const std::unordered_map<Board::Resource, int> m = gameModel_.getPlayerResources(static_cast<Board::PlayerNum>(Player + 1));
         std::cout << "Player " << Player << "resources" << std::endl;
@@ -294,9 +291,9 @@ GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI
         handlers_.push_back(nullptr);
     }
     handlers_[0] = std::make_unique<CardHandler     >(gameModel_, gameView_, gameClient_);
-    handlers_[1] = std::make_unique<DiceHandler     >(gameModel_, gameView_, gameClient_, ran);
+    handlers_[1] = std::make_unique<DiceHandler     >(gameModel_, gameView_, gameClient_, ran, myTurn_);
     handlers_[2] = std::make_unique<MarketHandler   >(gameModel_, gameView_, gameClient_);
-    handlers_[3] = std::make_unique<BuildHandler    >(gameModel_, gameView_, gameClient_);
+    handlers_[3] = std::make_unique<BuildHandler    >(gameModel_, gameView_, gameClient_, myTurn_);
     handlers_[4] = std::make_unique<EndTurnHandler  >(gameModel_, gameView_, gameClient_);
     handlers_[5] = std::make_unique<NextPhaseHandler>(gameModel_, gameView_, gameClient_);
     handlers_[6] = std::make_unique<EndGameHandler  >(gameModel_, gameView_, gameClient_);
