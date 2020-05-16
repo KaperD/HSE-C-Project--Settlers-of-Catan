@@ -8,7 +8,7 @@ int utility::Random::getRandomNumberFromTo(int from, int to) {
     return cut(random_);
 }
 
-utility::Random::Random(unsigned int seed) : cells(19), random_(std::random_device()()) {
+utility::Random::Random(unsigned int seed) : random_(std::random_device()()), cells(19) {
     std::mt19937 generator(seed);
     std::ofstream fout("RandomLog.txt", std::ios_base::app); // TODO: перед релизом изменить папку на /usr/share/CatanImages/
     fout << seed << '\n';
