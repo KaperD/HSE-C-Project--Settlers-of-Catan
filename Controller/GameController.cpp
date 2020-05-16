@@ -112,7 +112,17 @@ void DiceHandler::processEvent(Event& event, bool needSend) {
  
 void DiceHandler::displayEvent(Event& event) {
     gameView_.addDice(number1_, number2_);
-    //
+    int Player = event.playerid();
+    if (Player == gameView_.cur_player) {
+        std::vector<int> v;
+        const std::unordered_map<Board::Resource, int> m = gameModel_.getPlayerResources(static_cast<Board::PlayerNum>(Player + 1));
+        for(auto e: m) {
+            std::cout << e.second << std::endl;
+            v.push_back(e.second);
+        }
+        std::cout << v.size() << std::endl;
+        gameView_.updateResourses(v);
+    }
 }
  
  
@@ -257,12 +267,14 @@ void EndGameHandler::processEvent(Event& event, bool needSend) {
     if (event.type() != EventType::ENDGAME) {
         throw std::logic_error("Wrong type");
     }
+    displayEvent(event);
     if (needSend) {
         sendEvent(event);
     }
 }
  
 void EndGameHandler::displayEvent(Event& event) {
+    gameView_.quit.store(true);
 }
  
  
@@ -312,7 +324,6 @@ void GameController::RunGame() {
                 }
                 if (x == EventType::ENDGAME) {
                     quit = true;
-                    gameView_.quit.store(true);
                     break;
                 } else if (x == EventType::ENDTURN) {
                     break;
@@ -335,7 +346,6 @@ void GameController::RunGame() {
                 }
                 if (x == EventType::ENDGAME) {
                     quit = true;
-                    gameView_.quit.store(true);
                     break;
                 } else if (x == EventType::ENDTURN) {
                     break;
@@ -371,7 +381,6 @@ void GameController::BeginGame() {
                     }
                 } else if (x == EventType::ENDGAME) {
                     handlers_[x]->processEvent(event, true);
-                    gameView_.quit.store(true);
                     break;
                 }
             }
@@ -393,7 +402,6 @@ void GameController::BeginGame() {
                     }
                 } else if (x == EventType::ENDGAME) {
                     handlers_[x]->processEvent(event, false);
-                    gameView_.quit.store(true);
                     break;
                 }
             }

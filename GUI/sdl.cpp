@@ -207,8 +207,11 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     font = TTF_OpenFont("sample.ttf", 32);
     sfx = nullptr;
     sfx = Mix_LoadWAV("image/music.wav");
+    Mix_VolumeChunk(sfx, MIX_MAX_VOLUME / 4);
     button_sound = Mix_LoadWAV("image/button_sound.wav");
+    Mix_VolumeChunk(button_sound, MIX_MAX_VOLUME / 4);
     build_sound = Mix_LoadWAV("image/build_sound.wav");
+    Mix_VolumeChunk(build_sound, MIX_MAX_VOLUME / 12);
     if (sfx == nullptr)  std::cout << "Hhhh";
 
     _build_road = Inscription(gui, 423 + 161, 317 + 136, "Build Road");
@@ -493,7 +496,7 @@ GUI::GUI(int player, int numberOfPlayers) : cur_player(player), num_players(numb
     win = SDL_CreateWindow("Settlers of Catan", 0, 0, displayMode.w, displayMode.h, SDL_WINDOW_SHOWN);
     ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     players_points.resize(num_players, 0);
-    resourses = {0, 0, 0, 0, 0};
+    resourses = {2, 4, 4, 0, 2};
     //std::cout << "Sync " << SDL_GL_SetSwapInterval(1) << std::endl;
 }
 
