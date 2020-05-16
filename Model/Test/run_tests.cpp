@@ -1,4 +1,4 @@
-#include "time.h"
+#include <ctime>
 #include "gtest/gtest.h"
 #include "../Utility/random.h"
 
