@@ -45,6 +45,7 @@ TEST(HexesTest, giveResourcesTest) {
     if (board.getHex(14)->robbersIsHere()) hexNum = 18;
 
     board.giveResources(board.getHex(hexNum)->getNum());
+    //номер первого попавшегося ресурса может не совпадать с тем, что на гексе. Тест: 1589637194(seed)
     ASSERT_EQ(board.getPlayerResNum(PlayerNum::GAMER2, board.getHex(hexNum)->getResource()), 1);
     ASSERT_EQ(board.getPlayerResNum(PlayerNum::GAMER1, board.getHex(hexNum)->getResource()), 1);
 }
@@ -86,6 +87,9 @@ TEST(HexesTest, setRobbersTest) {
     board.changeCurPlayer(PlayerNum::GAMER2);
     board.setRobbers(hexNum);
     ASSERT_EQ(board.getRobbersIndx(), hexNum);
+    //номер первого попавшегося ресурса может не совпадать с тем, что на гексе. Тест: 1589634983(seed), 1589637299
     ASSERT_EQ(board.getPlayerResNum(PlayerNum::GAMER1, hexRe), 0);
     ASSERT_EQ(board.getPlayerResNum(PlayerNum::GAMER2, hexRe), 1);
 }
+
+//1589642844 -- рабочий seed
