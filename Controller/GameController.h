@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <memory>
+#include <random.h>
 
 #include "game.grpc.pb.h"
 #include "Board.h"
@@ -47,14 +48,20 @@ private:
 
 class DiceHandler : public Handler {
 public:
-    DiceHandler(Board::Catan& model, GUI::GUI& view, GameClient& client)
+    DiceHandler(Board::Catan& model, GUI::GUI& view, GameClient& client, utility::Random& ran, int id)
     : Handler(model, view, client)
-    , number_(0) { }
+    , number1_(0)
+    , number2_(0)
+    , random_(ran)
+    , myTurn_(id) { }
     void processEvent(::game::Event& event, bool needSend) override;
     void displayEvent(::game::Event& event) override;
     using Handler::sendEvent;
 private:
-    int number_;
+    int number1_;
+    int number2_;
+    utility::Random& random_;
+    int myTurn_;
 };
 
 class MarketHandler : public Handler {
@@ -73,11 +80,12 @@ private:
 
 class BuildHandler : public Handler {
 public:
-    BuildHandler(Board::Catan& model, GUI::GUI& view, GameClient& client)
+    BuildHandler(Board::Catan& model, GUI::GUI& view, GameClient& client, int id)
     : Handler(model, view, client)
     , buildingType_(0)
     , x_(0)
-    , y_(0) { }
+    , y_(0)
+    , myTurn_(id){ }
     void processEvent(::game::Event& event, bool needSend) override;
     void displayEvent(::game::Event& event) override;
     using Handler::sendEvent;
@@ -85,6 +93,7 @@ private:
     int buildingType_;
     int x_;
     int y_;
+    int myTurn_;
 };
 
 class EndTurnHandler : public Handler {
@@ -116,18 +125,17 @@ public:
 
 class GameController final {
 public:
-    GameController(Board::Catan& model, GameClient& client, GUI::GUI& view);
+    GameController(Board::Catan& model, GameClient& client, GUI::GUI& view, utility::Random& ran, const game::OrderInfo& info);
 
     GameController(const GameController&) = delete;
     GameController operator=(const GameController&) = delete;
 
     void RunGame();
 
-    bool ConnectToGame(int type, int val);
-
 
 private:
     void BeginGame();
+
     std::vector<std::unique_ptr<Handler>> handlers_;
     Board::Catan& gameModel_;
     GUI::GUI& gameView_;

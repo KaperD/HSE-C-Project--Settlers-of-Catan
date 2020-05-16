@@ -48,7 +48,7 @@ struct TableStruct_game_2eproto {
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::AuxillaryParseTableField aux[]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[10]
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[11]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata field_metadata[];
   static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable serialization_table[];
@@ -56,6 +56,9 @@ struct TableStruct_game_2eproto {
 };
 extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_game_2eproto;
 namespace game {
+class Bool;
+class BoolDefaultTypeInternal;
+extern BoolDefaultTypeInternal _Bool_default_instance_;
 class Build;
 class BuildDefaultTypeInternal;
 extern BuildDefaultTypeInternal _Build_default_instance_;
@@ -88,6 +91,7 @@ class VoidDefaultTypeInternal;
 extern VoidDefaultTypeInternal _Void_default_instance_;
 }  // namespace game
 PROTOBUF_NAMESPACE_OPEN
+template<> ::game::Bool* Arena::CreateMaybeMessage<::game::Bool>(Arena*);
 template<> ::game::Build* Arena::CreateMaybeMessage<::game::Build>(Arena*);
 template<> ::game::Card* Arena::CreateMaybeMessage<::game::Card>(Arena*);
 template<> ::game::Dice* Arena::CreateMaybeMessage<::game::Dice>(Arena*);
@@ -248,6 +252,134 @@ class Void :
 };
 // -------------------------------------------------------------------
 
+class Bool :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:game.Bool) */ {
+ public:
+  Bool();
+  virtual ~Bool();
+
+  Bool(const Bool& from);
+  Bool(Bool&& from) noexcept
+    : Bool() {
+    *this = ::std::move(from);
+  }
+
+  inline Bool& operator=(const Bool& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline Bool& operator=(Bool&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return GetMetadataStatic().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return GetMetadataStatic().reflection;
+  }
+  static const Bool& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const Bool* internal_default_instance() {
+    return reinterpret_cast<const Bool*>(
+               &_Bool_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    1;
+
+  friend void swap(Bool& a, Bool& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(Bool* other) {
+    if (other == this) return;
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline Bool* New() const final {
+    return CreateMaybeMessage<Bool>(nullptr);
+  }
+
+  Bool* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<Bool>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const Bool& from);
+  void MergeFrom(const Bool& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  inline void SharedCtor();
+  inline void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(Bool* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "game.Bool";
+  }
+  private:
+  inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
+    return nullptr;
+  }
+  inline void* MaybeArenaPtr() const {
+    return nullptr;
+  }
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  private:
+  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
+    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_game_2eproto);
+    return ::descriptor_table_game_2eproto.file_level_metadata[kIndexInFileMessages];
+  }
+
+  public:
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kHasEventFieldNumber = 1,
+  };
+  // bool hasEvent = 1;
+  void clear_hasevent();
+  bool hasevent() const;
+  void set_hasevent(bool value);
+  private:
+  bool _internal_hasevent() const;
+  void _internal_set_hasevent(bool value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:game.Bool)
+ private:
+  class _Internal;
+
+  ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
+  bool hasevent_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_game_2eproto;
+};
+// -------------------------------------------------------------------
+
 class NumberOfPlayers :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:game.NumberOfPlayers) */ {
  public:
@@ -290,7 +422,7 @@ class NumberOfPlayers :
                &_NumberOfPlayers_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    1;
+    2;
 
   friend void swap(NumberOfPlayers& a, NumberOfPlayers& b) {
     a.Swap(&b);
@@ -418,7 +550,7 @@ class GameId :
                &_GameId_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    2;
+    3;
 
   friend void swap(GameId& a, GameId& b) {
     a.Swap(&b);
@@ -546,7 +678,7 @@ class OrderInfo :
                &_OrderInfo_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    3;
+    4;
 
   friend void swap(OrderInfo& a, OrderInfo& b) {
     a.Swap(&b);
@@ -613,6 +745,7 @@ class OrderInfo :
     kIdFieldNumber = 1,
     kNumberOfPlayersFieldNumber = 2,
     kGameIdFieldNumber = 3,
+    kSeedFieldNumber = 4,
   };
   // int32 id = 1;
   void clear_id();
@@ -641,6 +774,15 @@ class OrderInfo :
   void _internal_set_gameid(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
+  // uint32 seed = 4;
+  void clear_seed();
+  ::PROTOBUF_NAMESPACE_ID::uint32 seed() const;
+  void set_seed(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_seed() const;
+  void _internal_set_seed(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  public:
+
   // @@protoc_insertion_point(class_scope:game.OrderInfo)
  private:
   class _Internal;
@@ -649,6 +791,7 @@ class OrderInfo :
   ::PROTOBUF_NAMESPACE_ID::int32 id_;
   ::PROTOBUF_NAMESPACE_ID::int32 numberofplayers_;
   ::PROTOBUF_NAMESPACE_ID::int32 gameid_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 seed_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_game_2eproto;
 };
@@ -696,7 +839,7 @@ class Player :
                &_Player_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    4;
+    5;
 
   friend void swap(Player& a, Player& b) {
     a.Swap(&b);
@@ -843,7 +986,7 @@ class Event :
                &_Event_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    5;
+    6;
 
   friend void swap(Event& a, Event& b) {
     a.Swap(&b);
@@ -1075,7 +1218,7 @@ class Card :
                &_Card_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    6;
+    7;
 
   friend void swap(Card& a, Card& b) {
     a.Swap(&b);
@@ -1203,7 +1346,7 @@ class Dice :
                &_Dice_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    7;
+    8;
 
   friend void swap(Dice& a, Dice& b) {
     a.Swap(&b);
@@ -1267,15 +1410,25 @@ class Dice :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kNumberFieldNumber = 1,
+    kNumber1FieldNumber = 1,
+    kNumber2FieldNumber = 2,
   };
-  // int32 number = 1;
-  void clear_number();
-  ::PROTOBUF_NAMESPACE_ID::int32 number() const;
-  void set_number(::PROTOBUF_NAMESPACE_ID::int32 value);
+  // int32 number1 = 1;
+  void clear_number1();
+  ::PROTOBUF_NAMESPACE_ID::int32 number1() const;
+  void set_number1(::PROTOBUF_NAMESPACE_ID::int32 value);
   private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_number() const;
-  void _internal_set_number(::PROTOBUF_NAMESPACE_ID::int32 value);
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_number1() const;
+  void _internal_set_number1(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // int32 number2 = 2;
+  void clear_number2();
+  ::PROTOBUF_NAMESPACE_ID::int32 number2() const;
+  void set_number2(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_number2() const;
+  void _internal_set_number2(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
   // @@protoc_insertion_point(class_scope:game.Dice)
@@ -1283,7 +1436,8 @@ class Dice :
   class _Internal;
 
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
-  ::PROTOBUF_NAMESPACE_ID::int32 number_;
+  ::PROTOBUF_NAMESPACE_ID::int32 number1_;
+  ::PROTOBUF_NAMESPACE_ID::int32 number2_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_game_2eproto;
 };
@@ -1331,7 +1485,7 @@ class Market :
                &_Market_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    8;
+    9;
 
   friend void swap(Market& a, Market& b) {
     a.Swap(&b);
@@ -1470,7 +1624,7 @@ class Build :
                &_Build_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    9;
+    10;
 
   friend void swap(Build& a, Build& b) {
     a.Swap(&b);
@@ -1589,6 +1743,30 @@ class Build :
 
 // -------------------------------------------------------------------
 
+// Bool
+
+// bool hasEvent = 1;
+inline void Bool::clear_hasevent() {
+  hasevent_ = false;
+}
+inline bool Bool::_internal_hasevent() const {
+  return hasevent_;
+}
+inline bool Bool::hasevent() const {
+  // @@protoc_insertion_point(field_get:game.Bool.hasEvent)
+  return _internal_hasevent();
+}
+inline void Bool::_internal_set_hasevent(bool value) {
+  
+  hasevent_ = value;
+}
+inline void Bool::set_hasevent(bool value) {
+  _internal_set_hasevent(value);
+  // @@protoc_insertion_point(field_set:game.Bool.hasEvent)
+}
+
+// -------------------------------------------------------------------
+
 // NumberOfPlayers
 
 // int32 numberOfPlayers = 1;
@@ -1697,6 +1875,26 @@ inline void OrderInfo::_internal_set_gameid(::PROTOBUF_NAMESPACE_ID::int32 value
 inline void OrderInfo::set_gameid(::PROTOBUF_NAMESPACE_ID::int32 value) {
   _internal_set_gameid(value);
   // @@protoc_insertion_point(field_set:game.OrderInfo.gameId)
+}
+
+// uint32 seed = 4;
+inline void OrderInfo::clear_seed() {
+  seed_ = 0u;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 OrderInfo::_internal_seed() const {
+  return seed_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 OrderInfo::seed() const {
+  // @@protoc_insertion_point(field_get:game.OrderInfo.seed)
+  return _internal_seed();
+}
+inline void OrderInfo::_internal_set_seed(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  
+  seed_ = value;
+}
+inline void OrderInfo::set_seed(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _internal_set_seed(value);
+  // @@protoc_insertion_point(field_set:game.OrderInfo.seed)
 }
 
 // -------------------------------------------------------------------
@@ -2044,24 +2242,44 @@ inline void Card::set_cardtype(::PROTOBUF_NAMESPACE_ID::int32 value) {
 
 // Dice
 
-// int32 number = 1;
-inline void Dice::clear_number() {
-  number_ = 0;
+// int32 number1 = 1;
+inline void Dice::clear_number1() {
+  number1_ = 0;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 Dice::_internal_number() const {
-  return number_;
+inline ::PROTOBUF_NAMESPACE_ID::int32 Dice::_internal_number1() const {
+  return number1_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 Dice::number() const {
-  // @@protoc_insertion_point(field_get:game.Dice.number)
-  return _internal_number();
+inline ::PROTOBUF_NAMESPACE_ID::int32 Dice::number1() const {
+  // @@protoc_insertion_point(field_get:game.Dice.number1)
+  return _internal_number1();
 }
-inline void Dice::_internal_set_number(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void Dice::_internal_set_number1(::PROTOBUF_NAMESPACE_ID::int32 value) {
   
-  number_ = value;
+  number1_ = value;
 }
-inline void Dice::set_number(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_number(value);
-  // @@protoc_insertion_point(field_set:game.Dice.number)
+inline void Dice::set_number1(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_number1(value);
+  // @@protoc_insertion_point(field_set:game.Dice.number1)
+}
+
+// int32 number2 = 2;
+inline void Dice::clear_number2() {
+  number2_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 Dice::_internal_number2() const {
+  return number2_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 Dice::number2() const {
+  // @@protoc_insertion_point(field_get:game.Dice.number2)
+  return _internal_number2();
+}
+inline void Dice::_internal_set_number2(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  number2_ = value;
+}
+inline void Dice::set_number2(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_number2(value);
+  // @@protoc_insertion_point(field_set:game.Dice.number2)
 }
 
 // -------------------------------------------------------------------
@@ -2175,6 +2393,8 @@ inline void Build::set_y(::PROTOBUF_NAMESPACE_ID::int32 value) {
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

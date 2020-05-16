@@ -10,9 +10,15 @@ service Network {
     rpc SendEvent(Event) returns (Void) {}
 
     rpc GetEvent(Player) returns (Event) {}
+
+    rpc HasEvent(Player) returns (Bool) {}
 }
 
 message Void {}
+
+message Bool {
+    bool hasEvent = 1;
+}
 
 message NumberOfPlayers {
     int32 numberOfPlayers = 1;
@@ -26,6 +32,7 @@ message OrderInfo {
     int32 id = 1;
     int32 numberOfPlayers = 2;
     int32 gameId = 3;
+    uint32 seed = 4;
 }
 
 
@@ -65,7 +72,8 @@ message Card {
 }
 
 message Dice {
-    int32 number = 1;
+    int32 number1 = 1;
+    int32 number2 = 2;
 }
 
 message Market {

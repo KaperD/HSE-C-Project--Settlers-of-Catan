@@ -1,13 +1,16 @@
 #include <iostream>
+#include <unordered_map>
 
 #include "gtest/gtest.h"
 #include "../Board.h"
 
+using utility::Random;
 using namespace Board;
 
 
 TEST(CatanGraph, ShowGraph) {
-    Catan board;
+    Random random;
+    Catan board(random, 4);
     for (int i = 0; i < FIELDHEIGHT; i ++) {
         for (int j = 0; j < FIELDWIDTH; j ++) {
             if (board.getFieldCell(i, j) != nullptr) {
