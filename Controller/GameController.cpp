@@ -5,10 +5,10 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
-
+ 
 #include "GameController.h"
 #include "random.h"
-
+ 
 using game::EventType;
 using game::Void;
 using game::OrderInfo;
@@ -19,34 +19,34 @@ using game::Market;
 using game::Build;
 using game::Player;
 using game::Network;
-
-
-
+ 
+ 
+ 
 namespace {
-
+ 
 bool roadIsSet = false;
 bool villageIsSet = false;
-
+ 
 } // namespace
-
-
+ 
+ 
 namespace Controller {
-
+ 
 //===============Handler===============
-
+ 
 void Handler::sendEvent(::game::Event& event) {
     gameClient_.SendEvent(event);
 }
-
-
-
+ 
+ 
+ 
 //===============CardHandler===============
-
+ 
 void CardHandler::processEvent(Event& event, bool needSend) {
     if (event.type() != EventType::CARD) {
         throw std::logic_error("Wrong type");
     }
-
+ 
     currentPlayer_ = event.playerid();
     cardType_ = event.cardinfo().cardtype();
     /*
@@ -59,24 +59,24 @@ void CardHandler::processEvent(Event& event, bool needSend) {
     }
     */
 }
-
+ 
 void CardHandler::displayEvent(Event& event) {
     // TODO
 }
-
-
-
+ 
+ 
+ 
 //===============DiceHandler===============
-
+ 
 void DiceHandler::processEvent(Event& event, bool needSend) {
     if (event.type() != EventType::DICE) {
         throw std::logic_error("Wrong type");
     }
-
+ 
     int Player = event.playerid() + 1;
     auto currentPlayer_ = static_cast<Board::PlayerNum>(Player);
     gameModel_.changeCurPlayer(currentPlayer_);
-
+ 
     auto diceInfo = event.mutable_diceinfo();
     number1_ = diceInfo->number1();
     number2_ = diceInfo->number2();
@@ -87,13 +87,13 @@ void DiceHandler::processEvent(Event& event, bool needSend) {
         diceInfo->set_number1(number1_);
         diceInfo->set_number2(number2_);
     }
-
+ 
     int numberSum = number1_ + number2_;
-
+ 
     if (numberSum <= 0 || numberSum > 12) {
         throw std::logic_error("Wrong dice number");
     }
-
+ 
     if (numberSum == 7) {
         int hexNum = 0;
         // hexNum = запросить у View
@@ -109,32 +109,32 @@ void DiceHandler::processEvent(Event& event, bool needSend) {
         sendEvent(event);
     }
 }
-
+ 
 void DiceHandler::displayEvent(Event& event) {
     gameView_.addDice(number1_, number2_);
     //
 }
-
-
-
-
+ 
+ 
+ 
+ 
 //===============MarketHandler===============
-
+ 
 void MarketHandler::processEvent(Event& event, bool needSend) {
     if (event.type() != EventType::MARKET) {
         throw std::logic_error("Wrong type");
     }
-
+ 
     int Player = event.playerid() + 1;
     auto currentPlayer_ = static_cast<Board::PlayerNum>(Player);
     requiredResource_ = event.mutable_marketinfo()->requiredresource();
     ownedResource_ = event.mutable_marketinfo()->ownedresource();
-
+ 
     gameModel_.changeCurPlayer(currentPlayer_);
-
+ 
     auto reTo = static_cast<Board::Resource>(requiredResource_);
     auto reFrom = static_cast<Board::Resource>(ownedResource_);
-    
+   
     if (gameModel_.trade(reFrom, reTo)) {
         displayEvent(event);
         if (needSend) {
@@ -143,34 +143,34 @@ void MarketHandler::processEvent(Event& event, bool needSend) {
     } else {
         // сказать о том, что не достаточно ресурсов
     }
-
-
+ 
+ 
 }
-
+ 
 void MarketHandler::displayEvent(Event& event) {
     /*
     Вывести изменения ресурсов
     */
 }
-
-
+ 
+ 
 //===============BuildHandler===============
-
+ 
 void BuildHandler::processEvent(Event& event, bool needSend) {
     if (event.type() != EventType::BUILD) {
         throw std::logic_error("Wrong type");
     }
-
-
+ 
+ 
     int Player = event.playerid() + 1;
     auto currentPlayer_ = static_cast<Board::PlayerNum>(Player);
     gameModel_.changeCurPlayer(currentPlayer_);
-
-
+ 
+ 
     buildingType_ = event.mutable_buildinfo()->buildingtype();
     x_ = event.mutable_buildinfo()->x();
     y_ = event.mutable_buildinfo()->y();
-
+ 
     auto type = static_cast<Board::BuildingType>(buildingType_);
     std::cout << x_ << ' ' << y_ << ' ' << static_cast<int>(Board::BuildingType::ROAD) << '\n';
     if (gameModel_.checkCards(type) && gameModel_.canBuild(type, x_, y_)) {
@@ -182,7 +182,7 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
         }
     }
 }
-
+ 
 void BuildHandler::displayEvent(Event& event) {
     auto type = static_cast<Board::BuildingType>(buildingType_);
     int Player = event.playerid();
@@ -210,11 +210,11 @@ void BuildHandler::displayEvent(Event& event) {
         gameView_.updateResourses(v);
     }
 }
-
-
-
+ 
+ 
+ 
 //===============EndTurnHandler===============
-
+ 
 void EndTurnHandler::processEvent(Event& event, bool needSend) {
     if (event.type() != EventType::ENDTURN) {
         throw std::logic_error("Wrong type");
@@ -224,35 +224,35 @@ void EndTurnHandler::processEvent(Event& event, bool needSend) {
         sendEvent(event);
     }
 }
-
+ 
 void EndTurnHandler::displayEvent(Event& event) {
     /*
     Убрать некоторый интерфейс
     */
 }
-
-
-
+ 
+ 
+ 
 //===============NextPhaseHandler===============
-
+ 
 void NextPhaseHandler::processEvent(Event& event, bool needSend) {
     if (event.type() != EventType::NEXTPHASE) {
         throw std::logic_error("Wrong type");
     }
     displayEvent(event);
 }
-
+ 
 void NextPhaseHandler::displayEvent(Event& event) {
     //gameView_.update();
     /*
     Отобразить новые кнопки
     */
 }
-
-
-
+ 
+ 
+ 
 //===============EndGameHandler===============
-
+ 
 void EndGameHandler::processEvent(Event& event, bool needSend) {
     if (event.type() != EventType::ENDGAME) {
         throw std::logic_error("Wrong type");
@@ -261,23 +261,23 @@ void EndGameHandler::processEvent(Event& event, bool needSend) {
         sendEvent(event);
     }
 }
-
+ 
 void EndGameHandler::displayEvent(Event& event) {
 }
-
-
-
+ 
+ 
+ 
 //===============GameController===============
-
-
+ 
+ 
 GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI& view, utility::Random& ran, const OrderInfo& info)
     : gameModel_(model)
-    , gameView_(view) 
+    , gameView_(view)
     , gameClient_(client)
     , myTurn_(info.id())
     , numberOfPlayers_(info.numberofplayers()) {
     std::cout << "My turn is " << myTurn_ << ", numOfPl " << numberOfPlayers_ << std::endl;
-
+ 
     for (int k = 0; k < 7; ++k) {
         handlers_.push_back(nullptr);
     }
@@ -289,12 +289,10 @@ GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI
     handlers_[5] = std::make_unique<NextPhaseHandler>(gameModel_, gameView_, gameClient_);
     handlers_[6] = std::make_unique<EndGameHandler  >(gameModel_, gameView_, gameClient_);
 }
-
-
+ 
+ 
 void GameController::RunGame() {
-    std::cout << myTurn_ << std::endl;
-
-    //BeginGame();
+    std::cout << myTurn_ << std::endl
 
     bool quit = false;
     while (!quit) {
@@ -348,8 +346,8 @@ void GameController::RunGame() {
         currentTurn_ %= numberOfPlayers_;
     }
 }
-
-
+ 
+ 
 void GameController::BeginGame() {
     for (int turn = 0; turn < numberOfPlayers_ * 2; ++turn) {
         if (turn >= numberOfPlayers_) {
@@ -357,7 +355,7 @@ void GameController::BeginGame() {
         } else {
             currentTurn_ = turn;
         }
-
+ 
         if (currentTurn_ == myTurn_) {
             while (true) {
                 Event event = gameView_.ThirdStage();
@@ -402,7 +400,6 @@ void GameController::BeginGame() {
         }
     }
 }
-
-
+ 
+ 
 } // namespace Controller
-

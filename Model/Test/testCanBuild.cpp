@@ -11,6 +11,11 @@ TEST(canBuildTest, simpleVillageCase) {
     Catan board(random, 3);
     board.settle(BuildingType::VILLAGE, 8, 6);
     board.settle(BuildingType::ROAD, 8, 7);
+    ASSERT_EQ(board.getPlayerResNum(PlayerNum::GAMER1, Resource::ORE), 0);
+    ASSERT_EQ(board.getPlayerResNum(PlayerNum::GAMER1, Resource::TREE), 2);
+    ASSERT_EQ(board.getPlayerResNum(PlayerNum::GAMER1, Resource::CLAY), 2);
+    ASSERT_EQ(board.getPlayerResNum(PlayerNum::GAMER1, Resource::WHEAT), 1);
+    ASSERT_EQ(board.getPlayerResNum(PlayerNum::GAMER1, Resource::WOOL), 1);
     board.changeCurPlayer(PlayerNum::GAMER2);
     ASSERT_EQ(board.canBuild(BuildingType::VILLAGE, 8, 4), false);
     ASSERT_EQ(board.canBuild(BuildingType::VILLAGE, 8, 2), true);
