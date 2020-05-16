@@ -304,7 +304,7 @@ GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI
  
  
 void GameController::RunGame() {
-    std::cout << myTurn_ << std::endl
+    std::cout << myTurn_ << std::endl;
 
     bool quit = false;
     while (!quit) {
