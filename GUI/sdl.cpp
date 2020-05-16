@@ -158,6 +158,7 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
 
     SDL_Surface *surf = TTF_RenderText_Blended(font, "WOOL", color_const_table);
+
     SDL_Rect dest1={150, 200, 0, 0};
 
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
@@ -173,7 +174,6 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     dest1.y += 30;
     surf = TTF_RenderText_Blended(font, "WHEAT", color_const_table);
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
-    TTF_CloseFont(font);
 
     dest1.y = 30;
     for (auto e: players_names) {
