@@ -79,6 +79,7 @@ void DiceHandler::processEvent(Event& event, bool needSend) {
 
     auto diceInfo = event.mutable_diceinfo();
     number1_ = diceInfo->number1();
+    number2_ = diceInfo->number2();
 
     if (number1_== 0) {
         number1_ = random_.getRandomNumberFromTo(1, 6);
@@ -287,7 +288,7 @@ GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI
 void GameController::RunGame() {
     std::cout << myTurn_ << std::endl;
 
-    BeginGame();
+    //BeginGame();
 
     bool quit = false;
     while (!quit) {
