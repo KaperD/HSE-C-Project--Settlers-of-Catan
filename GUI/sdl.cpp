@@ -156,23 +156,23 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     svitok_down1 = SDL_LoadBMP("image/svitok_down.bmp");
 
     TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
-    
+
     SDL_Surface *surf = TTF_RenderText_Blended(font, "WOOL", color_const_table);
-    
+
     SDL_Rect dest1={150, 200, 0, 0};
 
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
     dest1.y += 30;
-    surf = TTF_RenderText_Blended(font, "WOOD", color_const_table);
+    surf = TTF_RenderText_Blended(font, "ORE", color_const_table);
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
     dest1.y += 30;
     surf = TTF_RenderText_Blended(font, "BRICKS", color_const_table);
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
     dest1.y += 30;
-    surf = TTF_RenderText_Blended(font, "CORN", color_const_table);
+    surf = TTF_RenderText_Blended(font, "WOOD", color_const_table);
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
     dest1.y += 30;
-    surf = TTF_RenderText_Blended(font, "ORE", color_const_table);
+    surf = TTF_RenderText_Blended(font, "WHEAT", color_const_table);
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
 
     dest1.y = 30;
@@ -870,16 +870,16 @@ void GUI::updateResourses(std::vector<int> v) {
 
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
     dest1.y += 30;
-    surf = TTF_RenderText_Blended(font, "WOOD", color_const_table);
+    surf = TTF_RenderText_Blended(font, "ORE", color_const_table);
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
     dest1.y += 30;
     surf = TTF_RenderText_Blended(font, "BRICKS", color_const_table);
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
     dest1.y += 30;
-    surf = TTF_RenderText_Blended(font, "CORN", color_const_table);
+    surf = TTF_RenderText_Blended(font, "WOOD", color_const_table);
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
     dest1.y += 30;
-    surf = TTF_RenderText_Blended(font, "ORE", color_const_table);
+    surf = TTF_RenderText_Blended(font, "WHEAT", color_const_table);
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
     TTF_CloseFont(font);
 
@@ -902,7 +902,7 @@ void GUI::makeTextureConstTable(std::vector<int> vec, SDL_Surface& x, SDL_Textur
     }
     ans = nullptr;
     ans = SDL_CreateTextureFromSurface(ren, buff);
-    if (ans == nullptr) std::cerr << "PIZDA";
+    if (ans == nullptr) std::cerr << "c";
     TTF_CloseFont(font);
 }
 

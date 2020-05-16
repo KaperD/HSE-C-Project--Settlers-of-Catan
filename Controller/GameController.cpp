@@ -196,10 +196,12 @@ void BuildHandler::displayEvent(Event& event) {
     gameView_.updatePoints(gameModel_.Catan::getVictoryPoints());
     if (Player == myTurn_) {
         std::vector<int> v;
-        const std::unordered_map<Board::Resource, int> m = gameModel_.getPlayerResources(static_cast<Board::PlayerNum>(Player + 1));
-        for(auto e: m) {
-            v.push_back(e.second);
-        }
+        auto m = gameModel_.getPlayerResources(static_cast<Board::PlayerNum>(Player + 1));
+        v.push_back(m[Board::Resource::WOOL]);
+        v.push_back(m[Board::Resource::ORE]);
+        v.push_back(m[Board::Resource::CLAY]);
+        v.push_back(m[Board::Resource::TREE]);
+        v.push_back(m[Board::Resource::WHEAT]);
         gameView_.updateResourses(v);
     }
 }
