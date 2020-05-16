@@ -79,8 +79,9 @@ void DiceHandler::processEvent(Event& event, bool needSend) {
  
     auto diceInfo = event.mutable_diceinfo();
     number1_ = diceInfo->number1();
- 
-    if (number1_== 0) {
+    number2_ = diceInfo->number2();
+
+    if (number1_ == 0) {
         number1_ = random_.getRandomNumberFromTo(1, 6);
         number2_ = random_.getRandomNumberFromTo(1, 6);
         diceInfo->set_number1(number1_);
@@ -101,14 +102,16 @@ void DiceHandler::processEvent(Event& event, bool needSend) {
     } else {
         gameModel_.giveResources(numberSum);
     }
+
     displayEvent(event);
+
     if (needSend) {
         sendEvent(event);
     }
 }
  
 void DiceHandler::displayEvent(Event& event) {
-    gameView_.add_dice(number1_, number2_);
+    gameView_.addDice(number1_, number2_);
     //
 }
  
@@ -185,25 +188,27 @@ void BuildHandler::displayEvent(Event& event) {
     int Player = event.playerid();
     if (type == Board::BuildingType::ROAD) {
         roadIsSet = true;
-        gameView_.add_road({x_, y_}, Player);
+        gameView_.addRoad({x_, y_}, Player);
     }
     if (type == Board::BuildingType::VILLAGE) {
         villageIsSet = true;
-        gameView_.add_building({x_, y_}, Player);
+        gameView_.addBuilding({x_, y_}, Player);
     }
     if (type == Board::BuildingType::CITY) {
-        gameView_.add_building({x_, y_}, Player);
+        gameView_.addBuilding({x_, y_}, Player);
     }
-    gameView_.update_points(gameModel_.Catan::getVictoryPoints());
-    std::vector<int> v;
-    const std::unordered_map<Board::Resource, int> m = gameModel_.getPlayerResources(static_cast<Board::PlayerNum>(Player + 1));
-    std::cout << "Player " << Player << "resources" << std::endl;
-    for(auto e: m) {
-        std::cout << e.second << std::endl;
-        v.push_back(e.second);
+    gameView_.updatePoints(gameModel_.Catan::getVictoryPoints());
+    if (Player == gameView_.cur_player) {
+        std::vector<int> v;
+        const std::unordered_map<Board::Resource, int> m = gameModel_.getPlayerResources(static_cast<Board::PlayerNum>(Player + 1));
+        std::cout << "Player " << Player << "resources" << std::endl;
+        for(auto e: m) {
+            std::cout << e.second << std::endl;
+            v.push_back(e.second);
+        }
+        std::cout << v.size() << std::endl;
+        gameView_.updateResourses(v);
     }
-    std::cout << v.size() << std::endl;
-    gameView_.update_resourses(v);
 }
  
  
@@ -252,7 +257,9 @@ void EndGameHandler::processEvent(Event& event, bool needSend) {
     if (event.type() != EventType::ENDGAME) {
         throw std::logic_error("Wrong type");
     }
-    sendEvent(event);
+    if (needSend) {
+        sendEvent(event);
+    }
 }
  
 void EndGameHandler::displayEvent(Event& event) {
@@ -285,8 +292,7 @@ GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI
  
  
 void GameController::RunGame() {
-    std::cout << myTurn_ << std::endl;
-    //BeginGame();
+    std::cout << myTurn_ << std::endl
 
     bool quit = false;
     while (!quit) {
@@ -300,13 +306,13 @@ void GameController::RunGame() {
                     Event end;
                     end.set_type(EventType::ENDGAME);
                     gameClient_.SendEvent(end);
-                    gameView_.quit = true;
+                    gameView_.quit.store(true);
                     quit = true;
                     break;
                 }
                 if (x == EventType::ENDGAME) {
                     quit = true;
-                    gameView_.quit = true;
+                    gameView_.quit.store(true);
                     break;
                 } else if (x == EventType::ENDTURN) {
                     break;
@@ -323,16 +329,13 @@ void GameController::RunGame() {
                 int x = event.type();
                 handlers_[x]->processEvent(event, false);
                 if (gameModel_.isFinished()) {
-                    Event end;
-                    end.set_type(EventType::ENDGAME);
-                    gameClient_.SendEvent(end);
-                    gameView_.quit = true;
+                    gameView_.quit.store(true);
                     quit = true;
                     break;
                 }
                 if (x == EventType::ENDGAME) {
                     quit = true;
-                    gameView_.quit = true;
+                    gameView_.quit.store(true);
                     break;
                 } else if (x == EventType::ENDTURN) {
                     break;
@@ -368,7 +371,7 @@ void GameController::BeginGame() {
                     }
                 } else if (x == EventType::ENDGAME) {
                     handlers_[x]->processEvent(event, true);
-                    gameView_.quit = true;
+                    gameView_.quit.store(true);
                     break;
                 }
             }
@@ -390,7 +393,7 @@ void GameController::BeginGame() {
                     }
                 } else if (x == EventType::ENDGAME) {
                     handlers_[x]->processEvent(event, false);
-                    gameView_.quit = true;
+                    gameView_.quit.store(true);
                     break;
                 }
             }
