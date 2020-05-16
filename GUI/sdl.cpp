@@ -207,8 +207,11 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     font = TTF_OpenFont("sample.ttf", 32);
     sfx = nullptr;
     sfx = Mix_LoadWAV("image/music.wav");
+    Mix_VolumeChunk(sfx, MIX_MAX_VOLUME / 4);
     button_sound = Mix_LoadWAV("image/button_sound.wav");
+    Mix_VolumeChunk(button_sound, MIX_MAX_VOLUME / 4);
     build_sound = Mix_LoadWAV("image/build_sound.wav");
+    Mix_VolumeChunk(build_sound, MIX_MAX_VOLUME / 12);
     if (sfx == nullptr)  std::cout << "Hhhh";
 
     _build_road = Inscription(gui, 423 + 161, 317 + 136, "Build Road");

@@ -112,7 +112,17 @@ void DiceHandler::processEvent(Event& event, bool needSend) {
 
 void DiceHandler::displayEvent(Event& event) {
     gameView_.addDice(number1_, number2_);
-    //
+    int Player = event.playerid();
+    if (Player == gameView_.cur_player) {
+        std::vector<int> v;
+        const std::unordered_map<Board::Resource, int> m = gameModel_.getPlayerResources(static_cast<Board::PlayerNum>(Player + 1));
+        for(auto e: m) {
+            std::cout << e.second << std::endl;
+            v.push_back(e.second);
+        }
+        std::cout << v.size() << std::endl;
+        gameView_.updateResourses(v);
+    }
 }
 
 
