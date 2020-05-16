@@ -469,7 +469,7 @@ GUI::GUI(int player, int numberOfPlayers) : cur_player(player), num_players(numb
     win = SDL_CreateWindow("Settlers of Catan", 0, 0, displayMode.w, displayMode.h, SDL_WINDOW_SHOWN);
     ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     players_points.resize(num_players, 0);
-    resourses = {2, 4, 4, 0, 2};
+    resourses = {2, 0, 4, 4, 2};
     //std::cout << "Sync " << SDL_GL_SetSwapInterval(1) << std::endl;
 }
 
