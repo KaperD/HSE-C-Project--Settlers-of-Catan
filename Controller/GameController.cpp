@@ -119,10 +119,8 @@ void DiceHandler::displayEvent(Event& event) {
     std::vector<int> v;
     const std::unordered_map<Board::Resource, int> m = gameModel_.getPlayerResources(static_cast<Board::PlayerNum>(myTurn_ + 1));
     for(auto e: m) {
-        std::cout << e.second << std::endl;
         v.push_back(e.second);
     }
-    std::cout << v.size() << std::endl;
     gameView_.updateResourses(v);
 }
 
@@ -181,9 +179,8 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
     y_ = event.mutable_buildinfo()->y();
 
     auto type = static_cast<Board::BuildingType>(buildingType_);
-    std::cout << x_ << ' ' << y_ << ' ' << static_cast<int>(Board::BuildingType::ROAD) << '\n';
+
     if (gameModel_.checkCards(type) && gameModel_.canBuild(type, x_, y_)) {
-        std::cout << "YES" << '\n';
         gameModel_.settle(type, x_, y_);
         displayEvent(event);
         if (needSend) {
@@ -210,12 +207,9 @@ void BuildHandler::displayEvent(Event& event) {
     if (Player == myTurn_) {
         std::vector<int> v;
         const std::unordered_map<Board::Resource, int> m = gameModel_.getPlayerResources(static_cast<Board::PlayerNum>(Player + 1));
-        std::cout << "Player " << Player << "resources" << std::endl;
         for(auto e: m) {
-            std::cout << e.second << std::endl;
             v.push_back(e.second);
         }
-        std::cout << v.size() << std::endl;
         gameView_.updateResourses(v);
     }
 }
@@ -235,6 +229,7 @@ void EndTurnHandler::processEvent(Event& event, bool needSend) {
 }
 
 void EndTurnHandler::displayEvent(Event& event) {
+
     static_cast<void>(event);
 }
 
@@ -305,7 +300,8 @@ GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI
 void GameController::RunGame() {
     std::cout << myTurn_ << std::endl;
 
-    //BeginGame();
+    BeginGame();
+    gameModel_.gotoNextGamePhase();
 
     bool quit = false;
     while (!quit) {
