@@ -345,7 +345,7 @@ void GUI::renderBuildings() {
 }
 
 void GUI::renderTablesTime() const {
-    SDL_Rect (dest);
+    SDL_Rect dest;
     dest.x = 200 + 500;
     dest.y = 98 - 20;
     dest.w = 480 - 200;

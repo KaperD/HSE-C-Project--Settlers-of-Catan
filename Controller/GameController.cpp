@@ -22,14 +22,6 @@ using game::Network;
 
 
 
-namespace {
-
-bool roadIsSet = false;
-bool villageIsSet = false;
-
-} // namespace
-
-
 namespace Controller {
 
 //===============Handler===============
@@ -193,11 +185,9 @@ void BuildHandler::displayEvent(Event& event) {
     auto type = static_cast<Board::BuildingType>(buildingType_);
     int Player = event.playerid();
     if (type == Board::BuildingType::ROAD) {
-        roadIsSet = true;
         gameView_.addRoad({x_, y_}, Player);
     }
     if (type == Board::BuildingType::VILLAGE) {
-        villageIsSet = true;
         gameView_.addBuilding({x_, y_}, Player);
     }
     if (type == Board::BuildingType::CITY) {
@@ -356,23 +346,33 @@ void GameController::RunGame() {
 
 
 void GameController::BeginGame() {
+    bool roadIsSet = false;
+    bool villageIsSet = false;
     for (int turn = 0; turn < numberOfPlayers_ * 2; ++turn) {
         if (turn >= numberOfPlayers_) {
             currentTurn_ = 2 * numberOfPlayers_ - turn - 1;
         } else {
             currentTurn_ = turn;
         }
-
+        roadIsSet = false;
+        villageIsSet = false;
         if (currentTurn_ == myTurn_) {
             while (true) {
                 Event event = gameView_.ThirdStage();
                 int x = event.type();
+                event.set_playerid(myTurn_);
                 if (x == EventType::BUILD) {
-                    handlers_[x]->processEvent(event, true);
+                    auto type = static_cast<Board::BuildingType>(event.mutable_buildinfo()->buildingtype());
+                    if (type == Board::BuildingType::ROAD && !roadIsSet) {
+                        handlers_[x]->processEvent(event, true);
+                        roadIsSet = true;
+                    }
+                    if (type == Board::BuildingType::VILLAGE && !villageIsSet) {
+                        handlers_[x]->processEvent(event, true);
+                        villageIsSet = true;
+                    }
                 } else if (x == EventType::ENDTURN) {
                     if (roadIsSet && villageIsSet) {
-                        roadIsSet = false;
-                        villageIsSet = false;
                         handlers_[x]->processEvent(event, true);
                         break;
                     }
@@ -392,12 +392,7 @@ void GameController::BeginGame() {
                 int x = event.type();
                 if (x == EventType::BUILD) {
                     handlers_[x]->processEvent(event, false);
-                } else if (x == EventType::ENDTURN) {
-                    if (roadIsSet && villageIsSet) {
-                        handlers_[x]->processEvent(event, false);
-                        break;
-                    }
-                } else if (x == EventType::ENDGAME) {
+                } else if (x == EventType::ENDTURN || x == EventType::ENDGAME) {
                     handlers_[x]->processEvent(event, false);
                     break;
                 }
