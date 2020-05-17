@@ -159,7 +159,7 @@ Vertex::Vertex(int x, int y, bool direction) : Cell(BuildingType::VILLAGE) {
 //===============Road=================
 
 Road::Road(int x, int y, bool is_horizontal, bool is_even) : Cell(BuildingType::ROAD) {
-    //тут много кода повторяется, потом поправлю
+    //TODO: рефакторинг на свой страх и риск
     if (is_horizontal) {
         vertexes.emplace_back(x, y - 1);
         vertexes.emplace_back(x, y + 1);
@@ -415,7 +415,6 @@ void Catan::settle(BuildingType s, int x, int y) {
 }
 
 int Catan::findRoadsRecord(const std::unique_ptr<Cell> &v) {
-    if (v == nullptr) return -1; //на самом деле не нужно, так как check гарантирует отсутсвие nullptr в соседях
     if (v->getPlayer() != cur_player && v->getPlayer() != PlayerNum::NONE) return -1;
     if (v->marked) return 0;
 
@@ -428,7 +427,7 @@ int Catan::findRoadsRecord(const std::unique_ptr<Cell> &v) {
         int rx = v->getRoad(i).first;
         int ry = v->getRoad(i).second;
 
-        if (cell(rx, ry) == nullptr || cell(rx, ry)->marked || cell(rx, ry)->getPlayer() != cur_player) {
+        if (cell(rx, ry)->marked || cell(rx, ry)->getPlayer() != cur_player) {
             continue;
         }
         cell(rx, ry)->marked = true;
@@ -436,7 +435,7 @@ int Catan::findRoadsRecord(const std::unique_ptr<Cell> &v) {
         for (int k = 0; k < 2; k++) {
             int vx = cell(rx, ry)->getVertex(k).first;
             int vy = cell(rx, ry)->getVertex(k).second;
-            if (cell(vx, vy) == v) continue;
+            if (cell(vx, vy) == v || cell(vx, vy)->marked) continue;
             roadsNum[i] += findRoadsRecord(cell(vx, vy)) + 1;
         }
     }
@@ -459,14 +458,24 @@ int Catan::findRoadsRecord(const std::unique_ptr<Cell> &v) {
     return maxRoadsNum;
 }
 
-const std::unique_ptr<Cell>& Catan::getStart(const std::unique_ptr<Cell> &v, int x, int y) {
-    if (y - 2 < 0 || cell(x, y - 1) == nullptr || cell(x, y - 1)->marked ||
-        cell(x, y - 1)->getPlayer() != cur_player || cell(x, y - 2) == nullptr ||
-        (cell(x, y - 2)->getPlayer() != cur_player && cell(x, y - 2)->getPlayer() != PlayerNum::NONE)) {
+const std::unique_ptr<Cell>& Catan::getStart(const std::unique_ptr<Cell> &v, int x, int y, int dir) {
+    if (y + dir*2 < 0 || cell(x, y + dir) == nullptr || cell(x, y + dir)->marked ||
+        cell(x, y + dir)->getPlayer() != cur_player || cell(x, y + dir * 2) == nullptr ||
+        (cell(x, y + dir * 2)->getPlayer() != cur_player &&
+        cell(x, y + dir * 2)->getPlayer() != PlayerNum::NONE)) {
+        if (dir == 1) return v;
+        int numR = v->getRoadsNum();
+        int cnt = 0;
+        for (int i = 0; i < numR; i++) {
+            int rx = v->getRoad(i).first;
+            int ry = v->getRoad(i).second;
+            if (cell(rx, ry)->getPlayer() == cur_player) cnt++;
+        }
+        if (cnt >= 2) return getStart(cell(x, y + 2), x, y + 2, 1);
         return v;
     }
 
-    return getStart(cell(x, y - 2), x, y - 2);
+    return getStart(cell(x, y + dir * 2), x, y + dir * 2, dir);
 }
 
 void Catan::clearMarks() {
@@ -486,7 +495,7 @@ void Catan::updateRoadsRecord() {
         for (int vy = 0; vy < FIELDWIDTH; vy += 2) {
             if (cell(vx, vy) == nullptr || cell(vx, vy)->marked ||
                 cell(vx, vy)->getPlayer() != cur_player) continue;
-            maybeRecord = findRoadsRecord(getStart(cell(vx, vy), vx, vy));
+            maybeRecord = findRoadsRecord(getStart(cell(vx, vy), vx, vy, -1));
             if (maybeRecord > roads_record) {
                 setRoadsRecord(maybeRecord);
             }
@@ -496,7 +505,7 @@ void Catan::updateRoadsRecord() {
     clearMarks();
 }
 
-void Catan::setRobbers(int hex_num) {
+Resource Catan::setRobbers(int hex_num) {
     hexes[robbers_hex]->moveRobbers();
     hexes[hex_num]->moveRobbers();
     robbers_hex = hex_num;
@@ -507,19 +516,17 @@ void Catan::setRobbers(int hex_num) {
         y = hexes[hex_num]->getVertex(i).second;
         PlayerNum player = cell(x, y)->getPlayer();
         if (player != PlayerNum::NONE && player != cur_player) {
-            bool is_get = false;
-            for (int intRE = 1; intRE < TERRITORIESNUM + 1; intRE++) {
+            for (int intRE = 1; intRE <= TERRITORIESNUM; intRE++) {
                 auto re = static_cast<Resource>(intRE);
                 if (players[player]->checkResourceNum(re) > 0) {
                     players[player]->getResource(re, 1);
                     players[cur_player]->giveResource(re, 1);
-                    is_get = true;
-                    break;
+                    return re;
                 }
             }
-            if (is_get) break;
         }
     }
+    return Resource::NONE;
 }
 
 int Catan::getRobbersIndx() const {
@@ -605,15 +612,15 @@ std::vector<int> Catan::getVictoryPoints() const {
     return VP;
 }
 
-bool Catan::buildDevCard() {
+DevelopmentCard Catan::buildDevCard() {
     if (getPlayerCardNum(Resource::ORE) < 1 ||
         getPlayerCardNum(Resource::WHEAT) < 1 ||
         getPlayerCardNum(Resource::WOOL) < 1) {
-        return false;
+        return DevelopmentCard::NONE;
     }
     auto card = static_cast<DevelopmentCard>(random.getRandomNumberFromTo(1, 5));
     players[cur_player]->giveDevCard(card);
-    return true;
+    return card;
 }
 
 void Catan::playDevCard(DevelopmentCard card, int extraData) {
@@ -624,23 +631,18 @@ void Catan::playDevCard(DevelopmentCard card, int extraData) {
             knights_record = players[cur_player]->getKnightsNum();
             last_knights_record_holder = cur_player;
         }
-        return;
     }
     if (card == DevelopmentCard::VICTORY_POINT) {
         players[cur_player]->giveVictoryPoints(1);
-        return;
     }
     if (card == DevelopmentCard::INVENTION) {
         auto re1 = static_cast<Resource>(random.getRandomNumberFromTo(1, TERRITORIESNUM));
         auto re2 = static_cast<Resource>(random.getRandomNumberFromTo(1, TERRITORIESNUM));
         players[cur_player]->giveResource(re1, 1);
         players[cur_player]->giveResource(re2, 1);
-        return;
     }
     if (card == DevelopmentCard::ROAD_BUILDING) {
-        players[cur_player]->giveResource(Resource::TREE, 2);
-        players[cur_player]->giveResource(Resource::CLAY, 2);
-        return;
+        // тут можно вызвать settle(ROAD), либо контроллер сам вызовет в BuildEvent, если GUI заифает
     }
     if (card == DevelopmentCard::MONOPOLY) {
         auto re = static_cast<Resource>(extraData);
