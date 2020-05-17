@@ -21,7 +21,7 @@ public:
     void storeStartTime();
     void delay();
 private:
-    const int FPS = 60;
+    const int FPS = 120;
     const int frameDelay = 1000 / FPS;
     uint32_t frameStart = 0;
     int frameTime = 0;
@@ -113,7 +113,7 @@ class Inscription {
 public:
     SDL_Rect dest;
     SDL_Texture *texture;
-    explicit Inscription(GUI& gui, int _x, int _y,const std::string &s);
+    Inscription(GUI& gui, int _x, int _y,const std::string &s);
     Inscription() = default;
 };
 
@@ -122,13 +122,13 @@ class GUI {
 public:
     GUI(int player, int numberOfPlayers);
     ~GUI();
-    std::mutex mutex_for_roads {};  
-    std::mutex mutex_for_buildings {};
-    std::mutex mutex_for_table {};
+    mutable std::mutex mutex_for_roads {};
+    mutable std::mutex mutex_for_buildings {};
+    mutable std::mutex mutex_for_table {};
 
     Road_arr *roads = nullptr;
     Building_arr *buildings = nullptr;
-    std::pair<int, int> tmp_road;
+    std::pair<std::atomic<int>, std::atomic<int>> tmp_road;
 
     Mix_Chunk *sfx, *button_sound, *build_sound;
     std::pair<SDL_Texture*, int> cur_table;
@@ -162,16 +162,16 @@ public:
     int  end_time_dice = 0;
     std::vector<SDL_Texture *> field_arr;
     int tmp_sound = 0;
-    int render_type;
+    std::atomic<int> render_type;
     SDL_Renderer *ren;
     SDL_DisplayMode displayMode{};
     SDL_Window *win;
     void loadTextures(utility::Random& random, GUI& gui);
 
-    int tmp_coors{};
+    std::atomic<int> tmp_coors { 0 };
 
-    int dice1 = 0;
-    int dice2 = 0;
+    std::atomic<int> dice1 { 0 };
+    std::atomic<int> dice2 { 0 };
 
     SDL_Texture *ppp;
     
@@ -179,12 +179,10 @@ public:
     SDL_Color color = { 243, 195, 79, 255 };
     SDL_Color color_const_table = { 79, 51, 14, 255 };
     SDL_Texture* Text(const std::string &message);
-    SDL_Surface *svitok_up, *svitok_down;
-    SDL_Surface *svitok_up1, *svitok_down1;
     SDL_Texture *texture_svitok_up, *texture_svitok_down;
     SDL_Texture *dice_shadow;
     std::vector<SDL_Texture *> table_shadow;
-    void makeTextureConstTable(std::vector<int> vec, SDL_Surface& x, SDL_Texture *&ans, int type);
+    void makeTextureConstTable(std::vector<int>& vec, SDL_Surface* buff, SDL_Texture *&ans, int type);
     void destroyTextures();
     void renderBackground() const;
     void renderTables() const;
@@ -209,20 +207,13 @@ public:
     ::game::Event getEvent();
 
     void addRoad(std::pair<int, int> tmp, int player);
-
     void addBuilding(std::pair<int, int> tmp, int player);
 
     int returnRoad(int x, int y) const;
 
     int returnBuilding(int x, int y) const;
 
-    std::pair<int, int> tmp_building;
-
-    SDL_Texture *getBuilding(int i, int type);
-
-    SDL_Texture *getRoad(int x, int type);
-
-    SDL_Texture *getVertRoad(int type);
+    std::pair<std::atomic<int>, std::atomic<int>> tmp_building;
 
     std::vector<int> players_points;
     std::vector<std::string> players_names;
