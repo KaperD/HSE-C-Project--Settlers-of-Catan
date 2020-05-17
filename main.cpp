@@ -65,17 +65,17 @@ int main() {
     LocalServer localServer;
     std::thread server(RunServer, &localServer, isLocal);
 
-    utility::Random random;
-
-    GUI::GUI view;
     GameClient gameClient_(isLocal);
 
     OrderInfo info = gameClient_.ConnectToGame(gameParams.first, gameParams.second);
+    utility::Random random(info.seed());
+
+    GUI::GUI view(info.id(), info.numberofplayers());
     Board::Catan wow(random, info.numberofplayers());
 
     view.loadTextures(random, view);
-    view.roads = new GUI::Road_arr(view);
-    view.buildings = new GUI::Building_arr(view);
+    view.roads = new GUI::Road_arr();
+    view.buildings = new GUI::Building_arr();
 
     std::thread update(GUI::upgrade, &view);
 

@@ -48,11 +48,12 @@ private:
 
 class DiceHandler : public Handler {
 public:
-    DiceHandler(Board::Catan& model, GUI::GUI& view, GameClient& client, utility::Random& ran)
+    DiceHandler(Board::Catan& model, GUI::GUI& view, GameClient& client, utility::Random& ran, int id)
     : Handler(model, view, client)
     , number1_(0)
     , number2_(0)
-    , random_(ran) { }
+    , random_(ran)
+    , myTurn_(id) { }
     void processEvent(::game::Event& event, bool needSend) override;
     void displayEvent(::game::Event& event) override;
     using Handler::sendEvent;
@@ -60,6 +61,7 @@ private:
     int number1_;
     int number2_;
     utility::Random& random_;
+    int myTurn_;
 };
 
 class MarketHandler : public Handler {
@@ -78,11 +80,12 @@ private:
 
 class BuildHandler : public Handler {
 public:
-    BuildHandler(Board::Catan& model, GUI::GUI& view, GameClient& client)
+    BuildHandler(Board::Catan& model, GUI::GUI& view, GameClient& client, int id)
     : Handler(model, view, client)
     , buildingType_(0)
     , x_(0)
-    , y_(0) { }
+    , y_(0)
+    , myTurn_(id){ }
     void processEvent(::game::Event& event, bool needSend) override;
     void displayEvent(::game::Event& event) override;
     using Handler::sendEvent;
@@ -90,6 +93,7 @@ private:
     int buildingType_;
     int x_;
     int y_;
+    int myTurn_;
 };
 
 class EndTurnHandler : public Handler {

@@ -262,6 +262,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_game_2eproto::offsets[] PROTOB
   PROTOBUF_FIELD_OFFSET(::game::OrderInfo, id_),
   PROTOBUF_FIELD_OFFSET(::game::OrderInfo, numberofplayers_),
   PROTOBUF_FIELD_OFFSET(::game::OrderInfo, gameid_),
+  PROTOBUF_FIELD_OFFSET(::game::OrderInfo, seed_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::game::Player, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -317,12 +318,12 @@ static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOB
   { 11, -1, sizeof(::game::NumberOfPlayers)},
   { 17, -1, sizeof(::game::GameId)},
   { 23, -1, sizeof(::game::OrderInfo)},
-  { 31, -1, sizeof(::game::Player)},
-  { 38, -1, sizeof(::game::Event)},
-  { 51, -1, sizeof(::game::Card)},
-  { 57, -1, sizeof(::game::Dice)},
-  { 64, -1, sizeof(::game::Market)},
-  { 71, -1, sizeof(::game::Build)},
+  { 32, -1, sizeof(::game::Player)},
+  { 39, -1, sizeof(::game::Event)},
+  { 52, -1, sizeof(::game::Card)},
+  { 58, -1, sizeof(::game::Dice)},
+  { 65, -1, sizeof(::game::Market)},
+  { 72, -1, sizeof(::game::Build)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
@@ -343,28 +344,28 @@ const char descriptor_table_protodef_game_2eproto[] PROTOBUF_SECTION_VARIABLE(pr
   "\n\ngame.proto\022\004game\"\006\n\004Void\"\030\n\004Bool\022\020\n\010ha"
   "sEvent\030\001 \001(\010\"*\n\017NumberOfPlayers\022\027\n\017numbe"
   "rOfPlayers\030\001 \001(\005\"\030\n\006GameId\022\016\n\006gameId\030\001 \001"
-  "(\005\"@\n\tOrderInfo\022\n\n\002id\030\001 \001(\005\022\027\n\017numberOfP"
-  "layers\030\002 \001(\005\022\016\n\006gameId\030\003 \001(\005\"*\n\006Player\022\020"
-  "\n\010playerId\030\001 \001(\005\022\016\n\006gameId\030\002 \001(\005\"\333\001\n\005Eve"
-  "nt\022\035\n\004type\030\001 \001(\0162\017.game.EventType\022\020\n\010pla"
-  "yerId\030\002 \001(\005\022\016\n\006gameId\030\003 \001(\005\022\036\n\010cardInfo\030"
-  "\004 \001(\0132\n.game.CardH\000\022\036\n\010diceInfo\030\005 \001(\0132\n."
-  "game.DiceH\000\022\"\n\nmarketInfo\030\006 \001(\0132\014.game.M"
-  "arketH\000\022 \n\tbuildInfo\030\007 \001(\0132\013.game.BuildH"
-  "\000B\013\n\tEventInfo\"\030\n\004Card\022\020\n\010cardType\030\001 \001(\005"
-  "\"(\n\004Dice\022\017\n\007number1\030\001 \001(\005\022\017\n\007number2\030\002 \001"
-  "(\005\"9\n\006Market\022\030\n\020requiredResource\030\001 \001(\005\022\025"
-  "\n\rownedResource\030\002 \001(\005\"3\n\005Build\022\024\n\014buildi"
-  "ngType\030\001 \001(\005\022\t\n\001x\030\002 \001(\005\022\t\n\001y\030\003 \001(\005*_\n\tEv"
-  "entType\022\010\n\004CARD\020\000\022\010\n\004DICE\020\001\022\n\n\006MARKET\020\002\022"
-  "\t\n\005BUILD\020\003\022\013\n\007ENDTURN\020\004\022\r\n\tNEXTPHASE\020\005\022\013"
-  "\n\007ENDGAME\020\0062\351\001\n\007Network\0228\n\014StartNewGame\022"
-  "\025.game.NumberOfPlayers\032\017.game.OrderInfo\""
-  "\000\022+\n\010JoinGame\022\014.game.GameId\032\017.game.Order"
-  "Info\"\000\022&\n\tSendEvent\022\013.game.Event\032\n.game."
-  "Void\"\000\022\'\n\010GetEvent\022\014.game.Player\032\013.game."
-  "Event\"\000\022&\n\010HasEvent\022\014.game.Player\032\n.game"
-  ".Bool\"\000b\006proto3"
+  "(\005\"N\n\tOrderInfo\022\n\n\002id\030\001 \001(\005\022\027\n\017numberOfP"
+  "layers\030\002 \001(\005\022\016\n\006gameId\030\003 \001(\005\022\014\n\004seed\030\004 \001"
+  "(\r\"*\n\006Player\022\020\n\010playerId\030\001 \001(\005\022\016\n\006gameId"
+  "\030\002 \001(\005\"\333\001\n\005Event\022\035\n\004type\030\001 \001(\0162\017.game.Ev"
+  "entType\022\020\n\010playerId\030\002 \001(\005\022\016\n\006gameId\030\003 \001("
+  "\005\022\036\n\010cardInfo\030\004 \001(\0132\n.game.CardH\000\022\036\n\010dic"
+  "eInfo\030\005 \001(\0132\n.game.DiceH\000\022\"\n\nmarketInfo\030"
+  "\006 \001(\0132\014.game.MarketH\000\022 \n\tbuildInfo\030\007 \001(\013"
+  "2\013.game.BuildH\000B\013\n\tEventInfo\"\030\n\004Card\022\020\n\010"
+  "cardType\030\001 \001(\005\"(\n\004Dice\022\017\n\007number1\030\001 \001(\005\022"
+  "\017\n\007number2\030\002 \001(\005\"9\n\006Market\022\030\n\020requiredRe"
+  "source\030\001 \001(\005\022\025\n\rownedResource\030\002 \001(\005\"3\n\005B"
+  "uild\022\024\n\014buildingType\030\001 \001(\005\022\t\n\001x\030\002 \001(\005\022\t\n"
+  "\001y\030\003 \001(\005*_\n\tEventType\022\010\n\004CARD\020\000\022\010\n\004DICE\020"
+  "\001\022\n\n\006MARKET\020\002\022\t\n\005BUILD\020\003\022\013\n\007ENDTURN\020\004\022\r\n"
+  "\tNEXTPHASE\020\005\022\013\n\007ENDGAME\020\0062\351\001\n\007Network\0228\n"
+  "\014StartNewGame\022\025.game.NumberOfPlayers\032\017.g"
+  "ame.OrderInfo\"\000\022+\n\010JoinGame\022\014.game.GameI"
+  "d\032\017.game.OrderInfo\"\000\022&\n\tSendEvent\022\013.game"
+  ".Event\032\n.game.Void\"\000\022\'\n\010GetEvent\022\014.game."
+  "Player\032\013.game.Event\"\000\022&\n\010HasEvent\022\014.game"
+  ".Player\032\n.game.Bool\"\000b\006proto3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_game_2eproto_deps[1] = {
 };
@@ -384,7 +385,7 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_gam
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_game_2eproto_once;
 static bool descriptor_table_game_2eproto_initialized = false;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_game_2eproto = {
-  &descriptor_table_game_2eproto_initialized, descriptor_table_protodef_game_2eproto, "game.proto", 975,
+  &descriptor_table_game_2eproto_initialized, descriptor_table_protodef_game_2eproto, "game.proto", 989,
   &descriptor_table_game_2eproto_once, descriptor_table_game_2eproto_sccs, descriptor_table_game_2eproto_deps, 11, 0,
   schemas, file_default_instances, TableStruct_game_2eproto::offsets,
   file_level_metadata_game_2eproto, 11, file_level_enum_descriptors_game_2eproto, file_level_service_descriptors_game_2eproto,
@@ -1141,15 +1142,15 @@ OrderInfo::OrderInfo(const OrderInfo& from)
       _internal_metadata_(nullptr) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::memcpy(&id_, &from.id_,
-    static_cast<size_t>(reinterpret_cast<char*>(&gameid_) -
-    reinterpret_cast<char*>(&id_)) + sizeof(gameid_));
+    static_cast<size_t>(reinterpret_cast<char*>(&seed_) -
+    reinterpret_cast<char*>(&id_)) + sizeof(seed_));
   // @@protoc_insertion_point(copy_constructor:game.OrderInfo)
 }
 
 void OrderInfo::SharedCtor() {
   ::memset(&id_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&gameid_) -
-      reinterpret_cast<char*>(&id_)) + sizeof(gameid_));
+      reinterpret_cast<char*>(&seed_) -
+      reinterpret_cast<char*>(&id_)) + sizeof(seed_));
 }
 
 OrderInfo::~OrderInfo() {
@@ -1176,8 +1177,8 @@ void OrderInfo::Clear() {
   (void) cached_has_bits;
 
   ::memset(&id_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&gameid_) -
-      reinterpret_cast<char*>(&id_)) + sizeof(gameid_));
+      reinterpret_cast<char*>(&seed_) -
+      reinterpret_cast<char*>(&id_)) + sizeof(seed_));
   _internal_metadata_.Clear();
 }
 
@@ -1206,6 +1207,13 @@ const char* OrderInfo::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::
       case 3:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 24)) {
           gameid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // uint32 seed = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 32)) {
+          seed_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -1253,6 +1261,12 @@ failure:
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(3, this->_internal_gameid(), target);
   }
 
+  // uint32 seed = 4;
+  if (this->seed() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(4, this->_internal_seed(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields(), target, stream);
@@ -1288,6 +1302,13 @@ size_t OrderInfo::ByteSizeLong() const {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
         this->_internal_gameid());
+  }
+
+  // uint32 seed = 4;
+  if (this->seed() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
+        this->_internal_seed());
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1330,6 +1351,9 @@ void OrderInfo::MergeFrom(const OrderInfo& from) {
   if (from.gameid() != 0) {
     _internal_set_gameid(from._internal_gameid());
   }
+  if (from.seed() != 0) {
+    _internal_set_seed(from._internal_seed());
+  }
 }
 
 void OrderInfo::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
@@ -1356,6 +1380,7 @@ void OrderInfo::InternalSwap(OrderInfo* other) {
   swap(id_, other->id_);
   swap(numberofplayers_, other->numberofplayers_);
   swap(gameid_, other->gameid_);
+  swap(seed_, other->seed_);
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata OrderInfo::GetMetadata() const {

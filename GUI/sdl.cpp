@@ -32,12 +32,12 @@ using ::game::Event;
 using ::game::EventType;
 
 void playMusic(GUI* gui) {
-    while (!gui->quit) {
+    while (!gui->quit.load()) {
         std::cout << "MUSIC" << std::endl;
         Mix_PlayChannel(-1, gui->sfx, 0);
         for (int i = 0; i < 18000; ++i) {
-            if (gui->quit) return;
-            SDL_Delay(1000);
+            if (gui->quit.load()) return;
+            std::this_thread::sleep_for(std::chrono::seconds(1));
         }
     }
 }
@@ -86,7 +86,7 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     for (auto e: v3) {
         field_arr.push_back(e);
     }
-    for (int i = 4; i < v2.size(); ++i) {
+    for (int i = 4; i < static_cast<int>(v2.size()); ++i) {
         field_arr.push_back(v2[i]);
     }
     for (int i = 0; i < 4; ++i) {
@@ -164,10 +164,6 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     players_names.push_back("ALLAH");
     players_names.push_back("AKBAR");
 
-    
-    SDL_Rect dest;
-    dest.x = 0;
-    dest.y = 0;
     svitok_up = nullptr;
     svitok_down = nullptr;
     svitok_up = SDL_LoadBMP("image/svitok_up.bmp");
@@ -207,8 +203,11 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     font = TTF_OpenFont("sample.ttf", 32);
     sfx = nullptr;
     sfx = Mix_LoadWAV("image/music.wav");
+    Mix_VolumeChunk(sfx, MIX_MAX_VOLUME / 4);
     button_sound = Mix_LoadWAV("image/button_sound.wav");
+    Mix_VolumeChunk(button_sound, MIX_MAX_VOLUME / 4);
     build_sound = Mix_LoadWAV("image/build_sound.wav");
+    Mix_VolumeChunk(build_sound, MIX_MAX_VOLUME / 12);
     if (sfx == nullptr)  std::cout << "Hhhh";
 
     _build_road = Inscription(gui, 423 + 161, 317 + 136, "Build Road");
@@ -395,28 +394,8 @@ void GUI::renderText() const {
 }
 
 
-void GUI::makeTextureConstTable(std::vector<int> vec, SDL_Surface x, SDL_Texture *&ans, int type) {
-    TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
-    SDL_Surface * buff = new SDL_Surface(x);
-    SDL_Rect dest;
-    dest.x = 280 + 90;
-    dest.y = 200;
-    dest.h = 100;
-    dest.w = 100;
-    if (type) dest.y = 30;
-    for (auto e: vec) {     
-        SDL_Surface *surf = TTF_RenderText_Blended(font, std::to_string(e).c_str(), color_const_table);
-        SDL_BlitSurface(surf, nullptr, buff, &dest);
-        dest.y += 30;
-    }
-    ans = nullptr;
-    ans = SDL_CreateTextureFromSurface(ren, buff);
-    if (ans == nullptr) std::cerr << "PIZDA";
-    TTF_CloseFont(font);
-}
-
-
 void GUI::renderConstTable(){
+    std::lock_guard<std::mutex> lock(mutex_for_table);
     SDL_Rect dest;
     dest.x = 1380;
     dest.y = 0;
@@ -470,6 +449,13 @@ void GUI::makeRender() { // TODO: гонка данных --- ren
     } else {
         renderBeginingMenu();
     }
+
+    SDL_Rect dest;
+    dest.x = 1380;
+    dest.y = 0;
+    dest.w = 540;
+    dest.h = 960;
+
 }
 
 
@@ -483,10 +469,10 @@ void upgrade(GUI* g) {
 
     while (true) {
         frameStart = SDL_GetTicks();
-        // TODO: сделать mutex и захватывать его с помощью std::lock_guard
+
         g->makeRender();
         SDL_RenderPresent(g->ren);
-        if (g->quit) return;
+        if (g->quit.load()) return;
 
         frameTime = static_cast<int>(SDL_GetTicks() - frameStart);
         if (frameDelay > frameTime) {
@@ -495,7 +481,7 @@ void upgrade(GUI* g) {
     }
 }
 
-GUI::GUI() {
+GUI::GUI(int player, int numberOfPlayers) : cur_player(player), num_players(numberOfPlayers) {
     SDL_Init( SDL_INIT_EVERYTHING );
     SDL_Init(SDL_INIT_AUDIO);
     SDL_Init(SDL_INIT_VIDEO);
@@ -506,7 +492,7 @@ GUI::GUI() {
     win = SDL_CreateWindow("Settlers of Catan", 0, 0, displayMode.w, displayMode.h, SDL_WINDOW_SHOWN);
     ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     players_points.resize(num_players, 0);
-    resourses = {0, 0, 0, 0, 0};
+    resourses = {2, 4, 4, 0, 2};
     //std::cout << "Sync " << SDL_GL_SetSwapInterval(1) << std::endl;
 }
 
@@ -521,7 +507,7 @@ void GUI::getCoorsRoad() {
 
     Limiter limit;
 
-    while (!quit) {
+    while (!quit.load()) {
 
         limit.storeStartTime(); // засекает начало итерации
 
@@ -533,10 +519,10 @@ void GUI::getCoorsRoad() {
         }
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) {
-                quit = true;
+                quit.store(true);
             }
             if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE) {
-                quit = true;
+                quit.store(true);
                 break;
             }
             if( e.type == SDL_MOUSEMOTION ) {
@@ -574,7 +560,7 @@ void GUI::getCoorsBuilding () {
 
     Limiter limit;
 
-    while (!quit) {
+    while (!quit.load()) {
 
         limit.storeStartTime();
 
@@ -586,11 +572,11 @@ void GUI::getCoorsBuilding () {
         }
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) {
-                quit = true;
+                quit.store(true);
             }
 
             if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE) {
-                quit = true;
+                quit.store(true);
                 break;
             }
             if( e.type == SDL_MOUSEMOTION ) {
@@ -624,19 +610,19 @@ Event GUI::ThirdStage () {
 
     Limiter limit;
 
-    while (!quit) {
+    while (!quit.load()) {
 
         limit.storeStartTime();
 
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) {
-                quit = true;
+                quit.store(true);
                 Event event;
                 event.set_type(EventType::ENDGAME);
                 return event;
             }
             if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE) {
-                quit = true;
+                quit.store(true);
                 Event event;
                 event.set_type(EventType::ENDGAME);
                 return event;
@@ -673,7 +659,6 @@ Event GUI::ThirdStage () {
                 if (x > 161 && x < 423 && y > 610 && y < 790) { // деревня
                     Event event;
                     event.set_type(EventType::ENDTURN);
-                    auto q = event.mutable_buildinfo();
                     return event;
                 }
             }
@@ -702,6 +687,9 @@ Event GUI::ThirdStage () {
                 SDL_GetMouseState(&x, &y);
                 if (x > 200 && x < 480 && y > 98 && y < 280) {
                     event.set_type(EventType::DICE);
+                    auto nums = event.mutable_diceinfo();
+                    nums->set_number1(0);
+                    nums->set_number1(0);
                     return event;
                 }
                 if (x > 200 && x < 480 && y > 300 && y < 482) {
@@ -743,18 +731,18 @@ void GUI::addRoad(std::pair<int, int> tmp, int player) {
 }
 
 int GUI::returnRoad(int x, int y) const {
-    for (int i = 0; i < roads->vec.size(); ++i)
+    for (int i = 0; i < static_cast<int>(roads->vec.size()); ++i)
         if (roads->vec[i].is(x, y)) return i;
     return -1;
 }
 
 int GUI::returnBuilding(int x, int y) const {
-    for (int i = 0; i < buildings->vec.size(); ++i)
+    for (int i = 0; i < static_cast<int>(buildings->vec.size()); ++i)
         if (buildings->vec[i].is(x, y)) return i;
     return -1;
 }
 
-Road_arr::Road_arr(GUI& gui) {
+Road_arr::Road_arr() {
     SDL_Rect dest;
     for (int i = 0; i < 5; ++i){
         int a = 0;
@@ -826,7 +814,7 @@ void GUI::addBuilding(std::pair<int, int> tmp, int player) {
     std::cerr << "kek"; 
 }
 
-Building_arr::Building_arr(GUI& gui) {
+Building_arr::Building_arr() {
     SDL_Rect dest;
     for (int i = 0; i < 17; ++i) {
         int a = 0;
@@ -870,16 +858,75 @@ void GUI::updatePlayer(int x) {
 }
 
 void GUI::updatePoints(std::vector<int> vec) {
+    std::lock_guard<std::mutex> lock(mutex_for_table);
     players_points = vec;
+    svitok_down = nullptr;
+    svitok_down = SDL_LoadBMP("image/svitok_down.bmp");
 
-    SDL_BlitSurface(svitok_down, nullptr, svitok_down1, nullptr);
-    makeTextureConstTable(players_points, *svitok_down1, texture_svitok_down, 1);
+    TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
+
+    SDL_Rect dest1={150, 200, 0, 0};
+    SDL_Surface *surf = nullptr;
+
+    dest1.y = 30;
+    for (auto e: players_names) {
+        surf = TTF_RenderText_Blended(font, e.c_str(), color_const_table);
+        SDL_BlitSurface(surf, nullptr, svitok_down, &dest1);
+        dest1.y += 30;
+    }
+
+    TTF_CloseFont(font);
+
+    makeTextureConstTable(players_points, *svitok_down, texture_svitok_down, 1);
 }
 
 void GUI::updateResourses(std::vector<int> v) {
+    std::lock_guard<std::mutex> lock(mutex_for_table);
     resourses = v;
-    SDL_BlitSurface(svitok_up, nullptr, svitok_up1, nullptr);
-    makeTextureConstTable(resourses, *svitok_up1, texture_svitok_up, 0);
+
+    svitok_up = nullptr;
+    svitok_up = SDL_LoadBMP("image/svitok_up.bmp");
+
+    TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
+    SDL_Surface *surf = TTF_RenderText_Blended(font, "WOOL", color_const_table);
+    SDL_Rect dest1={150, 200, 0, 0};
+
+    SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
+    dest1.y += 30;
+    surf = TTF_RenderText_Blended(font, "WOOD", color_const_table);
+    SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
+    dest1.y += 30;
+    surf = TTF_RenderText_Blended(font, "BRICKS", color_const_table);
+    SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
+    dest1.y += 30;
+    surf = TTF_RenderText_Blended(font, "CORN", color_const_table);
+    SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
+    dest1.y += 30;
+    surf = TTF_RenderText_Blended(font, "ORE", color_const_table);
+    SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
+    TTF_CloseFont(font);
+
+    makeTextureConstTable(resourses, *svitok_up, texture_svitok_up, 0);
+}
+
+void GUI::makeTextureConstTable(std::vector<int> vec, SDL_Surface& x, SDL_Texture *&ans, int type) {
+    TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
+    SDL_Surface * buff = new SDL_Surface(x);
+    SDL_Rect dest;
+    dest.x = 280 + 90;
+    dest.y = 200;
+    dest.h = 100;
+    dest.w = 100;
+    if (type) dest.y = 30;
+    for (auto e: vec) {
+        SDL_Surface *surf = TTF_RenderText_Blended(font, std::to_string(e).c_str(), color_const_table);
+        SDL_BlitSurface(surf, nullptr, buff, &dest);
+        dest.y += 30;
+    }
+    ans = nullptr;
+    ans = SDL_CreateTextureFromSurface(ren, buff);
+    if (ans == nullptr) std::cerr << "PIZDA";
+    TTF_CloseFont(font);
 }
 
 void GUI::addPlayerName(int x, std::string s) {
@@ -890,7 +937,7 @@ int GUI::getPlaceOfGame() {
     render_type = 11;
     SDL_Event e;
     Limiter limit;
-    while (!quit) {
+    while (!quit.load()) {
         limit.storeStartTime();
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_MOUSEBUTTONDOWN) {
@@ -907,13 +954,14 @@ int GUI::getPlaceOfGame() {
         }
         limit.delay();
     }
+    return 1;
 }
 
 int GUI::getTypeOfGame() {
     render_type = 12;
     SDL_Event e;
     Limiter limit;
-    while (!quit) {
+    while (!quit.load()) {
         limit.storeStartTime();
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_MOUSEBUTTONDOWN) {
@@ -933,13 +981,14 @@ int GUI::getTypeOfGame() {
         }
         limit.delay();
     }
+    return 1;
 }
 
 int GUI::getNumOfPlayers() {
     render_type = 13;
     SDL_Event e;
     Limiter limit;
-    while (!quit) {
+    while (!quit.load()) {
         limit.storeStartTime();
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_MOUSEBUTTONDOWN) {
@@ -959,6 +1008,7 @@ int GUI::getNumOfPlayers() {
         }
         limit.delay();
     }
+    return 1;
 }
 
 int GUI::getGameId() {
@@ -966,7 +1016,7 @@ int GUI::getGameId() {
     int value = 0;
     SDL_Event e;
     Limiter limit;
-    while (!quit) {
+    while (!quit.load()) {
         limit.storeStartTime();
         while (SDL_PollEvent(&e)) {
             if(e.type == SDL_KEYDOWN) {
@@ -1007,7 +1057,7 @@ int GUI::getGameId() {
         }
         limit.delay();
     }
-
+    return 0;
 }
 
 ::game::Event GUI::getEvent() {

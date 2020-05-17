@@ -12,7 +12,7 @@ struct cellInfo {
 
 class Random {
 public:
-    Random();
+    explicit Random(unsigned int seed);
     Random(const Random&) = delete;
     Random& operator=(const Random&) = delete;
 

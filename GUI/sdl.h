@@ -8,6 +8,7 @@
 #include <random>
 #include <time.h>
 #include <mutex>
+#include <atomic>
 
 #include "game.pb.h"
 
@@ -84,11 +85,11 @@ public:
             gui_y2(y2), model_x(x), model_y(y),
             colour(_colour), dest(_dest), type(_type){};
 
-    double gui_x1, gui_y1, gui_x2, gui_y2;
+    double gui_x1, gui_x2, gui_y1, gui_y2;
     int model_x, model_y;
-    SDL_Rect dest;
     int built = 0;
     Colour colour;
+    SDL_Rect dest;
     int type = 0;
     bool is(int x, int y) const;
     std::pair<int, int> get_model_coors();
@@ -96,14 +97,14 @@ public:
 
 class Building_arr {
 public:
-    explicit Building_arr(GUI& gui);
+    Building_arr();
     ~Building_arr();
     std::vector<Obj> vec;
 };
 
 class Road_arr {
 public:
-    explicit Road_arr(GUI& gui);
+    Road_arr();
     ~Road_arr();
     std::vector<Obj> vec;
 };
@@ -119,11 +120,11 @@ public:
 
 class GUI {
 public:
-
-    
+    GUI(int player, int numberOfPlayers);
+    ~GUI();
     std::mutex mutex_for_roads {};  
     std::mutex mutex_for_buildings {};
-    std::mutex mutex_for_ren {};
+    std::mutex mutex_for_table {};
 
     Road_arr *roads = nullptr;
     Building_arr *buildings = nullptr;
@@ -157,7 +158,7 @@ public:
 
     int getGameId();
 
-    bool quit = false;
+    std::atomic<bool> quit { false };
     int  end_time_dice = 0;
     std::vector<SDL_Texture *> field_arr;
     int tmp_sound = 0;
@@ -183,9 +184,7 @@ public:
     SDL_Texture *texture_svitok_up, *texture_svitok_down;
     SDL_Texture *dice_shadow;
     std::vector<SDL_Texture *> table_shadow;
-    void makeTextureConstTable(std::vector<int> vec, SDL_Surface x, SDL_Texture *&ans, int type);
-    GUI();
-    ~GUI();
+    void makeTextureConstTable(std::vector<int> vec, SDL_Surface& x, SDL_Texture *&ans, int type);
     void destroyTextures();
     void renderBackground() const;
     void renderTables() const;

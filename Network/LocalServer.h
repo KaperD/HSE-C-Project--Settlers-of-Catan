@@ -5,7 +5,7 @@
 #include <mutex>
 #include <set>
 #include <queue>
-#include <string>
+#include <random>
 
 #include <grpc/grpc.h>
 #include <grpcpp/server.h>
@@ -16,8 +16,6 @@
 #include "EventQueue.h"
 #include "spinlock.h"
 
-
-namespace {
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -37,11 +35,13 @@ using game::GameId;
 using game::NumberOfPlayers;
 using game::Bool;
 
+
+namespace {
+
 constexpr int MaximumNumberOfGames = 100;
 constexpr int MaximumNumberOfPlayers = 4;
 
 } // namespace
-
 
 struct Game {
     Game() : events_(MaximumNumberOfPlayers) { }
@@ -59,14 +59,14 @@ struct Game {
 
     std::vector<utility::EventQueue> events_;
     int numberOfPlayers = 0;
+    uint32_t seed = 0;
     std::atomic_int activePlayers { 0 };
     utility::spinlock spin;
 };
 
-
 class GameServerImpl final : public Network::Service {
 public:
-    GameServerImpl() : games(MaximumNumberOfGames) {
+    GameServerImpl() : games(MaximumNumberOfGames), random(std::random_device()()) {
         for (int k = 0; k < MaximumNumberOfGames; ++k) {
             availableIds.insert(k);
         }
@@ -74,6 +74,7 @@ public:
 
 private:
     Status StartNewGame(::grpc::ServerContext* context, const NumberOfPlayers* request, OrderInfo* response) override {
+        static_cast<void>(context);
         std::cout << "New game " << request->numberofplayers() << std::endl;
         std::lock_guard<utility::spinlock> lock(spin);
 
@@ -94,9 +95,11 @@ private:
         games[newid].activePlayers.store(1);
         std::cout << "New game active: " << games[newid].activePlayers.load() << ' ' << games[newid].activePlayers.load() << std::endl;
         games[newid].numberOfPlayers = request->numberofplayers();
+        games[newid].seed = random();
 
         response->set_numberofplayers(request->numberofplayers());
         response->set_id(0);
+        response->set_seed(games[newid].seed);
         std::cout << "ID " << newid << std::endl;
         response->set_gameid(newid);
 
@@ -105,6 +108,7 @@ private:
 
 
     Status JoinGame(::grpc::ServerContext* context, const GameId* request, OrderInfo* response) override {
+        static_cast<void>(context);
         Game& game = games.at(request->gameid());
         std::lock_guard<utility::spinlock> lock(game.spin);
 
@@ -118,12 +122,15 @@ private:
         response->set_id(game.activePlayers++);
         response->set_gameid(request->gameid());
         response->set_numberofplayers(game.numberOfPlayers);
+        response->set_seed(game.seed);
 
         return Status::OK;
     }
 
 
     Status SendEvent(::grpc::ServerContext* context, const Event* request, Void* response) override {
+        static_cast<void>(context);
+        static_cast<void>(response);
         Event event = *request;
         int playerid = event.playerid();
         std::cout << "SendEvent gameid " <<  request->gameid() << std::endl;
@@ -145,6 +152,7 @@ private:
 
 
     Status GetEvent(ServerContext* context, const Player* request, Event* response) override {
+        static_cast<void>(context);
         int playerid = request->playerid();
         std::cout << "GetEvent gameid " <<  request->gameid() << std::endl;
         std::cout << "GetEvent playerid " <<  playerid << std::endl;
@@ -165,6 +173,7 @@ private:
 
 
     Status HasEvent(ServerContext* context, const Player* request, Bool* response) override {
+        static_cast<void>(context);
         int playerid = request->playerid();
         std::cout << "HasEvent gameid " <<  request->gameid() << std::endl;
         std::cout << "HasEvent playerid " <<  playerid << std::endl;
@@ -181,6 +190,8 @@ private:
     utility::spinlock spin;
     std::set<int> availableIds;
     int numberOfMadeGames = 0;
+
+    std::mt19937 random;
 };
 
 

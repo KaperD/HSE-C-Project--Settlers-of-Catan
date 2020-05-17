@@ -508,7 +508,7 @@ void Catan::setRobbers(int hex_num) {
         PlayerNum player = cell(x, y)->getPlayer();
         if (player != PlayerNum::NONE && player != cur_player) {
             bool is_get = false;
-            for (int intRE = 1; intRE < TERRITORIESNUM + 1; intRE++) {
+            for (int intRE = 1; intRE <= TERRITORIESNUM; intRE++) {
                 auto re = static_cast<Resource>(intRE);
                 if (players[player]->checkResourceNum(re) > 0) {
                     players[player]->getResource(re, 1);

@@ -8,18 +8,16 @@ int utility::Random::getRandomNumberFromTo(int from, int to) {
     return cut(random_);
 }
 
-utility::Random::Random() : cells(19) {
-    std::random_device rd;
-    unsigned int x = rd();
-    random_.seed(x);
-    std::ofstream fout("RandomLog.txt", std::ios_base::app);
-    fout << x << '\n';
+utility::Random::Random(unsigned int seed) : random_(std::random_device()()), cells(19) {
+    std::mt19937 generator(seed);
+    std::ofstream fout("RandomLog.txt", std::ios_base::app); // TODO: перед релизом изменить папку на /usr/share/CatanImages/
+    fout << seed << '\n';
 
     std::vector<int> numbers = {2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12};
-    std::shuffle(numbers.begin(), numbers.end(), std::mt19937(std::random_device()()));
+    std::shuffle(numbers.begin(), numbers.end(), generator);
 
     std::vector<int> resources = {0,  1, 1, 1, 1,  2, 2, 2,  3, 3, 3,  4, 4, 4, 4,  5, 5, 5, 5};
-    std::shuffle(resources.begin(), resources.end(), std::mt19937(std::random_device()()));
+    std::shuffle(resources.begin(), resources.end(), generator);
 
     int posNumbers = 0;
     for (int k = 0; k < 19; ++k) {
