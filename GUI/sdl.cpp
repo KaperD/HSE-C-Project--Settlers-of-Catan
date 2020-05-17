@@ -76,6 +76,8 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
             }
         }
         field_arr.push_back(SDL_CreateTextureFromSurface(ren, hex));
+        SDL_FreeSurface(numberImg);
+        SDL_FreeSurface(hex);
     }
     back_ground = IMG_LoadTexture(ren, "image/back_ground.bmp");
     back = IMG_LoadTexture(ren, "image/back.bmp");
@@ -817,11 +819,13 @@ void GUI::updatePoints(std::vector<int> vec) {
         surf = TTF_RenderText_Blended(font, e.c_str(), color_const_table);
         SDL_BlitSurface(surf, nullptr, svitok_down, &dest1);
         dest1.y += 30;
+        SDL_FreeSurface(surf);
     }
 
     TTF_CloseFont(font);
 
     makeTextureConstTable(players_points, svitok_down, texture_svitok_down, 1);
+    SDL_FreeSurface(svitok_down);
 }
 
 void GUI::updateResourses(std::vector<int> v) {
@@ -836,20 +840,26 @@ void GUI::updateResourses(std::vector<int> v) {
 
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
     dest1.y += 30;
+    SDL_FreeSurface(surf);
     surf = TTF_RenderText_Blended(font, "ORE", color_const_table);
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
     dest1.y += 30;
+    SDL_FreeSurface(surf);
     surf = TTF_RenderText_Blended(font, "BRICKS", color_const_table);
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
     dest1.y += 30;
+    SDL_FreeSurface(surf);
     surf = TTF_RenderText_Blended(font, "WOOD", color_const_table);
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
     dest1.y += 30;
+    SDL_FreeSurface(surf);
     surf = TTF_RenderText_Blended(font, "WHEAT", color_const_table);
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
     TTF_CloseFont(font);
 
     makeTextureConstTable(resourses, svitok_up, texture_svitok_up, 0);
+    SDL_FreeSurface(surf);
+    SDL_FreeSurface(svitok_up);
 }
 
 void GUI::makeTextureConstTable(std::vector<int>& vec, SDL_Surface* buff, SDL_Texture *&ans, int type) {
@@ -864,6 +874,7 @@ void GUI::makeTextureConstTable(std::vector<int>& vec, SDL_Surface* buff, SDL_Te
         SDL_Surface *surf = TTF_RenderText_Blended(font, std::to_string(e).c_str(), color_const_table);
         SDL_BlitSurface(surf, nullptr, buff, &dest);
         dest.y += 30;
+        SDL_FreeSurface(surf);
     }
     ans = nullptr;
     ans = SDL_CreateTextureFromSurface(ren, buff);
