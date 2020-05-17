@@ -9,7 +9,7 @@ using namespace Board;
 
 
 TEST(CatanGraph, ShowGraph) {
-    Random random(3);
+    Random random(1589637194);
     Catan board(random, 4);
     for (int i = 0; i < FIELDHEIGHT; i ++) {
         for (int j = 0; j < FIELDWIDTH; j ++) {

@@ -135,16 +135,16 @@ public:
 
     void settle(BuildingType s, int x, int y);
     void giveResources(int cubes_num);
-    void setRobbers(int hex_num);
+    Resource setRobbers(int hex_num);
 
     //возвращает true, если торговля прошла успешно, false, если не хватило ресурсов на обмен
     bool trade(Resource re_for_trade, Resource need_re);
     //TODO: доработать логику торговли с другими игроками, сейчас пока сыро
     void tradeWith(PlayerNum customerID, Resource re_for_trade, int tradeReNum, Resource need_re, int needReNum);
 
-
-    //возвращает true или false аналогично торговле
-    bool buildDevCard();
+    //возвращает NONE, если что-то пошло не так
+    DevelopmentCard buildDevCard();
+    //TODO: разобрать случай с постройкой дорог
     void playDevCard(DevelopmentCard card, int extraData);
 
     bool canBuild(BuildingType mod, int x, int y) const;
@@ -167,7 +167,6 @@ public:
     PlayerNum getRoadsRecordHolder() const;
     int getKnightRecord() const;
     PlayerNum getKnightRecordHolder() const;
-    void setRoadsRecord(int new_record);
     void setKnightRecord(int new_record);
 
     void gotoNextGamePhase();
@@ -188,7 +187,6 @@ private:
     PlayerNum last_knights_record_holder = PlayerNum::NONE;
     int knights_record = 2;
 
-    //TODO: static_cast<enum class> VS vector<enum class>
     std::vector<PlayerNum> playersIDs = {
             PlayerNum::NONE, PlayerNum::GAMER1,
             PlayerNum::GAMER2, PlayerNum::GAMER3,
@@ -196,8 +194,9 @@ private:
     };
 
     int findRoadsRecord(const std::unique_ptr<Cell>& v);
+    void setRoadsRecord(int new_record);
     void updateRoadsRecord();
-    const std::unique_ptr<Cell>& getStart(const std::unique_ptr<Cell>& v, int x, int y);
+    const std::unique_ptr<Cell>& getStart(const std::unique_ptr<Cell>& v, int x, int y, int dir);
     void clearMarks();
 
     utility::Random& random;
