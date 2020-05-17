@@ -9,7 +9,7 @@ using namespace Board;
 
 
 TEST(CatanGraph, ShowGraph) {
-    Random random;
+    Random random(1589637194);
     Catan board(random, 4);
     for (int i = 0; i < FIELDHEIGHT; i ++) {
         for (int j = 0; j < FIELDWIDTH; j ++) {
@@ -68,18 +68,35 @@ TEST(CatanGraph, ShowGraph) {
         std::cout << '\n';
     }
 
+    std::vector<int> ind = {0, 2, 4, 6, 8, 10, 12, 14, 15, 16, 17, 18, 7, 9, 11, 13, 1, 3, 5};
+    std::vector<int> step = {2, 6, 11, 15, 18};
+    int cnt = 0;
+
     std::cout << '\n';
     std::cout << "Check Hexes Resources\n";
     for (int i = 0; i < HEXESNUM; i++) {
-        if (board.getHex(i)->robbersIsHere()) {
+        if (board.getHex(ind[i])->robbersIsHere()) {
             std::cout << 0 << ' ';
+            if (i == step[cnt]) {
+                std::cout << '\n';
+                cnt++;
+            }
             continue;
         }
-        std::cout << static_cast<int>(board.getHex(i)->getResource()) << ' ';
+        std::cout << static_cast<int>(board.getHex(ind[i])->getResource()) << ' ';
+        if (i == step[cnt]) {
+            std::cout << '\n';
+            cnt++;
+        }
     }
     std::cout << '\n';
     std::cout << "Check Hexes Num\n";
+    cnt = 0;
     for (int i = 0; i < HEXESNUM; i++) {
-        std::cout << board.getHex(i)->getNum() << ' ';
+        std::cout << board.getHex(ind[i])->getNum() << ' ';
+        if (i == step[cnt]) {
+            std::cout << '\n';
+            cnt++;
+        }
     }
 }
