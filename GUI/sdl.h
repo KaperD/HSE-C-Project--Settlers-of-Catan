@@ -230,10 +230,11 @@ public:
     Inscription _build_road, _build, _settlement, _end_turn, _go_back, _go_back2,
                  _roll_the_dice, _play_a_card,_local_game, _game_on_server, _ok,
                  _start_new_game, _join_game, _exit, _2_Players, _3_Players,
-                _4_Players, _type_game_id, _exchange, _resources;
+                _4_Players, _type_game_id, _exchange, _resources, _next_phase;
 
     ::game::Event FirstStage();
     ::game::Event ThirdStage(GUI &gui);
+    ::game::Event SecondStage (GUI &gui);
 
     ::game::Event getEvent(GUI &gui);
 
@@ -260,7 +261,7 @@ public:
     void renderText() const;
 
     int num_players = 4;
-
+    int my_player;
     void updatePoints(std::vector<int> vec);
 
     void updateResourses(std::vector<int> vec);
@@ -272,6 +273,7 @@ public:
     int getCoorsRobber(GUI &gui);
 
     void getCoorsResourses();
+
 
     void renderResourses() const;
 

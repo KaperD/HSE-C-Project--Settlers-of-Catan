@@ -184,12 +184,13 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     _build_road = Inscription(gui, 423 + 161, 317 + 136 - 2 * 48, "Build Road");
     _build = Inscription(gui, 423 + 161, (373 + 552) / 2 + 373 - 3*48/2, "Build");
     _settlement = Inscription(gui, 423 + 161, (373 + 552) / 2 + 552 - 3*48/2, "Settlement");
-    _exchange = Inscription(gui, 423 + 161, (610 + 790) / 2 + 610 - 3*48/2, "Exchange");
-    _resources = Inscription(gui, 423 + 161, (610 + 790) / 2 + 790 - 3*48/2, "Resources");
+    _next_phase = Inscription(gui, 423 + 161, (373 + 552) - 2*48, "Next Phase");
+    _exchange = Inscription(gui, 423 + 161, (317 + 136) / 2  + 136 - 3*48/2, "Exchange");
+    _resources = Inscription(gui, 423 + 161, (317 + 136) / 2 + 317 - 3*48/2, "Resources");
 
 
-
-    _end_turn = Inscription(gui, 423 + 161, 846 + 1020 - 2 * 48, "End Turn");
+    _end_turn = Inscription(gui, 423 + 161, 610 + 790 - 2 * 48, "End Turn");
+    //_end_turn = Inscription(gui, 423 + 161, 846 + 1020 - 2 * 48, "End Turn");
     _go_back = Inscription(gui, 423 + 161, 317 + 136 - 2 * 48, "Go Back");
     _go_back2 = Inscription(gui, 423 + 161, 373 + 552 - 2 * 48, "Go Back");
     _ok = Inscription(gui, 423 + 161, 317 + 136 - 2 * 48, "OK");
@@ -258,10 +259,10 @@ void GUI::renderTables() const {
     dest.h = 960*1.2;
 
     if (render_type.load() == 0)
-        SDL_RenderCopy(ren, tables_arr[3], nullptr,&dest);
+        SDL_RenderCopy(ren, tables_arr[2], nullptr,&dest);
     if (render_type.load() == 1 || render_type.load() == 2 || render_type.load() == 37)
         SDL_RenderCopy(ren, tables_arr[0], nullptr,&dest);
-    if (render_type.load() == 5 || render_type.load() == 6)
+    if (render_type.load() == 5 || render_type.load() == 6 || render_type.load() == 8)
         SDL_RenderCopy(ren, tables_arr[1], nullptr,&dest);
 }
 
@@ -398,8 +399,6 @@ void GUI::renderText() const {
     if (render_type.load() == 0) {
         SDL_RenderCopy(ren, _build_road.texture, nullptr, &_build_road.dest);
         SDL_RenderCopy(ren, _build.texture, nullptr, &_build.dest);
-        SDL_RenderCopy(ren, _resources.texture, nullptr, &_resources.dest);
-        SDL_RenderCopy(ren, _exchange.texture, nullptr, &_exchange.dest);
         SDL_RenderCopy(ren, _settlement.texture, nullptr, &_settlement.dest);
         SDL_RenderCopy(ren, _end_turn.texture, nullptr, &_end_turn.dest);
     }
@@ -413,6 +412,11 @@ void GUI::renderText() const {
     if (render_type.load() == 6) {
         SDL_RenderCopy(ren, _ok.texture, nullptr, &_ok.dest);
         SDL_RenderCopy(ren, _go_back2.texture, nullptr, &_go_back2.dest);
+    }
+    if (render_type.load() == 8) {
+        SDL_RenderCopy(ren, _exchange.texture, nullptr, &_exchange.dest);
+        SDL_RenderCopy(ren, _resources.texture, nullptr, &_resources.dest);
+        SDL_RenderCopy(ren, _next_phase.texture, nullptr, &_next_phase.dest);
     }
     if (render_type.load() == 37) {
         SDL_RenderCopy(ren, _ok.texture, nullptr, &_ok.dest);
@@ -502,7 +506,7 @@ void upgrade(GUI* g) {
     }
 }
 
-GUI::GUI(int player, int numberOfPlayers) : cur_player(player), num_players(numberOfPlayers) {
+GUI::GUI(int player, int numberOfPlayers) :num_players(numberOfPlayers), my_player(player) {
     SDL_Init( SDL_INIT_EVERYTHING );
     SDL_Init(SDL_INIT_AUDIO);
     SDL_Init(SDL_INIT_VIDEO);
@@ -680,20 +684,65 @@ Event GUI::ThirdStage (GUI &gui) {
                     q->set_y(p.second);
                     return event;
                 }
-                if (x > 161 && x < 423 && y > 610- 48 && y < 790- 48) { // обмен
-                    getCoorsResourses();
-                    if (render_type.load() == 0) continue;
-
-                     Event event;
-                     event.set_type(EventType::MARKET);
-                     auto q = event.mutable_marketinfo();
-                     q->set_ownedresource(tmp_resourses.first);
-                     q->set_requiredresource(tmp_resourses.second);
-                     return event;
-                }
-                if (x > 161 && x < 423 && y > 846 - 48 && y < 1020 - 48) { // деревня
+                if (x > 161 && x < 423 && y > 610- 48 && y < 790- 48) { // деревня
                     Event event;
                     event.set_type(EventType::ENDTURN);
+                    return event;
+                }
+            }
+        }
+
+        limit.delay();
+
+    }
+    Event event;
+    event.set_type(EventType::ENDGAME);
+    return event;
+}
+
+
+
+Event GUI::SecondStage (GUI &gui) {
+    SDL_Event e;
+    render_type.store(8);
+    std::cerr  << "eeeeee\n";
+    Limiter limit;
+
+    while (!quit.load()) {
+
+        limit.storeStartTime();
+
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) {
+                quit.store(true);
+                Event event;
+                event.set_type(EventType::ENDGAME);
+                return event;
+            }
+            if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE) {
+                quit.store(true);
+                Event event;
+                event.set_type(EventType::ENDGAME);
+                return event;
+            }
+            if (e.type == SDL_MOUSEBUTTONDOWN) {
+                Mix_PlayChannel(-1, button_sound, 0);
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                //std::cout << x << ' ' << y << '\n';
+                if (x > 161 && x < 423 && y > 136- 48  && y < 317- 48) { // дорога
+                    getCoorsResourses();
+                    if (render_type.load() == 0) continue;
+                    Event event;
+                    event.set_type(EventType::MARKET);
+                    auto q = event.mutable_marketinfo();
+                    q->set_ownedresource(tmp_resourses.first);
+                    q->set_requiredresource(tmp_resourses.second);
+                    return event;
+                }
+                if (x > 161 && x < 423 && y > 373- 48 && y < 552- 48) { // derevnia
+                    Event event;
+                    event.set_type(EventType::NEXTPHASE);
                     return event;
                 }
             }
@@ -1109,8 +1158,10 @@ int GUI::getGameId() {
         event = FirstStage();
         if (event.type() == EventType::DICE) ++gameStage;
         return event;
-//    } else if (gameStage == 1) {
-//
+    } else if (gameStage == 1) {
+        event = SecondStage(gui);
+        if (event.type() == EventType::NEXTPHASE) gameStage++;
+        return event;
     } else {
         event = ThirdStage(gui);
         if (event.type() == EventType::ENDTURN) gameStage = 0;
