@@ -778,7 +778,8 @@ Event GUI::SecondStage (GUI &gui) {
                     return event;
                 }
                 if (x > 200 && x < 480 && y > 300 - 48 && y < 482- 48) {
-                    event.set_type(EventType::CARD); // TODO: нужно сразу здесь вызвать функцию, которая получит вид карты
+                    event.set_type(EventType::CARD); 
+                    getCoorsCard();
                     return event;
                 }
             }
@@ -997,6 +998,8 @@ void GUI::updateResourses(std::vector<int> v) {
     SDL_FreeSurface(surf);
     SDL_FreeSurface(svitok_up);
 }
+
+
 
 void GUI::makeTextureConstTable(std::vector<int>& vec, SDL_Surface* buff, SDL_Texture *&ans, int type) {
     TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
@@ -1226,7 +1229,11 @@ std::pair<int, int> Robber_arr::get_coors(int type, GUI &gui) {
     return std::make_pair(-1, -1);
 }
 
-int Robber_arr::setRobber(int x){
+void GUI::setRobber(int x) {
+    robber->set(x);
+}
+
+void Robber_arr::set(int x){
     x_r.store(vec[x].first + 50);
     y_r.store(vec[x].second + 50);
 }

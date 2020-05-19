@@ -124,7 +124,7 @@ public:
     std::atomic<int> x_r;
     std::atomic<int> y_r;
     int number;
-    int setRobber (int x);
+    void set (int x);
 };
 
 
@@ -189,6 +189,8 @@ public:
 
     int getGameId();
 
+    
+
     std::atomic<bool> quit { false };
     int  end_time_dice = 0;
     std::vector<SDL_Texture *> field_arr;
@@ -227,6 +229,8 @@ public:
     void makeRender(GUI &gui);
     void getCoorsRoad();
     void getCoorsBuilding();
+    void getCoorsCard();
+    void setRobber(int x);
 
     Inscription _build_road, _build, _settlement, _end_turn, _go_back, _go_back2,
                  _roll_the_dice, _play_a_card,_local_game, _game_on_server, _ok,
