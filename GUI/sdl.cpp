@@ -1,6 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <SDL2/SDL_mixer.h>
+//#include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_ttf.h>
 #include <iostream>
 #include <thread>
@@ -34,6 +34,7 @@ using ::game::EventType;
 
 void playMusic(GUI* gui) {
     while (!gui->quit.load()) {
+        std::cout << "MUSIC" << std::endl;
         Mix_PlayChannel(-1, gui->sfx, 0);
         for (int i = 0; i < 18000; ++i) {
             if (gui->quit.load()) return;
@@ -176,6 +177,7 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     Mix_VolumeChunk(button_sound, MIX_MAX_VOLUME / 4);
     build_sound = Mix_LoadWAV("image/build_sound.wav");
     Mix_VolumeChunk(build_sound, MIX_MAX_VOLUME / 12);
+    if (sfx == nullptr)  std::cout << "Hhhh";
     dice_sound = Mix_LoadWAV("image/dice_sound.wav");
     Mix_VolumeChunk(dice_sound, MIX_MAX_VOLUME * 20);
 
@@ -374,12 +376,12 @@ void GUI::renderResourses() const {
 
 
 SDL_Texture* GUI::Text(const std::string &message) {   
-        TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
-        SDL_Surface *surf = TTF_RenderText_Blended(font, message.c_str(), color);
-        SDL_Texture *texture = SDL_CreateTextureFromSurface(ren, surf);
-        SDL_FreeSurface(surf);
-        TTF_CloseFont(font);
-        return texture;
+    TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
+    SDL_Surface *surf = TTF_RenderText_Blended(font, message.c_str(), color);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(ren, surf);
+    SDL_FreeSurface(surf);
+    TTF_CloseFont(font);
+    return texture;
 }
 
 Inscription::Inscription(GUI& gui, int _x, int _y, const std::string &s) {
@@ -1285,14 +1287,13 @@ int GUI::getCoorsRobber(GUI &gui) {
                     robber->x_r.store(tmp.first);
                     robber->y_r.store(tmp.second);
                 }
-
-                
             }
         }
 
         limit.delay();
 
     }
+    return -1;
 }
 
 Resourses_arr::Resourses_arr() {
@@ -1357,7 +1358,7 @@ void GUI::getCoorsResourses() {
                         }
                         e.built = tmp + 1;
                         if (j/5) {
-                            tmp_resourses.second = j;
+                            tmp_resourses.second = j - 5;
                             tmp_resourses_num.second = e.built;
                         } else {
                             tmp_resourses.first = j;

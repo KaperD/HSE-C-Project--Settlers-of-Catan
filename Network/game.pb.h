@@ -1412,6 +1412,7 @@ class Dice :
   enum : int {
     kNumber1FieldNumber = 1,
     kNumber2FieldNumber = 2,
+    kHexNumberFieldNumber = 3,
   };
   // int32 number1 = 1;
   void clear_number1();
@@ -1431,6 +1432,15 @@ class Dice :
   void _internal_set_number2(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
+  // int32 hexNumber = 3;
+  void clear_hexnumber();
+  ::PROTOBUF_NAMESPACE_ID::int32 hexnumber() const;
+  void set_hexnumber(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_hexnumber() const;
+  void _internal_set_hexnumber(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
   // @@protoc_insertion_point(class_scope:game.Dice)
  private:
   class _Internal;
@@ -1438,6 +1448,7 @@ class Dice :
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
   ::PROTOBUF_NAMESPACE_ID::int32 number1_;
   ::PROTOBUF_NAMESPACE_ID::int32 number2_;
+  ::PROTOBUF_NAMESPACE_ID::int32 hexnumber_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_game_2eproto;
 };
@@ -2280,6 +2291,26 @@ inline void Dice::_internal_set_number2(::PROTOBUF_NAMESPACE_ID::int32 value) {
 inline void Dice::set_number2(::PROTOBUF_NAMESPACE_ID::int32 value) {
   _internal_set_number2(value);
   // @@protoc_insertion_point(field_set:game.Dice.number2)
+}
+
+// int32 hexNumber = 3;
+inline void Dice::clear_hexnumber() {
+  hexnumber_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 Dice::_internal_hexnumber() const {
+  return hexnumber_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 Dice::hexnumber() const {
+  // @@protoc_insertion_point(field_get:game.Dice.hexNumber)
+  return _internal_hexnumber();
+}
+inline void Dice::_internal_set_hexnumber(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  hexnumber_ = value;
+}
+inline void Dice::set_hexnumber(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_hexnumber(value);
+  // @@protoc_insertion_point(field_set:game.Dice.hexNumber)
 }
 
 // -------------------------------------------------------------------

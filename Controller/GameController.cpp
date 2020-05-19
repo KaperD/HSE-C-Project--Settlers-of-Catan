@@ -97,10 +97,15 @@ void DiceHandler::processEvent(Event& event, bool needSend) {
 
 
     if (numberSum == 7) { // TODO: когда у GUI появится функция для разбойников, спроить здесь, куда их поставить
-//        int hexNum = 0;
-//        hexNum = запросить у View
-//        gameModel_.setRobbers(hexNum);
-//        изменить расположение разбойников у GUI
+        gameView_.addDice(number1_, number2_);
+        int hexNum = 0;
+        if (Player - 1 == myTurn_) {
+            hexNum = gameView_.getCoorsRobber(gameView_);
+            diceInfo->set_hexnumber(hexNum);
+        } else {
+            hexNum = diceInfo->hexnumber();
+        }
+        gameModel_.setRobbers(hexNum);
     } else {
         gameModel_.giveResources(numberSum);
     }
@@ -142,8 +147,10 @@ void MarketHandler::processEvent(Event& event, bool needSend) {
  
     gameModel_.changeCurPlayer(currentPlayer_);
  
-    auto reTo = static_cast<Board::Resource>(requiredResource_);
-    auto reFrom = static_cast<Board::Resource>(ownedResource_);
+    auto reTo = static_cast<Board::Resource>(++requiredResource_);
+    auto reFrom = static_cast<Board::Resource>(++ownedResource_);
+    std::cout << "requiredResource " << requiredResource_ << std::endl;
+    std::cout << "ownedResource " << ownedResource_ << std::endl;
    
     if (gameModel_.trade(reFrom, reTo)) {
         wasSuccess = true;
@@ -255,9 +262,6 @@ void NextPhaseHandler::processEvent(Event& event, bool needSend) {
         throw std::logic_error("Wrong type");
     }
     displayEvent(event);
-    if (needSend) {
-
-    }
 }
  
 void NextPhaseHandler::displayEvent(Event& event) {
@@ -311,13 +315,14 @@ GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI
  
 void GameController::RunGame() {
     std::cout << myTurn_ << std::endl;
-    // if (BeginGame()) {
-    //     return;
-    // }
+    if (BeginGame()) {
+        return;
+    }
     gameModel_.gotoNextGamePhase();
     bool quit = false;
     while (!quit) {
-        // TODO: Обновить у GUI того, кто ходит
+        gameView_.updatePlayer(currentTurn_);
+
         if (currentTurn_ == myTurn_) {
             while (true) {
                 Event event = gameView_.getEvent(gameView_);
@@ -377,7 +382,7 @@ bool GameController::BeginGame() {
         } else {
             currentTurn_ = turn;
         }
-        // TODO: Обновить у GUI того, кто ходит
+        gameView_.updatePlayer(turn);
         roadIsSet = false;
         villageIsSet = false;
         if (currentTurn_ == myTurn_) {
