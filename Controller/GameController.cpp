@@ -311,16 +311,16 @@ GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI
  
 void GameController::RunGame() {
     std::cout << myTurn_ << std::endl;
-    if (BeginGame()) {
-        return;
-    }
+    // if (BeginGame()) {
+    //     return;
+    // }
     gameModel_.gotoNextGamePhase();
     bool quit = false;
     while (!quit) {
         // TODO: Обновить у GUI того, кто ходит
         if (currentTurn_ == myTurn_) {
             while (true) {
-                Event event = gameView_.getEvent();
+                Event event = gameView_.getEvent(gameView_);
                 int x = event.type();
                 event.set_playerid(myTurn_);
                 handlers_[x]->processEvent(event, true);
@@ -382,7 +382,7 @@ bool GameController::BeginGame() {
         villageIsSet = false;
         if (currentTurn_ == myTurn_) {
             while (true) {
-                Event event = gameView_.ThirdStage();
+                Event event = gameView_.ThirdStage(gameView_);
                 int x = event.type();
                 event.set_playerid(myTurn_);
                 if (x == EventType::BUILD) {

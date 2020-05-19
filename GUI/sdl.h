@@ -109,11 +109,35 @@ public:
     std::vector<Obj> vec;
 };
 
+
+class Robber_arr {
+public:
+    Robber_arr(GUI &gui);
+    ~Robber_arr();
+    std::vector<std::pair<int, int>> vec;
+    std::pair<int, int> get_coors(int type, GUI &gui);
+    SDL_Texture *texture_oct = nullptr;
+    SDL_Texture *texture_robber = nullptr;
+    void render(GUI &gui);
+    std::atomic<int> x_tmp;
+    std::atomic<int> y_tmp;
+    std::atomic<int> x_r;
+    std::atomic<int> y_r;
+};
+
+
+class Resourses_arr {
+public:
+    Resourses_arr();
+    ~Resourses_arr();
+    std::vector<Obj> vec;
+};
+
 class Inscription {
 public:
     SDL_Rect dest;
     SDL_Texture *texture;
-    Inscription(GUI& gui, int _x, int _y,const std::string &s);
+    Inscription(GUI& gui, int _x, int _y, const std::string &s);
     Inscription() = default;
 };
 
@@ -126,11 +150,12 @@ public:
     mutable std::mutex mutex_for_buildings {};
     mutable std::mutex mutex_for_table {};
 
+    Robber_arr *robber = nullptr;
     Road_arr *roads = nullptr;
     Building_arr *buildings = nullptr;
     std::pair<std::atomic<int>, std::atomic<int>> tmp_road;
 
-    Mix_Chunk *sfx, *button_sound, *build_sound;
+    Mix_Chunk *sfx, *button_sound, *build_sound, *dice_sound;
     std::pair<SDL_Texture*, int> cur_table;
     SDL_Texture *back, *back_ground, *oct, *cur_road, *cur_road1,
             *cur_road2, *table, *table_1, *table_2,
@@ -147,6 +172,10 @@ public:
 
     std::vector<SDL_Texture *> dice;
     std::vector<SDL_Texture *> tables_arr;
+
+    SDL_Texture * cur_texture_resourse;
+    std::vector<SDL_Texture *> texture_arr_resourses;
+    SDL_Texture * texture_resourse_built;
 
     void renderBeginingMenu();
 
@@ -179,6 +208,7 @@ public:
     SDL_Color color = { 243, 195, 79, 255 };
     SDL_Color color_const_table = { 79, 51, 14, 255 };
     SDL_Texture* Text(const std::string &message);
+    SDL_Texture* back_resourse;
     SDL_Texture *texture_svitok_up, *texture_svitok_down;
     SDL_Texture *dice_shadow;
     std::vector<SDL_Texture *> table_shadow;
@@ -192,19 +222,19 @@ public:
     void renderDice();
     void addDice(int x, int y);
     void renderTablesTime() const;
-    void makeRender();
+    void makeRender(GUI &gui);
     void getCoorsRoad();
     void getCoorsBuilding();
 
-    Inscription _build_road, _build, _settlement, _end_turn, _go_back,
-                 _roll_the_dice, _play_a_card,_local_game, _game_on_server, 
+    Inscription _build_road, _build, _settlement, _end_turn, _go_back, _go_back2,
+                 _roll_the_dice, _play_a_card,_local_game, _game_on_server, _ok,
                  _start_new_game, _join_game, _exit, _2_Players, _3_Players,
-                _4_Players, _type_game_id;
+                _4_Players, _type_game_id, _exchange, _resources;
 
     ::game::Event FirstStage();
-    ::game::Event ThirdStage();
+    ::game::Event ThirdStage(GUI &gui);
 
-    ::game::Event getEvent();
+    ::game::Event getEvent(GUI &gui);
 
     void addRoad(std::pair<int, int> tmp, int player);
     void addBuilding(std::pair<int, int> tmp, int player);
@@ -213,7 +243,12 @@ public:
 
     int returnBuilding(int x, int y) const;
 
+    int returnResourses(int x, int y) const;
+
     std::pair<std::atomic<int>, std::atomic<int>> tmp_building;
+    std::pair<std::atomic<int>, std::atomic<int>> tmp_resours;
+
+    Resourses_arr *resourses_img = nullptr;
 
     std::vector<int> players_points;
     std::vector<std::string> players_names;
@@ -232,6 +267,13 @@ public:
 
     void renderConstTable();
     void addPlayerName(int x, std::string s);
+
+    void getCoorsRobber(GUI &gui);
+
+    void getCoorsResourses();
+
+    void renderResourses() const;
+
 
 };
 
