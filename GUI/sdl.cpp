@@ -15,14 +15,15 @@ namespace GUI {
 namespace {
 
 void Limiter::storeStartTime() {
-    frameStart = SDL_GetTicks();
+
+//    frameStart = SDL_GetTicks();
 }
 
 void Limiter::delay() {
-    frameTime = static_cast<int>(SDL_GetTicks() - frameStart);
-    if (frameDelay > frameTime) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(frameDelay - frameTime));
-    }
+//    frameTime = static_cast<int>(SDL_GetTicks() - frameStart);
+//    if (frameDelay > frameTime) {
+//        std::this_thread::sleep_for(std::chrono::milliseconds(frameDelay - frameTime));
+//    }
 }
 
 } // namespace
@@ -132,18 +133,21 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     (texture_arr_building[2]).push_back(IMG_LoadTexture(ren, "image/house1_green.bmp"));
     (texture_arr_building[2]).push_back(IMG_LoadTexture(ren, "image/house1_blue.bmp"));
 
-    (texture_arr_road[0]).push_back(IMG_LoadTexture(ren, "image/road_red.bmp"));
+    
     (texture_arr_road[0]).push_back(IMG_LoadTexture(ren, "image/road_yellow.bmp"));
+    (texture_arr_road[0]).push_back(IMG_LoadTexture(ren, "image/road_red.bmp"));
     (texture_arr_road[0]).push_back(IMG_LoadTexture(ren, "image/road_green.bmp"));
     (texture_arr_road[0]).push_back(IMG_LoadTexture(ren, "image/road_blue.bmp"));
 
-    (texture_arr_road[1]).push_back(IMG_LoadTexture(ren, "image/road1_red.bmp"));
+    
     (texture_arr_road[1]).push_back(IMG_LoadTexture(ren, "image/road1_yellow.bmp"));
+    (texture_arr_road[1]).push_back(IMG_LoadTexture(ren, "image/road1_red.bmp"));
     (texture_arr_road[1]).push_back(IMG_LoadTexture(ren, "image/road1_green.bmp"));
     (texture_arr_road[1]).push_back(IMG_LoadTexture(ren, "image/road1_blue.bmp"));
 
-    (texture_arr_road[2]).push_back(IMG_LoadTexture(ren, "image/road2_red.bmp"));
+    
     (texture_arr_road[2]).push_back(IMG_LoadTexture(ren, "image/road2_yellow.bmp"));
+    (texture_arr_road[2]).push_back(IMG_LoadTexture(ren, "image/road2_red.bmp"));
     (texture_arr_road[2]).push_back(IMG_LoadTexture(ren, "image/road2_green.bmp"));
     (texture_arr_road[2]).push_back(IMG_LoadTexture(ren, "image/road2_blue.bmp"));
 
@@ -493,16 +497,16 @@ void upgrade(GUI* g) {
     int frameTime = 0;
 
     while (true) {
-        frameStart = SDL_GetTicks();
+        //frameStart = SDL_GetTicks();
 
         g->makeRender(*g);
         SDL_RenderPresent(g->ren);
         if (g->quit.load()) return;
 
-        frameTime = static_cast<int>(SDL_GetTicks() - frameStart);
-        if (frameDelay > frameTime) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(frameDelay - frameTime));
-        }
+        // frameTime = static_cast<int>(SDL_GetTicks() - frameStart);
+        // if (frameDelay > frameTime) {
+        //     std::this_thread::sleep_for(std::chrono::milliseconds(frameDelay - frameTime));
+        // }
     }
 }
 
@@ -949,15 +953,23 @@ void GUI::updatePoints(std::vector<int> vec) {
     players_points = vec;
 
     SDL_Surface* svitok_down = SDL_LoadBMP("image/svitok_down.bmp");
+   if (svitok_down == nullptr) {
+       throw (std::runtime_error("null"));
+   }
 
     TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
+    if (font == nullptr) {
+        throw (std::runtime_error("null"));
+    }
 
     SDL_Rect dest1={150, 200, 0, 0};
-    SDL_Surface *surf = nullptr;
 
     dest1.y = 30;
     for (auto& e: players_names) {
-        surf = TTF_RenderText_Blended(font, e.c_str(), color_const_table);
+        SDL_Surface* surf = TTF_RenderText_Blended(font, e.c_str(), color_const_table);
+        if (surf == nullptr) {
+            throw (std::runtime_error("null"));
+        }
         SDL_BlitSurface(surf, nullptr, svitok_down, &dest1);
         dest1.y += 30;
         SDL_FreeSurface(surf);
@@ -974,27 +986,50 @@ void GUI::updateResourses(std::vector<int> v) {
     resourses = std::move(v);
 
     SDL_Surface* svitok_up = SDL_LoadBMP("image/svitok_up.bmp");
+    if (svitok_up == nullptr) {
+        throw (std::runtime_error("null"));
+    }
 
     TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
+    if (font == nullptr) {
+        throw (std::runtime_error("null"));
+    }
+
+
     SDL_Surface *surf = TTF_RenderText_Blended(font, "WOOL", color_const_table);
+    if (surf == nullptr) {
+        throw (std::runtime_error("null"));
+    }
     SDL_Rect dest1={150, 200, 0, 0};
 
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
     dest1.y += 30;
     SDL_FreeSurface(surf);
     surf = TTF_RenderText_Blended(font, "ORE", color_const_table);
+    if (surf == nullptr) {
+        throw (std::runtime_error("null"));
+    }
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
     dest1.y += 30;
     SDL_FreeSurface(surf);
     surf = TTF_RenderText_Blended(font, "BRICKS", color_const_table);
+    if (surf == nullptr) {
+        throw (std::runtime_error("null"));
+    }
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
     dest1.y += 30;
     SDL_FreeSurface(surf);
     surf = TTF_RenderText_Blended(font, "WOOD", color_const_table);
+    if (surf == nullptr) {
+        throw (std::runtime_error("null"));
+    }
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
     dest1.y += 30;
     SDL_FreeSurface(surf);
     surf = TTF_RenderText_Blended(font, "WHEAT", color_const_table);
+    if (surf == nullptr) {
+        throw (std::runtime_error("null"));
+    }
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
     TTF_CloseFont(font);
 
@@ -1007,6 +1042,9 @@ void GUI::updateResourses(std::vector<int> v) {
 
 void GUI::makeTextureConstTable(std::vector<int>& vec, SDL_Surface* buff, SDL_Texture *&ans, int type) {
     TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
+    if (font == nullptr) {
+        throw (std::runtime_error("null"));
+    }
     SDL_Rect dest;
     dest.x = 280 + 90;
     dest.y = 200;
@@ -1015,6 +1053,9 @@ void GUI::makeTextureConstTable(std::vector<int>& vec, SDL_Surface* buff, SDL_Te
     if (type) dest.y = 30;
     for (auto& e: vec) {
         SDL_Surface *surf = TTF_RenderText_Blended(font, std::to_string(e).c_str(), color_const_table);
+        if (surf == nullptr) {
+            throw (std::runtime_error("null"));
+        }
         SDL_BlitSurface(surf, nullptr, buff, &dest);
         dest.y += 30;
         SDL_FreeSurface(surf);
@@ -1238,8 +1279,10 @@ void GUI::setRobber(int x) {
 }
 
 void Robber_arr::set(int x){
-    x_r.store(vec[x].first + 50);
-    y_r.store(vec[x].second + 50);
+    std::vector<int> sameOrderWithModel = {0, 2, 4, 6, 8, 10, 12, 14, 15, 16, 17, 18, 7, 9, 11, 13, 1, 3, 5};
+    number = sameOrderWithModel[x];
+    x_r.store(vec[number].first + 50);
+    y_r.store(vec[number].second + 50);
 }
 
 Robber_arr::Robber_arr (GUI &gui) {
