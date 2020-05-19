@@ -262,9 +262,6 @@ void NextPhaseHandler::processEvent(Event& event, bool needSend) {
         throw std::logic_error("Wrong type");
     }
     displayEvent(event);
-    if (needSend) {
-
-    }
 }
  
 void NextPhaseHandler::displayEvent(Event& event) {
@@ -324,7 +321,8 @@ void GameController::RunGame() {
     gameModel_.gotoNextGamePhase();
     bool quit = false;
     while (!quit) {
-        // TODO: Обновить у GUI того, кто ходит
+        gameView_.updatePlayer(currentTurn_);
+
         if (currentTurn_ == myTurn_) {
             while (true) {
                 Event event = gameView_.getEvent(gameView_);
@@ -384,7 +382,7 @@ bool GameController::BeginGame() {
         } else {
             currentTurn_ = turn;
         }
-        // TODO: Обновить у GUI того, кто ходит
+        gameView_.updatePlayer(turn);
         roadIsSet = false;
         villageIsSet = false;
         if (currentTurn_ == myTurn_) {

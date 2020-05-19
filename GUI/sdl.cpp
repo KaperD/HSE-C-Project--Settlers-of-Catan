@@ -1109,8 +1109,8 @@ int GUI::getGameId() {
         event = FirstStage();
         if (event.type() == EventType::DICE) ++gameStage;
         return event;
-    } else if (gameStage == 1) {
-        
+//    } else if (gameStage == 1) {
+//
     } else {
         event = ThirdStage(gui);
         if (event.type() == EventType::ENDTURN) gameStage = 0;
@@ -1307,7 +1307,7 @@ void GUI::getCoorsResourses() {
                         }
                         e.built = tmp + 1;
                         if (j/5) {
-                            tmp_resourses.second = j;
+                            tmp_resourses.second = j - 5;
                             tmp_resourses_num.second = e.built;
                         } else {
                             tmp_resourses.first = j;
