@@ -15,14 +15,15 @@ namespace GUI {
 namespace {
 
 void Limiter::storeStartTime() {
-    //frameStart = SDL_GetTicks();
+
+//    frameStart = SDL_GetTicks();
 }
 
 void Limiter::delay() {
-    // frameTime = static_cast<int>(SDL_GetTicks() - frameStart);
-    // if (frameDelay > frameTime) {
-    //     std::this_thread::sleep_for(std::chrono::milliseconds(frameDelay - frameTime));
-    // }
+//    frameTime = static_cast<int>(SDL_GetTicks() - frameStart);
+//    if (frameDelay > frameTime) {
+//        std::this_thread::sleep_for(std::chrono::milliseconds(frameDelay - frameTime));
+//    }
 }
 
 } // namespace
@@ -952,15 +953,23 @@ void GUI::updatePoints(std::vector<int> vec) {
     players_points = vec;
 
     SDL_Surface* svitok_down = SDL_LoadBMP("image/svitok_down.bmp");
+   if (svitok_down == nullptr) {
+       throw (std::runtime_error("null"));
+   }
 
     TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
+    if (font == nullptr) {
+        throw (std::runtime_error("null"));
+    }
 
     SDL_Rect dest1={150, 200, 0, 0};
-    SDL_Surface *surf = nullptr;
 
     dest1.y = 30;
     for (auto& e: players_names) {
-        surf = TTF_RenderText_Blended(font, e.c_str(), color_const_table);
+        SDL_Surface* surf = TTF_RenderText_Blended(font, e.c_str(), color_const_table);
+        if (surf == nullptr) {
+            throw (std::runtime_error("null"));
+        }
         SDL_BlitSurface(surf, nullptr, svitok_down, &dest1);
         dest1.y += 30;
         SDL_FreeSurface(surf);
@@ -977,27 +986,50 @@ void GUI::updateResourses(std::vector<int> v) {
     resourses = std::move(v);
 
     SDL_Surface* svitok_up = SDL_LoadBMP("image/svitok_up.bmp");
+    if (svitok_up == nullptr) {
+        throw (std::runtime_error("null"));
+    }
 
     TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
+    if (font == nullptr) {
+        throw (std::runtime_error("null"));
+    }
+
+
     SDL_Surface *surf = TTF_RenderText_Blended(font, "WOOL", color_const_table);
+    if (surf == nullptr) {
+        throw (std::runtime_error("null"));
+    }
     SDL_Rect dest1={150, 200, 0, 0};
 
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
     dest1.y += 30;
     SDL_FreeSurface(surf);
     surf = TTF_RenderText_Blended(font, "ORE", color_const_table);
+    if (surf == nullptr) {
+        throw (std::runtime_error("null"));
+    }
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
     dest1.y += 30;
     SDL_FreeSurface(surf);
     surf = TTF_RenderText_Blended(font, "BRICKS", color_const_table);
+    if (surf == nullptr) {
+        throw (std::runtime_error("null"));
+    }
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
     dest1.y += 30;
     SDL_FreeSurface(surf);
     surf = TTF_RenderText_Blended(font, "WOOD", color_const_table);
+    if (surf == nullptr) {
+        throw (std::runtime_error("null"));
+    }
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
     dest1.y += 30;
     SDL_FreeSurface(surf);
     surf = TTF_RenderText_Blended(font, "WHEAT", color_const_table);
+    if (surf == nullptr) {
+        throw (std::runtime_error("null"));
+    }
     SDL_BlitSurface(surf, nullptr, svitok_up, &dest1);
     TTF_CloseFont(font);
 
@@ -1010,6 +1042,9 @@ void GUI::updateResourses(std::vector<int> v) {
 
 void GUI::makeTextureConstTable(std::vector<int>& vec, SDL_Surface* buff, SDL_Texture *&ans, int type) {
     TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
+    if (font == nullptr) {
+        throw (std::runtime_error("null"));
+    }
     SDL_Rect dest;
     dest.x = 280 + 90;
     dest.y = 200;
@@ -1018,6 +1053,9 @@ void GUI::makeTextureConstTable(std::vector<int>& vec, SDL_Surface* buff, SDL_Te
     if (type) dest.y = 30;
     for (auto& e: vec) {
         SDL_Surface *surf = TTF_RenderText_Blended(font, std::to_string(e).c_str(), color_const_table);
+        if (surf == nullptr) {
+            throw (std::runtime_error("null"));
+        }
         SDL_BlitSurface(surf, nullptr, buff, &dest);
         dest.y += 30;
         SDL_FreeSurface(surf);
