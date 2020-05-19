@@ -680,18 +680,16 @@ Event GUI::ThirdStage (GUI &gui) {
                     q->set_y(p.second);
                     return event;
                 }
-                if (x > 161 && x < 423 && y > 610- 48 && y < 790- 48) { // деревня
+                if (x > 161 && x < 423 && y > 610- 48 && y < 790- 48) { // обмен
                     getCoorsResourses();
                     if (render_type.load() == 0) continue;
-                    // std::lock_guard<std::mutex> lock(mutex_for_buildings);
-                    // auto p = buildings->vec[tmp_coors].get_model_coors();
-                    // Event event;
-                    // event.set_type(EventType::BUILD);
-                    // auto q = event.mutable_buildinfo();
-                    // q->set_buildingtype(buildings->vec[tmp_coors].built + 1);
-                    // q->set_x(p.first);
-                    // q->set_y(p.second);
-                    // return event;
+
+                     Event event;
+                     event.set_type(EventType::MARKET);
+                     auto q = event.mutable_marketinfo();
+                     q->set_ownedresource(tmp_resourses.first);
+                     q->set_requiredresource(tmp_resourses.second);
+                     return event;
                 }
                 if (x > 161 && x < 423 && y > 846 - 48 && y < 1020 - 48) { // деревня
                     Event event;
@@ -1111,8 +1109,8 @@ int GUI::getGameId() {
         event = FirstStage();
         if (event.type() == EventType::DICE) ++gameStage;
         return event;
-//    } else if (gameStage == 1) {
-
+    } else if (gameStage == 1) {
+        
     } else {
         event = ThirdStage(gui);
         if (event.type() == EventType::ENDTURN) gameStage = 0;
@@ -1238,14 +1236,13 @@ int GUI::getCoorsRobber(GUI &gui) {
                     robber->x_r.store(tmp.first);
                     robber->y_r.store(tmp.second);
                 }
-
-                
             }
         }
 
         limit.delay();
 
     }
+    return -1;
 }
 
 Resourses_arr::Resourses_arr() {

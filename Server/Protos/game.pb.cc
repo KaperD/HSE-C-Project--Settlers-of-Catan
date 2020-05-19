@@ -296,6 +296,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_game_2eproto::offsets[] PROTOB
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::game::Dice, number1_),
   PROTOBUF_FIELD_OFFSET(::game::Dice, number2_),
+  PROTOBUF_FIELD_OFFSET(::game::Dice, hexnumber_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::game::Market, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -322,8 +323,8 @@ static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOB
   { 39, -1, sizeof(::game::Event)},
   { 52, -1, sizeof(::game::Card)},
   { 58, -1, sizeof(::game::Dice)},
-  { 65, -1, sizeof(::game::Market)},
-  { 72, -1, sizeof(::game::Build)},
+  { 66, -1, sizeof(::game::Market)},
+  { 73, -1, sizeof(::game::Build)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
@@ -353,19 +354,20 @@ const char descriptor_table_protodef_game_2eproto[] PROTOBUF_SECTION_VARIABLE(pr
   "eInfo\030\005 \001(\0132\n.game.DiceH\000\022\"\n\nmarketInfo\030"
   "\006 \001(\0132\014.game.MarketH\000\022 \n\tbuildInfo\030\007 \001(\013"
   "2\013.game.BuildH\000B\013\n\tEventInfo\"\030\n\004Card\022\020\n\010"
-  "cardType\030\001 \001(\005\"(\n\004Dice\022\017\n\007number1\030\001 \001(\005\022"
-  "\017\n\007number2\030\002 \001(\005\"9\n\006Market\022\030\n\020requiredRe"
-  "source\030\001 \001(\005\022\025\n\rownedResource\030\002 \001(\005\"3\n\005B"
-  "uild\022\024\n\014buildingType\030\001 \001(\005\022\t\n\001x\030\002 \001(\005\022\t\n"
-  "\001y\030\003 \001(\005*_\n\tEventType\022\010\n\004CARD\020\000\022\010\n\004DICE\020"
-  "\001\022\n\n\006MARKET\020\002\022\t\n\005BUILD\020\003\022\013\n\007ENDTURN\020\004\022\r\n"
-  "\tNEXTPHASE\020\005\022\013\n\007ENDGAME\020\0062\351\001\n\007Network\0228\n"
-  "\014StartNewGame\022\025.game.NumberOfPlayers\032\017.g"
-  "ame.OrderInfo\"\000\022+\n\010JoinGame\022\014.game.GameI"
-  "d\032\017.game.OrderInfo\"\000\022&\n\tSendEvent\022\013.game"
-  ".Event\032\n.game.Void\"\000\022\'\n\010GetEvent\022\014.game."
-  "Player\032\013.game.Event\"\000\022&\n\010HasEvent\022\014.game"
-  ".Player\032\n.game.Bool\"\000b\006proto3"
+  "cardType\030\001 \001(\005\";\n\004Dice\022\017\n\007number1\030\001 \001(\005\022"
+  "\017\n\007number2\030\002 \001(\005\022\021\n\thexNumber\030\003 \001(\005\"9\n\006M"
+  "arket\022\030\n\020requiredResource\030\001 \001(\005\022\025\n\rowned"
+  "Resource\030\002 \001(\005\"3\n\005Build\022\024\n\014buildingType\030"
+  "\001 \001(\005\022\t\n\001x\030\002 \001(\005\022\t\n\001y\030\003 \001(\005*_\n\tEventType"
+  "\022\010\n\004CARD\020\000\022\010\n\004DICE\020\001\022\n\n\006MARKET\020\002\022\t\n\005BUIL"
+  "D\020\003\022\013\n\007ENDTURN\020\004\022\r\n\tNEXTPHASE\020\005\022\013\n\007ENDGA"
+  "ME\020\0062\351\001\n\007Network\0228\n\014StartNewGame\022\025.game."
+  "NumberOfPlayers\032\017.game.OrderInfo\"\000\022+\n\010Jo"
+  "inGame\022\014.game.GameId\032\017.game.OrderInfo\"\000\022"
+  "&\n\tSendEvent\022\013.game.Event\032\n.game.Void\"\000\022"
+  "\'\n\010GetEvent\022\014.game.Player\032\013.game.Event\"\000"
+  "\022&\n\010HasEvent\022\014.game.Player\032\n.game.Bool\"\000"
+  "b\006proto3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_game_2eproto_deps[1] = {
 };
@@ -385,7 +387,7 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_gam
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_game_2eproto_once;
 static bool descriptor_table_game_2eproto_initialized = false;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_game_2eproto = {
-  &descriptor_table_game_2eproto_initialized, descriptor_table_protodef_game_2eproto, "game.proto", 989,
+  &descriptor_table_game_2eproto_initialized, descriptor_table_protodef_game_2eproto, "game.proto", 1008,
   &descriptor_table_game_2eproto_once, descriptor_table_game_2eproto_sccs, descriptor_table_game_2eproto_deps, 11, 0,
   schemas, file_default_instances, TableStruct_game_2eproto::offsets,
   file_level_metadata_game_2eproto, 11, file_level_enum_descriptors_game_2eproto, file_level_service_descriptors_game_2eproto,
@@ -2304,15 +2306,15 @@ Dice::Dice(const Dice& from)
       _internal_metadata_(nullptr) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::memcpy(&number1_, &from.number1_,
-    static_cast<size_t>(reinterpret_cast<char*>(&number2_) -
-    reinterpret_cast<char*>(&number1_)) + sizeof(number2_));
+    static_cast<size_t>(reinterpret_cast<char*>(&hexnumber_) -
+    reinterpret_cast<char*>(&number1_)) + sizeof(hexnumber_));
   // @@protoc_insertion_point(copy_constructor:game.Dice)
 }
 
 void Dice::SharedCtor() {
   ::memset(&number1_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&number2_) -
-      reinterpret_cast<char*>(&number1_)) + sizeof(number2_));
+      reinterpret_cast<char*>(&hexnumber_) -
+      reinterpret_cast<char*>(&number1_)) + sizeof(hexnumber_));
 }
 
 Dice::~Dice() {
@@ -2339,8 +2341,8 @@ void Dice::Clear() {
   (void) cached_has_bits;
 
   ::memset(&number1_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&number2_) -
-      reinterpret_cast<char*>(&number1_)) + sizeof(number2_));
+      reinterpret_cast<char*>(&hexnumber_) -
+      reinterpret_cast<char*>(&number1_)) + sizeof(hexnumber_));
   _internal_metadata_.Clear();
 }
 
@@ -2362,6 +2364,13 @@ const char* Dice::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::inter
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
           number2_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // int32 hexNumber = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 24)) {
+          hexnumber_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -2403,6 +2412,12 @@ failure:
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(2, this->_internal_number2(), target);
   }
 
+  // int32 hexNumber = 3;
+  if (this->hexnumber() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(3, this->_internal_hexnumber(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields(), target, stream);
@@ -2431,6 +2446,13 @@ size_t Dice::ByteSizeLong() const {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
         this->_internal_number2());
+  }
+
+  // int32 hexNumber = 3;
+  if (this->hexnumber() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
+        this->_internal_hexnumber());
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -2470,6 +2492,9 @@ void Dice::MergeFrom(const Dice& from) {
   if (from.number2() != 0) {
     _internal_set_number2(from._internal_number2());
   }
+  if (from.hexnumber() != 0) {
+    _internal_set_hexnumber(from._internal_hexnumber());
+  }
 }
 
 void Dice::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
@@ -2495,6 +2520,7 @@ void Dice::InternalSwap(Dice* other) {
   _internal_metadata_.Swap(&other->_internal_metadata_);
   swap(number1_, other->number1_);
   swap(number2_, other->number2_);
+  swap(hexnumber_, other->hexnumber_);
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata Dice::GetMetadata() const {
