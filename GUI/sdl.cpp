@@ -34,7 +34,6 @@ using ::game::EventType;
 
 void playMusic(GUI* gui) {
     while (!gui->quit.load()) {
-        std::cout << "MUSIC" << std::endl;
         Mix_PlayChannel(-1, gui->sfx, 0);
         for (int i = 0; i < 18000; ++i) {
             if (gui->quit.load()) return;
@@ -72,7 +71,7 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
             dest.w = static_cast<int>(static_cast<double>(numberImg->w) * 0.5);
             dest.h = static_cast<int>(static_cast<double>(numberImg->h) * 0.5);
             if (SDL_BlitScaled(numberImg, nullptr, hex, &dest) != 0) {
-                std::cout << "Wrong Blit" << std::endl;
+               // std::cout << "Wrong Blit" << std::endl;
             }
         } else {
             robber->x_r.store(robber->vec[k].first + 50);
@@ -177,7 +176,6 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     Mix_VolumeChunk(button_sound, MIX_MAX_VOLUME / 4);
     build_sound = Mix_LoadWAV("image/build_sound.wav");
     Mix_VolumeChunk(build_sound, MIX_MAX_VOLUME / 12);
-    if (sfx == nullptr)  std::cout << "Hhhh";
     dice_sound = Mix_LoadWAV("image/dice_sound.wav");
     Mix_VolumeChunk(dice_sound, MIX_MAX_VOLUME * 20);
 
@@ -209,7 +207,7 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
 
     updatePoints(players_points);
     updateResourses(resourses);
-    std::cerr << "EEEEEEEEEEEEEEEE BOY";
+    //std::cerr << "EEEEEEEEEEEEEEEE BOY";
     TTF_CloseFont(font);
 }
 
@@ -467,11 +465,11 @@ void GUI::makeRender(GUI &gui) {
     renderRoads();
     renderBuildings();
     renderDice();
+    robber->render(gui);
     renderResourses();
     renderTables();
     //renderTablesTime();
     renderText();
-    robber->render(gui);
 
     //renderBeginingMenu();
 
@@ -562,7 +560,7 @@ void GUI::getCoorsRoad() {
                     return;
                 }
                 tmp_coors = returnRoad(x, y);
-                std::cout << x << ' ' << y << '\n';
+                //std::cout << x << ' ' << y << '\n';
                 if (tmp_coors != -1) return;
             }
         }
@@ -612,7 +610,6 @@ void GUI::getCoorsBuilding () {
                 Mix_PlayChannel(-1, button_sound, 0);
                 int x, y;
                 SDL_GetMouseState(&x, &y); // Получить координаты мыши
-                std::cout << "GGGG" << '\n';
                 if (x > 200 && x < 480 && y > 98 - 48 && y < 280 - 48) {
                     render_type.store(old_render_type);
                     return;
@@ -654,7 +651,7 @@ Event GUI::ThirdStage (GUI &gui) {
                 Mix_PlayChannel(-1, button_sound, 0);
                 int x, y;
                 SDL_GetMouseState(&x, &y);
-                std::cout << x << ' ' << y << '\n';
+                //std::cout << x << ' ' << y << '\n';
                 if (x > 161 && x < 423 && y > 136- 48  && y < 317- 48) { // дорога
                     getCoorsRoad();
                     if (render_type.load() == 0) continue;
@@ -682,7 +679,7 @@ Event GUI::ThirdStage (GUI &gui) {
                     return event;
                 }
                 if (x > 161 && x < 423 && y > 610- 48 && y < 790- 48) { // деревня
-                    getCoorsRobber(gui);
+                    getCoorsResourses();
                     if (render_type.load() == 0) continue;
                     // std::lock_guard<std::mutex> lock(mutex_for_buildings);
                     // auto p = buildings->vec[tmp_coors].get_model_coors();
@@ -881,7 +878,7 @@ Building_arr::Building_arr() {
                    	t,  j*2 , 
                     NONE, dest, 0);
             //tmp.built = true;
-            std::cout << t << ' ' << j*2  << '\n';
+            //std::cout << t << ' ' << j*2  << '\n';
             vec.push_back(tmp);
         }
     }
@@ -1132,7 +1129,7 @@ void Robber_arr::render(GUI &gui){
             dest.x = tmp.first;
             dest.y = tmp.second;
             SDL_RenderCopy(gui.ren, texture_oct, nullptr, &dest);
-        } else std::cerr << "(";
+        } //else std::cerr << "(";
 
     }
     std::pair<int, int> tmp = get_coors(1, gui);
@@ -1140,7 +1137,7 @@ void Robber_arr::render(GUI &gui){
     dest.y = tmp.second;
     if (tmp.first!=-1 && tmp.second!= -1) {
         SDL_RenderCopy(gui.ren, texture_robber, nullptr, &dest);
-    } else std::cerr << ")";    
+    } //else std::cerr << ")";    
 }
 
 std::pair<int, int> Robber_arr::get_coors(int type, GUI &gui) {
@@ -1155,12 +1152,15 @@ std::pair<int, int> Robber_arr::get_coors(int type, GUI &gui) {
         ty += 150;
         for (int q = 0; q < k; ++q){
             tx += 100*sqrt(3);
-            for (auto e:vec){
+            for (int p = 0; p < vec.size(); ++p){
+                auto e = vec[p];
                 if (x > e.first && x < e.first + (100*sqrt(3)) ) {
                     double cur_x = x - e.first;
                     double cur_y = y - e.second;
                     cur_x/= sqrt(3);    
                     if (cur_y < cur_x + 150 && cur_y < 250 - cur_x && cur_y > 50 - cur_x && cur_y > cur_x - 50) {
+                        std::vector<int> sameOrderWithModel = {0, 2, 4, 6, 8, 10, 12, 14, 15, 16, 17, 18, 7, 9, 11, 13, 1, 3, 5};
+                        number = sameOrderWithModel[p];
                         return e;
                     }
                 }
@@ -1194,7 +1194,7 @@ Robber_arr::Robber_arr (GUI &gui) {
     texture_robber = IMG_LoadTexture(gui.ren, "image/robber.bmp");
 }
 
-void GUI::getCoorsRobber(GUI &gui) {
+int GUI::getCoorsRobber(GUI &gui) {
     int old_render_type = render_type.load();
     render_type.store(37);
     //SDL_Rect dest;
@@ -1225,10 +1225,9 @@ void GUI::getCoorsRobber(GUI &gui) {
                 Mix_PlayChannel(-1, button_sound, 0);
                 int x, y;
                 SDL_GetMouseState(&x, &y); // Получить координаты мыши
-                std::cout << "GGGG" << '\n';
                 if (x > 200 && x < 480 && y > 98 && y < 280) {
                     render_type.store(old_render_type);
-                    return;
+                    return robber->number;
                 }
                 std::pair<int, int> tmp = std::make_pair(robber->x_r.load(), robber->y_r.load());
                 robber->x_r.store(x);
@@ -1238,8 +1237,7 @@ void GUI::getCoorsRobber(GUI &gui) {
                     robber->y_r.store(tmp.second);
                 }
 
-                // tmp_coors = returnBuilding(x, y);
-                // if (tmp_coors != -1) return;
+                
             }
         }
 
@@ -1293,7 +1291,6 @@ void GUI::getCoorsResourses() {
                 Mix_PlayChannel(-1, button_sound, 0);
                 int x, y;
                 SDL_GetMouseState(&x, &y); // Получить координаты мыши
-                std::cout << "GGGG" << '\n';
                 if (x > 161 && x < 423 && y > 136 && y < 317) { 
                     return;
                 }
@@ -1310,6 +1307,14 @@ void GUI::getCoorsResourses() {
                             resourses_img->vec[i].built = 0;
                         }
                         e.built = tmp + 1;
+                        if (j/5) {
+                            tmp_resourses.second = j;
+                            tmp_resourses_num.second = e.built;
+                        } else {
+                            tmp_resourses.first = j;
+                            tmp_resourses_num.first = e.built;
+                        }
+                        
                         resourses_img->vec[(j+5)%10].built = 0;
                         break;
                     }
