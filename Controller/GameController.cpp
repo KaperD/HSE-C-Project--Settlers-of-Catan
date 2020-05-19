@@ -105,6 +105,7 @@ void DiceHandler::processEvent(Event& event, bool needSend) {
         } else {
             hexNum = diceInfo->hexnumber();
         }
+        gameView_.setRobber(hexNum);
         gameModel_.setRobbers(hexNum);
     } else {
         gameModel_.giveResources(numberSum);
@@ -315,9 +316,9 @@ GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI
  
 void GameController::RunGame() {
     std::cout << myTurn_ << std::endl;
-    // if (BeginGame()) {
-    //     return;
-    // }
+    if (BeginGame()) {
+        return;
+    }
     gameModel_.gotoNextGamePhase();
     bool quit = false;
     while (!quit) {
