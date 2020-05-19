@@ -200,7 +200,6 @@ TEST(RoadsRecord, cycle_level3_boss) {
     ASSERT_EQ(board.getRoadsRecordHolder(), PlayerNum::GAMER1);
     ASSERT_EQ(board.getRoadsRecord(), 15);
 }
-
 TEST(RoadsRecord, cycle_level_death1) { //СМЕРТЬ
     Random random(time(nullptr));
     Catan board(random, 2);
