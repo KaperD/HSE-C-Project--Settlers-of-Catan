@@ -20,10 +20,10 @@ void Limiter::storeStartTime() {
 }
 
 void Limiter::delay() {
-   frameTime = static_cast<int>(SDL_GetTicks() - frameStart);
-   if (frameDelay > frameTime) {
-       std::this_thread::sleep_for(std::chrono::milliseconds(frameDelay - frameTime));
-   }
+    frameTime = static_cast<int>(SDL_GetTicks() - frameStart);
+    if (frameDelay > frameTime) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(frameDelay - frameTime));
+    }
 }
 
 } // namespace
@@ -502,11 +502,10 @@ void upgrade(GUI* g) {
         g->makeRender(*g);
         SDL_RenderPresent(g->ren);
         if (g->quit.load()) return;
-
-        frameTime = static_cast<int>(SDL_GetTicks() - frameStart);
-        if (frameDelay > frameTime) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(frameDelay - frameTime));
-        }
+         frameTime = static_cast<int>(SDL_GetTicks() - frameStart);
+         if (frameDelay > frameTime) {
+             std::this_thread::sleep_for(std::chrono::milliseconds(frameDelay - frameTime));
+         }
     }
 }
 
@@ -1279,7 +1278,6 @@ void GUI::setRobber(int x) {
 }
 
 void Robber_arr::set(int x){
-    //std::vector<int> sameOrderWithModel = {0, 2, 4, 6, 8, 10, 12, 14, 15, 16, 17, 18, 7, 9, 11, 13, 1, 3, 5};
     std::vector<int> sameOrderWithModel = {0, 16, 1, 17, 2, 18, 3, 12, 4, 13, 5, 14, 6, 15, 7, 8, 9, 10, 11};
     number = sameOrderWithModel[x];
     x_r.store(vec[number].first + 50);
