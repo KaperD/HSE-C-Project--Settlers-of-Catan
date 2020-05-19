@@ -123,6 +123,7 @@ public:
     std::atomic<int> y_tmp;
     std::atomic<int> x_r;
     std::atomic<int> y_r;
+    int number;
 };
 
 
@@ -268,12 +269,14 @@ public:
     void renderConstTable();
     void addPlayerName(int x, std::string s);
 
-    void getCoorsRobber(GUI &gui);
+    int getCoorsRobber(GUI &gui);
 
     void getCoorsResourses();
 
     void renderResourses() const;
 
+    std::pair<int, int> tmp_resourses;
+    std::pair<int, int> tmp_resourses_num;
 
 };
 
