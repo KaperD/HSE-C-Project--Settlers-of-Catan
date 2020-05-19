@@ -15,6 +15,7 @@ namespace GUI {
 namespace {
 
 void Limiter::storeStartTime() {
+
     frameStart = SDL_GetTicks();
 }
 
@@ -501,7 +502,6 @@ void upgrade(GUI* g) {
         g->makeRender(*g);
         SDL_RenderPresent(g->ren);
         if (g->quit.load()) return;
-
          frameTime = static_cast<int>(SDL_GetTicks() - frameStart);
          if (frameDelay > frameTime) {
              std::this_thread::sleep_for(std::chrono::milliseconds(frameDelay - frameTime));
