@@ -642,7 +642,8 @@ void Catan::playDevCard(DevelopmentCard card, int extraData) {
         players[cur_player]->giveResource(re2, 1);
     }
     if (card == DevelopmentCard::ROAD_BUILDING) {
-        // тут можно вызвать settle(ROAD), либо контроллер сам вызовет в BuildEvent, если GUI заифает
+        players[cur_player]->giveResource(Resource::TREE, 2);
+        players[cur_player]->giveResource(Resource::CLAY, 2);
     }
     if (card == DevelopmentCard::MONOPOLY) {
         auto re = static_cast<Resource>(extraData);
