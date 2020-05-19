@@ -155,16 +155,16 @@ public:
     Robber_arr *robber = nullptr;
     Road_arr *roads = nullptr;
     Building_arr *buildings = nullptr;
-    std::pair<std::atomic<int>, std::atomic<int>> tmp_road;
+    std::pair<std::atomic<int>, std::atomic<int>> tmp_road {0, 0};
 
-    Mix_Chunk *sfx, *button_sound, *build_sound, *dice_sound;
-    std::pair<SDL_Texture*, int> cur_table;
-    SDL_Texture *back, *back_ground, *oct, *cur_road, *cur_road1,
-            *cur_road2, *table, *table_1, *table_2,
-            *table_time, *house_cur, *house1_cur, *svitok;
-    SDL_Texture* arr[6];
-    SDL_Texture* build_texture_arr[3];
-    SDL_Texture* cur_build_texture_arr[3];
+    Mix_Chunk *sfx = nullptr;
+    Mix_Chunk *button_sound = nullptr;
+    Mix_Chunk *build_sound = nullptr;
+    Mix_Chunk *dice_sound = nullptr;
+    std::pair<SDL_Texture*, int> cur_table {nullptr, 0};
+    SDL_Texture *back = nullptr;
+    SDL_Texture *back_ground = nullptr;
+    SDL_Texture *table_time = nullptr;
 
     std::vector<SDL_Texture *> texture_arr_building[3];
     std::vector<SDL_Texture *> cur_texture_arr_building;
@@ -175,30 +175,16 @@ public:
     std::vector<SDL_Texture *> dice;
     std::vector<SDL_Texture *> tables_arr;
 
-    SDL_Texture * cur_texture_resourse;
+    SDL_Texture * cur_texture_resourse = nullptr;
     std::vector<SDL_Texture *> texture_arr_resourses;
-    SDL_Texture * texture_resourse_built;
-
-    void renderBeginingMenu();
-
-    int getPlaceOfGame();
-
-    int getTypeOfGame();
-
-    int getNumOfPlayers();
-
-    int getGameId();
-
-    
+    SDL_Texture * texture_resourse_built = nullptr;
 
     std::atomic<bool> quit { false };
-    int  end_time_dice = 0;
     std::vector<SDL_Texture *> field_arr;
-    int tmp_sound = 0;
-    std::atomic<int> render_type;
-    SDL_Renderer *ren;
+    std::atomic<int> render_type { 0 };
+    SDL_Renderer *ren = nullptr;
     SDL_DisplayMode displayMode{};
-    SDL_Window *win;
+    SDL_Window *win = nullptr;
     void loadTextures(utility::Random& random, GUI& gui);
 
     std::atomic<int> tmp_coors { 0 };
@@ -206,15 +192,13 @@ public:
     std::atomic<int> dice1 { 0 };
     std::atomic<int> dice2 { 0 };
 
-    SDL_Texture *ppp;
-    
-
     SDL_Color color = { 243, 195, 79, 255 };
     SDL_Color color_const_table = { 79, 51, 14, 255 };
     SDL_Texture* Text(const std::string &message);
-    SDL_Texture* back_resourse;
-    SDL_Texture *texture_svitok_up, *texture_svitok_down;
-    SDL_Texture *dice_shadow;
+    SDL_Texture* back_resourse = nullptr;
+    SDL_Texture *texture_svitok_up = nullptr;
+    SDL_Texture *texture_svitok_down = nullptr;
+    SDL_Texture *dice_shadow = nullptr;
     std::vector<SDL_Texture *> table_shadow;
     void makeTextureConstTable(std::vector<int>& vec, SDL_Surface* buff, SDL_Texture *&ans, int type);
     void destroyTextures();
@@ -252,8 +236,8 @@ public:
 
     int returnResourses(int x, int y) const;
 
-    std::pair<std::atomic<int>, std::atomic<int>> tmp_building;
-    std::pair<std::atomic<int>, std::atomic<int>> tmp_resours;
+    std::pair<std::atomic<int>, std::atomic<int>> tmp_building {0, 0};
+    std::pair<std::atomic<int>, std::atomic<int>> tmp_resours {0, 0};
 
     Resourses_arr *resourses_img = nullptr;
 
@@ -266,14 +250,13 @@ public:
     void renderText() const;
 
     int num_players = 4;
-    int my_player;
+    int my_player = 0;
     void updatePoints(std::vector<int> vec);
 
     void updateResourses(std::vector<int> vec);
     std::vector<int> resourses;
 
     void renderConstTable();
-    void addPlayerName(int x, std::string s);
 
     int getCoorsRobber(GUI &gui);
 
@@ -282,9 +265,8 @@ public:
 
     void renderResourses() const;
 
-    std::pair<int, int> tmp_resourses;
-    std::pair<int, int> tmp_resourses_num;
-
+    std::pair<int, int> tmp_resourses {0, 0};
+    std::pair<int, int> tmp_resourses_num {0, 0};
 };
 
 } // namespace GUI

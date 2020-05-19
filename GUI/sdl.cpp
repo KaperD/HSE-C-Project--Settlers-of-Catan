@@ -14,6 +14,21 @@ namespace GUI {
 
 namespace {
 
+
+void RenderCopy(SDL_Renderer*   renderer,
+                SDL_Texture*    texture,
+                const SDL_Rect* srcrect,
+                const SDL_Rect* dstrect) {
+    if (texture == nullptr) {
+        std::cout << "texture == nullptr\n";
+        return;
+    }
+    if (SDL_RenderCopy(renderer, texture, srcrect, dstrect) != 0) {
+        throw std::runtime_error("RenderCopy");
+    }
+}
+
+
 void Limiter::storeStartTime() {
 
     frameStart = SDL_GetTicks();
@@ -46,10 +61,8 @@ void playMusic(GUI* gui) {
 
 void GUI::loadTextures(utility::Random& random, GUI& gui) {
     auto randomResouresAndNumbers = random.generateResourcesAndNumbers();
-    std::string s = "image/oct .bmp";
-    
-    std::vector<SDL_Texture *> v1;
 
+    std::string s = "image/oct .bmp";
     std::vector<int> sameOrderWithModel = {0, 2, 4, 6, 8, 10, 12, 14, 15, 16, 17, 18, 7, 9, 11, 13, 1, 3, 5};
     for (int k = 0; k < 19; ++k) {
         int i = sameOrderWithModel[k];
@@ -62,7 +75,12 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
         ss = ss + ".bmp";
         SDL_Surface* numberImg = nullptr;
 
-        if (number) numberImg = IMG_Load(ss.c_str()); // TODO: Вместо 2 нужно ставить число number, кроме случая, когда число 0, в этом случае не нужно изображение чилса
+        if (number) {
+            numberImg = IMG_Load(ss.c_str());
+            if (numberImg == nullptr) {
+                throw (std::runtime_error("null number"));
+            }
+        }
         
         //std::cerr << ss;
         SDL_Surface* hex = IMG_Load(s.c_str());
@@ -73,50 +91,80 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
             dest.w = static_cast<int>(static_cast<double>(numberImg->w) * 0.5);
             dest.h = static_cast<int>(static_cast<double>(numberImg->h) * 0.5);
             if (SDL_BlitScaled(numberImg, nullptr, hex, &dest) != 0) {
-               // std::cout << "Wrong Blit" << std::endl;
+                throw (std::runtime_error("wrong blit"));
             }
         } else {
             robber->x_r.store(robber->vec[k].first + 50);
             robber->y_r.store(robber->vec[k].second + 50);
         }
-        field_arr.push_back(SDL_CreateTextureFromSurface(ren, hex));
+        SDL_Texture* tex = SDL_CreateTextureFromSurface(ren, hex);
+        if (tex == nullptr) {
+            throw (std::runtime_error("null tex"));
+        }
+        field_arr.push_back(tex);
         SDL_FreeSurface(numberImg);
         SDL_FreeSurface(hex);
     }
     back_ground = IMG_LoadTexture(ren, "image/back_ground.bmp");
     back = IMG_LoadTexture(ren, "image/back.bmp");
+    if (back_ground == nullptr || back == nullptr) {
+        throw (std::runtime_error("null back"));
+    }
 
     (cur_texture_arr_road).push_back(IMG_LoadTexture(ren, "image/cur_road.bmp"));
     (cur_texture_arr_road).push_back(IMG_LoadTexture(ren, "image/cur_road1.bmp"));
     (cur_texture_arr_road).push_back(IMG_LoadTexture(ren, "image/cur_road2.bmp"));
+    for (auto& i : cur_texture_arr_road) {
+        if (i == nullptr) {
+            throw (std::runtime_error("null cur_texture_arr_road"));
+        }
+    }
 
-    table = IMG_LoadTexture(ren, "image/table.bmp");
-    table_1 = IMG_LoadTexture(ren, "image/table_1.bmp");
-    table_2 = IMG_LoadTexture(ren, "image/table_1.bmp");
     table_time = IMG_LoadTexture(ren, "image/table_time.bmp");
-
-    svitok = IMG_LoadTexture(ren, "image/svitok.bmp");
+    if (table_time == nullptr) {
+        throw (std::runtime_error("null table_time"));
+    }
 
     tables_arr.push_back(IMG_LoadTexture(ren, "image/1_tables.bmp"));
     tables_arr.push_back(IMG_LoadTexture(ren, "image/2_tables.bmp"));
     tables_arr.push_back(IMG_LoadTexture(ren, "image/3_tables.bmp"));
     tables_arr.push_back(IMG_LoadTexture(ren, "image/4_tables.bmp"));
+    for (auto& i : tables_arr) {
+        if (i == nullptr) {
+            throw (std::runtime_error("null tables_arr"));
+        }
+    }
     back_resourse = IMG_LoadTexture(ren, "image/back_resourse.bmp");
+    if (back_resourse == nullptr) {
+        throw (std::runtime_error("null back_resourse"));
+    }
 
     texture_arr_resourses.push_back(IMG_LoadTexture(ren, "image/sheep.bmp"));
     texture_arr_resourses.push_back(IMG_LoadTexture(ren, "image/stone.bmp"));
     texture_arr_resourses.push_back(IMG_LoadTexture(ren, "image/clay.bmp"));
     texture_arr_resourses.push_back(IMG_LoadTexture(ren, "image/wood.bmp"));
     texture_arr_resourses.push_back(IMG_LoadTexture(ren, "image/wheat.bmp"));
+    for (auto& i : texture_arr_resourses) {
+        if (i == nullptr) {
+            throw (std::runtime_error("null texture_arr_resourses"));
+        }
+    }
 
     cur_texture_resourse = IMG_LoadTexture(ren, "image/cur_resourse.bmp");
     texture_resourse_built = IMG_LoadTexture(ren, "image/built_resourse.bmp");
-
+    if (cur_texture_resourse == nullptr || texture_resourse_built == nullptr) {
+        throw (std::runtime_error("null back_resourse"));
+    }
 
 
     (cur_texture_arr_building).push_back(IMG_LoadTexture(ren, "image/cur_house.bmp"));
     (cur_texture_arr_building).push_back(IMG_LoadTexture(ren, "image/cur_house1.bmp"));
-    (cur_texture_arr_building).push_back(nullptr);
+    (cur_texture_arr_building).push_back(IMG_LoadTexture(ren, "image/cur_house1.bmp"));
+    for (int k = 0; k < 3; ++k) {
+        if (cur_texture_arr_building[k] == nullptr) {
+            throw (std::runtime_error("null cur_texture_arr_building"));
+        }
+    }
 
     (texture_arr_building[0]).push_back(IMG_LoadTexture(ren, "image/house_yellow.bmp"));
     (texture_arr_building[0]).push_back(IMG_LoadTexture(ren, "image/house_red.bmp"));
@@ -132,6 +180,13 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     (texture_arr_building[2]).push_back(IMG_LoadTexture(ren, "image/house1_red.bmp"));
     (texture_arr_building[2]).push_back(IMG_LoadTexture(ren, "image/house1_green.bmp"));
     (texture_arr_building[2]).push_back(IMG_LoadTexture(ren, "image/house1_blue.bmp"));
+    for (int k = 0; k < 3; ++k) {
+        for (auto& i : texture_arr_building[k]) {
+            if (i == nullptr) {
+                throw (std::runtime_error("null texture_arr_building"));
+            }
+        }
+    }
 
     
     (texture_arr_road[0]).push_back(IMG_LoadTexture(ren, "image/road_yellow.bmp"));
@@ -150,20 +205,44 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     (texture_arr_road[2]).push_back(IMG_LoadTexture(ren, "image/road2_red.bmp"));
     (texture_arr_road[2]).push_back(IMG_LoadTexture(ren, "image/road2_green.bmp"));
     (texture_arr_road[2]).push_back(IMG_LoadTexture(ren, "image/road2_blue.bmp"));
+    for (int k = 0; k < 3; ++k) {
+        for (auto& i : texture_arr_road[k]) {
+            if (i == nullptr) {
+                throw (std::runtime_error("null texture_arr_road"));
+            }
+        }
+    }
 
-    dice.push_back(nullptr);
+    dice.push_back(IMG_LoadTexture(ren, "image/dice1.bmp"));// было nullptr
     dice.push_back(IMG_LoadTexture(ren, "image/dice1.bmp"));
     dice.push_back(IMG_LoadTexture(ren, "image/dice2.bmp"));
     dice.push_back(IMG_LoadTexture(ren, "image/dice3.bmp"));
     dice.push_back(IMG_LoadTexture(ren, "image/dice4.bmp"));
     dice.push_back(IMG_LoadTexture(ren, "image/dice5.bmp"));
     dice.push_back(IMG_LoadTexture(ren, "image/dice6.bmp"));
+    auto q = dice.begin();
+    ++q;
+    while (q != dice.end()) {
+        if (*q == nullptr) {
+            throw (std::runtime_error("null dice"));
+        }
+        ++q;
+    }
 
     dice_shadow = IMG_LoadTexture(ren, "image/dice_shadow.bmp");
-    table_shadow.push_back(nullptr);
+    if (dice_shadow == nullptr) {
+        throw (std::runtime_error("null dice_shadow"));
+    }
+
+    table_shadow.push_back(IMG_LoadTexture(ren, "image/table_shadow1.bmp"));
     table_shadow.push_back(IMG_LoadTexture(ren, "image/table_shadow1.bmp"));
     table_shadow.push_back(IMG_LoadTexture(ren, "image/table_shadow2.bmp"));
     table_shadow.push_back(IMG_LoadTexture(ren, "image/table_shadow3.bmp"));
+    for (int k = 0; k < 4; ++k) {
+        if (table_shadow[k] == nullptr) {
+            throw (std::runtime_error("null table_shadow"));
+        }
+    }
 
     players_names.push_back("LOL");
     players_names.push_back("KEK");
@@ -183,7 +262,10 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     Mix_VolumeChunk(build_sound, MIX_MAX_VOLUME / 12);
     if (sfx == nullptr)  std::cout << "Hhhh";
     dice_sound = Mix_LoadWAV("image/dice_sound.wav");
-    Mix_VolumeChunk(dice_sound, MIX_MAX_VOLUME * 20);
+    Mix_VolumeChunk(dice_sound, MIX_MAX_VOLUME);
+    if (sfx == nullptr || button_sound == nullptr || build_sound == nullptr || dice_sound == nullptr) {
+        throw (std::runtime_error("null music"));
+    }
 
     _build_road = Inscription(gui, 423 + 161, 317 + 136 - 2 * 48, "Build Road");
     _build = Inscription(gui, 423 + 161, (373 + 552) / 2 + 373 - 3*48/2, "Build");
@@ -211,11 +293,11 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     _3_Players = Inscription(gui, 1030, 240, "3 Players");
     _4_Players = Inscription(gui, 1030, 270, "4 Players");
     _type_game_id = Inscription(gui, 1030, 210, "Type Game Id");
-
+    TTF_CloseFont(font);
     updatePoints(players_points);
     updateResourses(resourses);
     //std::cerr << "EEEEEEEEEEEEEEEE BOY";
-    TTF_CloseFont(font);
+
 }
 
 void GUI::destroyTextures() { // TODO: Удалять всё, а не только часть
@@ -234,9 +316,9 @@ void GUI::renderBackground() const {
     dest1.w = displayMode.w;
     dest1.h = displayMode.h;
     assert(ren != nullptr);
-    SDL_RenderCopy(ren, back_ground, nullptr, &dest1);
+    RenderCopy(ren, back_ground, nullptr, &dest1);
     if (render_type.load() <= 10)
-        SDL_RenderCopy(ren, back, nullptr, &dest1);
+        RenderCopy(ren, back, nullptr, &dest1);
 }
 
 void GUI::renderDice() {
@@ -249,10 +331,10 @@ void GUI::renderDice() {
     dest.y = 650;
     dest.w = 100;
     dest.h = 100;
-    if (dice1.load() && dice2.load()) SDL_RenderCopy(ren, dice_shadow, nullptr, nullptr);
-    SDL_RenderCopy(ren, dice[dice1.load()], nullptr, &dest);
+    if (dice1.load() && dice2.load()) RenderCopy(ren, dice_shadow, nullptr, nullptr);
+    RenderCopy(ren, dice[dice1.load()], nullptr, &dest);
     dest.x += 120;
-    SDL_RenderCopy(ren, dice[dice2.load()], nullptr, &dest);
+    RenderCopy(ren, dice[dice2.load()], nullptr, &dest);
 }
 
 void GUI::renderTables() const {
@@ -263,11 +345,11 @@ void GUI::renderTables() const {
     dest.h = 960*1.2;
 
     if (render_type.load() == 0)
-        SDL_RenderCopy(ren, tables_arr[2], nullptr,&dest);
+        RenderCopy(ren, tables_arr[2], nullptr,&dest);
     if (render_type.load() == 1 || render_type.load() == 2 || render_type.load() == 37)
-        SDL_RenderCopy(ren, tables_arr[0], nullptr,&dest);
+        RenderCopy(ren, tables_arr[0], nullptr,&dest);
     if (render_type.load() == 5 || render_type.load() == 6 || render_type.load() == 8)
-        SDL_RenderCopy(ren, tables_arr[1], nullptr,&dest);
+        RenderCopy(ren, tables_arr[1], nullptr,&dest);
 }
 
 
@@ -283,7 +365,7 @@ void GUI::renderField() {
         dest.y += 150;
         for (int q = 0; q < k; ++q){
             dest.x += 100*sqrt(3);
-            SDL_RenderCopy(ren, field_arr[it++], nullptr, &dest); //Копируем в рендер персонажа
+            RenderCopy(ren, field_arr[it++], nullptr, &dest); //Копируем в рендер персонажа
         }
         dest.x-= 100*sqrt(3)*k;
         if (i < 2) {k+=1;dest.x-= 50*sqrt(3);}
@@ -297,7 +379,7 @@ void GUI::renderRoads() {
         std::lock_guard<std::mutex> lock(mutex_for_roads);
         for (auto& e: roads->vec) {
             if (e.built) {
-                SDL_RenderCopy(ren, texture_arr_road[e.type][e.colour], nullptr, &e.dest);
+                RenderCopy(ren, texture_arr_road[e.type][e.colour], nullptr, &e.dest);
             }
 
         }
@@ -306,7 +388,7 @@ void GUI::renderRoads() {
         int e = returnRoad(tmp_road.first.load(), tmp_road.second.load());
         if (e == -1) return;
         std::lock_guard<std::mutex> lock(mutex_for_roads);// TODO: можно проверить, что дорога ещё не стоит, тогда уже построенные дороги не будут подсвечиваться
-        SDL_RenderCopy(ren,  cur_texture_arr_road[roads->vec[e].type], nullptr, &roads->vec[e].dest);
+        RenderCopy(ren,  cur_texture_arr_road[roads->vec[e].type], nullptr, &roads->vec[e].dest);
     }
 }
 
@@ -316,7 +398,7 @@ void GUI::renderBuildings() {
         std::lock_guard<std::mutex> lock(mutex_for_buildings);
         for (auto& e: buildings->vec) {
             if (e.built) {
-                SDL_RenderCopy(ren, texture_arr_building[e.built][e.colour], nullptr, &e.dest);
+                RenderCopy(ren, texture_arr_building[e.built][e.colour], nullptr, &e.dest);
             }
         }
     }
@@ -324,7 +406,7 @@ void GUI::renderBuildings() {
         int e = returnBuilding(tmp_building.first.load(), tmp_building.second.load());
         if (e == -1) return;
         std::lock_guard<std::mutex> lock(mutex_for_buildings);// TODO: можно проверить, что здание ещё не стоит
-        SDL_RenderCopy(ren, cur_texture_arr_building[buildings->vec[e].built] , nullptr, &buildings->vec[e].dest);
+        RenderCopy(ren, cur_texture_arr_building[buildings->vec[e].built] , nullptr, &buildings->vec[e].dest);
     }
 }
 
@@ -334,7 +416,7 @@ void GUI::renderTablesTime() const {
     dest.y = 98 - 20;
     dest.w = 480 - 200;
     dest.h = 280 - 98;
-    if (clock() < cur_table.second) SDL_RenderCopy(ren, cur_table.first, nullptr, &dest);
+    if (clock() < cur_table.second) RenderCopy(ren, cur_table.first, nullptr, &dest);
 }
 
 int GUI::returnResourses(int x, int y) const {
@@ -345,13 +427,13 @@ int GUI::returnResourses(int x, int y) const {
 
 void GUI::renderResourses() const {
     if (render_type != 6) return;
-    SDL_RenderCopy(ren, back_resourse, nullptr, nullptr);
+    RenderCopy(ren, back_resourse, nullptr, nullptr);
     int e = returnResourses(tmp_resours.first.load(), tmp_resours.second.load());
-    if (e != -1) SDL_RenderCopy(ren, cur_texture_resourse , nullptr, &resourses_img->vec[e].dest);
+    if (e != -1) RenderCopy(ren, cur_texture_resourse , nullptr, &resourses_img->vec[e].dest);
     int it = 0;
     for (auto& t: resourses_img->vec) {
         if (t.built) {
-            SDL_RenderCopy(ren, texture_resourse_built, nullptr, &t.dest);
+            RenderCopy(ren, texture_resourse_built, nullptr, &t.dest);
             TTF_Font *font = TTF_OpenFont("sample.ttf", 128);
             SDL_Surface *surf = TTF_RenderText_Blended(font, std::to_string(t.built).c_str(), color);
             SDL_Texture *texture = SDL_CreateTextureFromSurface(ren, surf);
@@ -369,10 +451,10 @@ void GUI::renderResourses() const {
             
             dest.y = t.dest.y;
             dest.y+= (170 - dest.h)/2;
-            SDL_RenderCopy(ren, texture, nullptr, &dest);
+            RenderCopy(ren, texture, nullptr, &dest);
         }
         
-        SDL_RenderCopy(ren, texture_arr_resourses[t.type], nullptr, &t.dest);
+        RenderCopy(ren, texture_arr_resourses[t.type], nullptr, &t.dest);
         it ++;
         
     }
@@ -383,6 +465,9 @@ SDL_Texture* GUI::Text(const std::string &message) {
     TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
     SDL_Surface *surf = TTF_RenderText_Blended(font, message.c_str(), color);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(ren, surf);
+    if (font == nullptr || surf == nullptr || texture == nullptr) {
+        throw (std::runtime_error("GUI::Text"));
+    }
     SDL_FreeSurface(surf);
     TTF_CloseFont(font);
     return texture;
@@ -401,29 +486,29 @@ Inscription::Inscription(GUI& gui, int _x, int _y, const std::string &s) {
 
 void GUI::renderText() const {
     if (render_type.load() == 0) {
-        SDL_RenderCopy(ren, _build_road.texture, nullptr, &_build_road.dest);
-        SDL_RenderCopy(ren, _build.texture, nullptr, &_build.dest);
-        SDL_RenderCopy(ren, _settlement.texture, nullptr, &_settlement.dest);
-        SDL_RenderCopy(ren, _end_turn.texture, nullptr, &_end_turn.dest);
+        RenderCopy(ren, _build_road.texture, nullptr, &_build_road.dest);
+        RenderCopy(ren, _build.texture, nullptr, &_build.dest);
+        RenderCopy(ren, _settlement.texture, nullptr, &_settlement.dest);
+        RenderCopy(ren, _end_turn.texture, nullptr, &_end_turn.dest);
     }
     if (render_type.load() == 1 || render_type.load() == 2) {
-        SDL_RenderCopy(ren, _go_back.texture, nullptr, &_go_back.dest);
+        RenderCopy(ren, _go_back.texture, nullptr, &_go_back.dest);
     }
     if (render_type.load() == 5) {
-        SDL_RenderCopy(ren, _roll_the_dice.texture, nullptr, &_roll_the_dice.dest);
-        SDL_RenderCopy(ren, _play_a_card.texture, nullptr, &_play_a_card.dest);
+        RenderCopy(ren, _roll_the_dice.texture, nullptr, &_roll_the_dice.dest);
+        RenderCopy(ren, _play_a_card.texture, nullptr, &_play_a_card.dest);
     }
     if (render_type.load() == 6) {
-        SDL_RenderCopy(ren, _ok.texture, nullptr, &_ok.dest);
-        SDL_RenderCopy(ren, _go_back2.texture, nullptr, &_go_back2.dest);
+        RenderCopy(ren, _ok.texture, nullptr, &_ok.dest);
+        RenderCopy(ren, _go_back2.texture, nullptr, &_go_back2.dest);
     }
     if (render_type.load() == 8) {
-        SDL_RenderCopy(ren, _exchange.texture, nullptr, &_exchange.dest);
-        SDL_RenderCopy(ren, _resources.texture, nullptr, &_resources.dest);
-        SDL_RenderCopy(ren, _next_phase.texture, nullptr, &_next_phase.dest);
+        RenderCopy(ren, _exchange.texture, nullptr, &_exchange.dest);
+        RenderCopy(ren, _resources.texture, nullptr, &_resources.dest);
+        RenderCopy(ren, _next_phase.texture, nullptr, &_next_phase.dest);
     }
     if (render_type.load() == 37) {
-        SDL_RenderCopy(ren, _ok.texture, nullptr, &_ok.dest);
+        RenderCopy(ren, _ok.texture, nullptr, &_ok.dest);
     }
 }
 
@@ -435,37 +520,12 @@ void GUI::renderConstTable(){
     dest.y = 0;
     dest.w = 540;
     dest.h = 480;
-    SDL_RenderCopy(ren, texture_svitok_up, nullptr, &dest);
+    RenderCopy(ren, texture_svitok_up, nullptr, &dest);
     dest.y += 240 + 150;
     dest.h += 240 - 150;
-    SDL_RenderCopy(ren, texture_svitok_down, nullptr, &dest);
+    RenderCopy(ren, texture_svitok_down, nullptr, &dest);
 }
 
-void GUI::renderBeginingMenu(){
-    SDL_Rect dest;
-    dest.x = 1000;
-    dest.y = 98;
-    dest.w = 540*1.2;
-    dest.h = 960*1.2;
-    if (render_type.load() == 11) {
-        SDL_RenderCopy(ren, tables_arr[1], nullptr,&dest);
-        SDL_RenderCopy(ren, _local_game.texture, nullptr, &_local_game.dest);
-        SDL_RenderCopy(ren, _game_on_server.texture, nullptr, &_game_on_server.dest);
-    } else if (render_type.load() == 12) {
-        SDL_RenderCopy(ren, tables_arr[2], nullptr,&dest);
-        SDL_RenderCopy(ren, _start_new_game.texture, nullptr, &_start_new_game.dest);
-        SDL_RenderCopy(ren, _join_game.texture, nullptr, &_join_game.dest);
-        SDL_RenderCopy(ren, _exit.texture, nullptr, &_exit.dest);
-    } else if (render_type.load() == 13) {
-        SDL_RenderCopy(ren, tables_arr[2], nullptr,&dest);
-        SDL_RenderCopy(ren, _2_Players.texture, nullptr, &_2_Players.dest);
-        SDL_RenderCopy(ren, _3_Players.texture, nullptr, &_3_Players.dest);
-        SDL_RenderCopy(ren, _4_Players.texture, nullptr, &_4_Players.dest);
-    } else if (render_type.load() == 14) {
-        SDL_RenderCopy(ren, tables_arr[1], nullptr,&dest);
-        SDL_RenderCopy(ren, _type_game_id.texture, nullptr, &_type_game_id.dest);
-    }
-}
 
 void GUI::makeRender(GUI &gui) {
     SDL_RenderClear(ren);
@@ -1067,136 +1127,6 @@ void GUI::makeTextureConstTable(std::vector<int>& vec, SDL_Surface* buff, SDL_Te
     }
 }
 
-void GUI::addPlayerName(int x, std::string s) {
-    players_names[x] = std::move(s);
-}
-
-int GUI::getPlaceOfGame() {
-    render_type.store(11);
-    SDL_Event e;
-    Limiter limit;
-    while (!quit.load()) {
-        limit.storeStartTime();
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_MOUSEBUTTONDOWN) {
-                Mix_PlayChannel(-1, button_sound, 0);
-                int x, y;
-                SDL_GetMouseState(&x, &y);
-                if (x > 1161 && x < 1423 && y > 136 && y < 317) { // дорога
-                    return 1;
-                }
-                if (x > 1161 && x < 1423 && y > 373 && y < 552) { // derevnia
-                    return 2;
-                }
-            }
-        }
-        limit.delay();
-    }
-    return 1;
-}
-
-int GUI::getTypeOfGame() {
-    render_type.store(12);
-    SDL_Event e;
-    Limiter limit;
-    while (!quit.load()) {
-        limit.storeStartTime();
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_MOUSEBUTTONDOWN) {
-                Mix_PlayChannel(-1, button_sound, 0);
-                int x, y;
-                SDL_GetMouseState(&x, &y);
-                if (x > 1161 && x < 1423 && y > 136 && y < 317) { // дорога
-                    return 1;
-                }
-                if (x > 1161 && x < 1423 && y > 373 && y < 552) { // derevnia
-                    return 2;
-                }
-                if (x > 1161 && x < 1423 && y > 610 && y < 790) { // деревня
-                    return 3;
-                }
-            }
-        }
-        limit.delay();
-    }
-    return 1;
-}
-
-int GUI::getNumOfPlayers() {
-    render_type.store(13);
-    SDL_Event e;
-    Limiter limit;
-    while (!quit.load()) {
-        limit.storeStartTime();
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_MOUSEBUTTONDOWN) {
-                Mix_PlayChannel(-1, button_sound, 0);
-                int x, y;
-                SDL_GetMouseState(&x, &y);
-                if (x > 1161 && x < 1423 && y > 136 && y < 317) { // дорога
-                    return 1;
-                }
-                if (x > 1161 && x < 1423 && y > 373 && y < 552) { // derevnia
-                    return 2;
-                }
-                if (x > 1161 && x < 1423 && y > 610 && y < 790) { // деревня
-                    return 3;
-                }
-            }
-        }
-        limit.delay();
-    }
-    return 1;
-}
-
-int GUI::getGameId() {
-    render_type.store(14);
-    int value = 0;
-    SDL_Event e;
-    Limiter limit;
-    while (!quit.load()) {
-        limit.storeStartTime();
-        while (SDL_PollEvent(&e)) {
-            if(e.type == SDL_KEYDOWN) {
-                if (e.key.keysym.sym == SDLK_0) {
-                    value*=10;
-                    value+=0;
-                } else if (e.key.keysym.sym == SDLK_1) {
-                    value*=10;
-                    value+=1;
-                } else if (e.key.keysym.sym == SDLK_2) {
-                    value*=10;
-                    value+=2;
-                } else if (e.key.keysym.sym == SDLK_3) {
-                    value*=10;
-                    value+=3;
-                } else if (e.key.keysym.sym == SDLK_4) {
-                    value*=10;
-                    value+=4;
-                } else if (e.key.keysym.sym == SDLK_5) {
-                    value*=10;
-                    value+=5;
-                } else if (e.key.keysym.sym == SDLK_6) {
-                    value*=10;
-                    value+=6;
-                } else if (e.key.keysym.sym == SDLK_7) {
-                    value*=10;
-                    value+=0;
-                } else if (e.key.keysym.sym == SDLK_8) {
-                    value*=10;
-                    value+=8;
-                } else if (e.key.keysym.sym == SDLK_9) {
-                    value*=10;
-                    value+=9;
-                } else if (e.key.keysym.sym == SDLK_KP_ENTER) {
-                    return value;
-                }
-            }
-        }
-        limit.delay();
-    }
-    return 0;
-}
 
 ::game::Event GUI::getEvent(GUI &gui) {
     static int gameStage = 0;
@@ -1226,7 +1156,7 @@ void Robber_arr::render(GUI &gui){
         if (tmp.first!=-1 && tmp.second!= -1) {
             dest.x = tmp.first;
             dest.y = tmp.second;
-            SDL_RenderCopy(gui.ren, texture_oct, nullptr, &dest);
+            RenderCopy(gui.ren, texture_oct, nullptr, &dest);
         } //else std::cerr << "(";
 
     }
@@ -1234,7 +1164,7 @@ void Robber_arr::render(GUI &gui){
     dest.x = tmp.first;
     dest.y = tmp.second;
     if (tmp.first!=-1 && tmp.second!= -1) {
-        SDL_RenderCopy(gui.ren, texture_robber, nullptr, &dest);
+        RenderCopy(gui.ren, texture_robber, nullptr, &dest);
     } //else std::cerr << ")";    
 }
 
