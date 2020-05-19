@@ -124,6 +124,7 @@ public:
     std::atomic<int> x_r;
     std::atomic<int> y_r;
     int number;
+    int setRobber (int x);
 };
 
 

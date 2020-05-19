@@ -1226,6 +1226,11 @@ std::pair<int, int> Robber_arr::get_coors(int type, GUI &gui) {
     return std::make_pair(-1, -1);
 }
 
+int Robber_arr::setRobber(int x){
+    x_r.store(vec[x].first + 50);
+    y_r.store(vec[x].second + 50);
+}
+
 Robber_arr::Robber_arr (GUI &gui) {
     int tx = gui.displayMode.w / 2 - 250*sqrt(3);
     int ty = gui.displayMode.h / 2 - 550;
