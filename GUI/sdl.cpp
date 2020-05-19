@@ -1,6 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <SDL2/SDL_mixer.h>
+//#include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_ttf.h>
 #include <iostream>
 #include <thread>
@@ -32,16 +32,16 @@ void Limiter::delay() {
 using ::game::Event;
 using ::game::EventType;
 
-void playMusic(GUI* gui) {
-    while (!gui->quit.load()) {
-        std::cout << "MUSIC" << std::endl;
-        Mix_PlayChannel(-1, gui->sfx, 0);
-        for (int i = 0; i < 18000; ++i) {
-            if (gui->quit.load()) return;
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-        }
-    }
-}
+//void playMusic(GUI* gui) {
+//    while (!gui->quit.load()) {
+//        std::cout << "MUSIC" << std::endl;
+//        Mix_PlayChannel(-1, gui->sfx, 0);
+//        for (int i = 0; i < 18000; ++i) {
+//            if (gui->quit.load()) return;
+//            std::this_thread::sleep_for(std::chrono::seconds(1));
+//        }
+//    }
+//}
 
 void GUI::loadTextures(utility::Random& random, GUI& gui) {
     auto randomResouresAndNumbers = random.generateResourcesAndNumbers();
@@ -152,14 +152,14 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     players_names.push_back("AKBAR");
 
     auto font = TTF_OpenFont("sample.ttf", 32);
-    sfx = nullptr;
-    sfx = Mix_LoadWAV("image/music.wav");
-    Mix_VolumeChunk(sfx, MIX_MAX_VOLUME / 4);
-    button_sound = Mix_LoadWAV("image/button_sound.wav");
-    Mix_VolumeChunk(button_sound, MIX_MAX_VOLUME / 4);
-    build_sound = Mix_LoadWAV("image/build_sound.wav");
-    Mix_VolumeChunk(build_sound, MIX_MAX_VOLUME / 12);
-    if (sfx == nullptr)  std::cout << "Hhhh";
+//    sfx = nullptr;
+//    sfx = Mix_LoadWAV("image/music.wav");
+//    Mix_VolumeChunk(sfx, MIX_MAX_VOLUME / 4);
+//    button_sound = Mix_LoadWAV("image/button_sound.wav");
+//    Mix_VolumeChunk(button_sound, MIX_MAX_VOLUME / 4);
+//    build_sound = Mix_LoadWAV("image/build_sound.wav");
+//    Mix_VolumeChunk(build_sound, MIX_MAX_VOLUME / 12);
+//    if (sfx == nullptr)  std::cout << "Hhhh";
 
     _build_road = Inscription(gui, 423 + 161, 317 + 136, "Build Road");
     _build = Inscription(gui, 423 + 161, (373 + 552) / 2 + 373 , "Build");
@@ -191,7 +191,7 @@ void GUI::destroyTextures() { // TODO: Удалять всё, а не тольк
     for (auto & i : field_arr) {
         SDL_DestroyTexture(i);
     }
-    Mix_CloseAudio();
+//    Mix_CloseAudio();
     SDL_DestroyTexture(back_ground);
     SDL_DestroyTexture(back);
 }
@@ -311,12 +311,12 @@ void GUI::renderTablesTime() const {
 
 
 SDL_Texture* GUI::Text(const std::string &message) {   
-        TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
-        SDL_Surface *surf = TTF_RenderText_Blended(font, message.c_str(), color);
-        SDL_Texture *texture = SDL_CreateTextureFromSurface(ren, surf);
-        SDL_FreeSurface(surf);
-        TTF_CloseFont(font);
-        return texture;
+    TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
+    SDL_Surface *surf = TTF_RenderText_Blended(font, message.c_str(), color);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(ren, surf);
+    SDL_FreeSurface(surf);
+    TTF_CloseFont(font);
+    return texture;
 }
 
 Inscription::Inscription(GUI& gui, int _x, int _y, const std::string &s) {
@@ -429,10 +429,11 @@ void upgrade(GUI* g) {
 GUI::GUI(int player, int numberOfPlayers) : cur_player(player), num_players(numberOfPlayers) {
     SDL_Init( SDL_INIT_EVERYTHING );
     SDL_Init(SDL_INIT_AUDIO);
-    SDL_Init(SDL_INIT_VIDEO);
     TTF_Init();
 
-    Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 4096);
+//    if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 ) {
+//        printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
+//    }
     SDL_GetDesktopDisplayMode(0,&displayMode);
     win = SDL_CreateWindow("Settlers of Catan", 0, 0, displayMode.w, displayMode.h, SDL_WINDOW_SHOWN);
     ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -443,7 +444,7 @@ GUI::GUI(int player, int numberOfPlayers) : cur_player(player), num_players(numb
 
 
 void GUI::getCoorsRoad() {
-    Mix_PlayChannel(-1, build_sound, 0);
+//    Mix_PlayChannel(-1, build_sound, 0);
     int old_render_type = render_type.load();
     render_type.store(1);
     //SDL_Rect dest;
@@ -478,7 +479,7 @@ void GUI::getCoorsRoad() {
                 tmp_road.second.store(y);
             }
             if (e.type == SDL_MOUSEBUTTONDOWN) {
-                Mix_PlayChannel(-1, button_sound, 0);
+//                Mix_PlayChannel(-1, button_sound, 0);
                 int x, y;
                 SDL_GetMouseState(&x, &y); // Получить координаты мыши
                 if (x > 200 && x < 480 && y > 98 && y < 280) {
@@ -497,7 +498,7 @@ void GUI::getCoorsRoad() {
 }
 
 void GUI::getCoorsBuilding () {
-    Mix_PlayChannel(-1, build_sound, 0);
+//    Mix_PlayChannel(-1, build_sound, 0);
     int old_render_type = render_type.load();
     render_type.store(2);
     //SDL_Rect dest;
@@ -533,7 +534,7 @@ void GUI::getCoorsBuilding () {
                 tmp_building.second.store(y);
             }
             if (e.type == SDL_MOUSEBUTTONDOWN) {
-                Mix_PlayChannel(-1, button_sound, 0);
+//                Mix_PlayChannel(-1, button_sound, 0);
                 int x, y;
                 SDL_GetMouseState(&x, &y); // Получить координаты мыши
                 std::cout << "GGGG" << '\n';
@@ -575,7 +576,7 @@ Event GUI::ThirdStage () {
                 return event;
             }
             if (e.type == SDL_MOUSEBUTTONDOWN) {
-                Mix_PlayChannel(-1, button_sound, 0);
+//                Mix_PlayChannel(-1, button_sound, 0);
                 int x, y;
                 SDL_GetMouseState(&x, &y);
                 std::cout << x << ' ' << y << '\n';
@@ -896,7 +897,7 @@ int GUI::getPlaceOfGame() {
         limit.storeStartTime();
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_MOUSEBUTTONDOWN) {
-                Mix_PlayChannel(-1, button_sound, 0);
+//                Mix_PlayChannel(-1, button_sound, 0);
                 int x, y;
                 SDL_GetMouseState(&x, &y);
                 if (x > 1161 && x < 1423 && y > 136 && y < 317) { // дорога
@@ -920,7 +921,7 @@ int GUI::getTypeOfGame() {
         limit.storeStartTime();
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_MOUSEBUTTONDOWN) {
-                Mix_PlayChannel(-1, button_sound, 0);
+//                Mix_PlayChannel(-1, button_sound, 0);
                 int x, y;
                 SDL_GetMouseState(&x, &y);
                 if (x > 1161 && x < 1423 && y > 136 && y < 317) { // дорога
@@ -947,7 +948,7 @@ int GUI::getNumOfPlayers() {
         limit.storeStartTime();
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_MOUSEBUTTONDOWN) {
-                Mix_PlayChannel(-1, button_sound, 0);
+//                Mix_PlayChannel(-1, button_sound, 0);
                 int x, y;
                 SDL_GetMouseState(&x, &y);
                 if (x > 1161 && x < 1423 && y > 136 && y < 317) { // дорога
