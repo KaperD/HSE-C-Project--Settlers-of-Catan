@@ -15,6 +15,7 @@ namespace GUI {
 namespace {
 
 void Limiter::storeStartTime() {
+
 //    frameStart = SDL_GetTicks();
 }
 
@@ -132,18 +133,21 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     (texture_arr_building[2]).push_back(IMG_LoadTexture(ren, "image/house1_green.bmp"));
     (texture_arr_building[2]).push_back(IMG_LoadTexture(ren, "image/house1_blue.bmp"));
 
-    (texture_arr_road[0]).push_back(IMG_LoadTexture(ren, "image/road_red.bmp"));
+    
     (texture_arr_road[0]).push_back(IMG_LoadTexture(ren, "image/road_yellow.bmp"));
+    (texture_arr_road[0]).push_back(IMG_LoadTexture(ren, "image/road_red.bmp"));
     (texture_arr_road[0]).push_back(IMG_LoadTexture(ren, "image/road_green.bmp"));
     (texture_arr_road[0]).push_back(IMG_LoadTexture(ren, "image/road_blue.bmp"));
 
-    (texture_arr_road[1]).push_back(IMG_LoadTexture(ren, "image/road1_red.bmp"));
+    
     (texture_arr_road[1]).push_back(IMG_LoadTexture(ren, "image/road1_yellow.bmp"));
+    (texture_arr_road[1]).push_back(IMG_LoadTexture(ren, "image/road1_red.bmp"));
     (texture_arr_road[1]).push_back(IMG_LoadTexture(ren, "image/road1_green.bmp"));
     (texture_arr_road[1]).push_back(IMG_LoadTexture(ren, "image/road1_blue.bmp"));
 
-    (texture_arr_road[2]).push_back(IMG_LoadTexture(ren, "image/road2_red.bmp"));
+    
     (texture_arr_road[2]).push_back(IMG_LoadTexture(ren, "image/road2_yellow.bmp"));
+    (texture_arr_road[2]).push_back(IMG_LoadTexture(ren, "image/road2_red.bmp"));
     (texture_arr_road[2]).push_back(IMG_LoadTexture(ren, "image/road2_green.bmp"));
     (texture_arr_road[2]).push_back(IMG_LoadTexture(ren, "image/road2_blue.bmp"));
 
@@ -493,16 +497,16 @@ void upgrade(GUI* g) {
     int frameTime = 0;
 
     while (true) {
-//        frameStart = SDL_GetTicks();
+        //frameStart = SDL_GetTicks();
 
         g->makeRender(*g);
         SDL_RenderPresent(g->ren);
         if (g->quit.load()) return;
 
-//        frameTime = static_cast<int>(SDL_GetTicks() - frameStart);
-//        if (frameDelay > frameTime) {
-//            std::this_thread::sleep_for(std::chrono::milliseconds(frameDelay - frameTime));
-//        }
+        // frameTime = static_cast<int>(SDL_GetTicks() - frameStart);
+        // if (frameDelay > frameTime) {
+        //     std::this_thread::sleep_for(std::chrono::milliseconds(frameDelay - frameTime));
+        // }
     }
 }
 
@@ -1275,8 +1279,10 @@ void GUI::setRobber(int x) {
 }
 
 void Robber_arr::set(int x){
-    x_r.store(vec[x].first + 50);
-    y_r.store(vec[x].second + 50);
+    std::vector<int> sameOrderWithModel = {0, 2, 4, 6, 8, 10, 12, 14, 15, 16, 17, 18, 7, 9, 11, 13, 1, 3, 5};
+    number = sameOrderWithModel[x];
+    x_r.store(vec[number].first + 50);
+    y_r.store(vec[number].second + 50);
 }
 
 Robber_arr::Robber_arr (GUI &gui) {
