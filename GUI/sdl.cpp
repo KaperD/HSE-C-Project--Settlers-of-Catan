@@ -35,7 +35,7 @@ using ::game::EventType;
 void playMusic(GUI* gui) {
     while (!gui->quit.load()) {
         std::cout << "MUSIC" << std::endl;
-        Mix_PlayChannel(-1, gui->sfx, 0);
+        Mix_PlayChannel(-1, gui->sfx, 1000);
         for (int i = 0; i < 18000; ++i) {
             if (gui->quit.load()) return;
             std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -786,6 +786,10 @@ Event GUI::SecondStage (GUI &gui) {
         }
         limit.delay();
     }
+}
+
+void GUI::getCoorsCard() {
+
 }
 
 void GUI::addDice(int x, int y) {
