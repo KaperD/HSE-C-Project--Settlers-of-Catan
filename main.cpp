@@ -83,11 +83,11 @@ int main() {
 
     Controller::GameController gc(wow, gameClient_, view, random, info);
 
-    std::thread music(GUI::playMusic, &view);
+    //std::thread music(GUI::playMusic, &view);
 
     gc.RunGame();
 
-    music.join();
+    //music.join();
     update.join();
 
     localServer.terminate();
