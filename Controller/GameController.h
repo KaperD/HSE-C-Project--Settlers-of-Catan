@@ -66,16 +66,19 @@ private:
 
 class MarketHandler : public Handler {
 public:
-    MarketHandler(Board::Catan& model, GUI::GUI& view, GameClient& client)
+    MarketHandler(Board::Catan& model, GUI::GUI& view, GameClient& client, int id)
     : Handler(model, view, client)
     , requiredResource_(0)
-    , ownedResource_(0) { }
+    , ownedResource_(0)
+    , myTurn_(id){ }
     void processEvent(::game::Event& event, bool needSend) override;
     void displayEvent(::game::Event& event) override;
     using Handler::sendEvent;
 private:
     int requiredResource_;
     int ownedResource_;
+    int myTurn_;
+    bool wasSuccess = false;
 };
 
 class BuildHandler : public Handler {
@@ -134,7 +137,7 @@ public:
 
 
 private:
-    void BeginGame();
+    bool BeginGame();
 
     std::vector<std::unique_ptr<Handler>> handlers_;
     Board::Catan& gameModel_;

@@ -9,7 +9,7 @@ using namespace Board;
 
 
 TEST(CatanGraph, ShowGraph) {
-    Random random(time(nullptr));
+    Random random(1589637194);
     Catan board(random, 4);
     for (int i = 0; i < FIELDHEIGHT; i ++) {
         for (int j = 0; j < FIELDWIDTH; j ++) {
@@ -77,6 +77,10 @@ TEST(CatanGraph, ShowGraph) {
     for (int i = 0; i < HEXESNUM; i++) {
         if (board.getHex(ind[i])->robbersIsHere()) {
             std::cout << 0 << ' ';
+            if (i == step[cnt]) {
+                std::cout << '\n';
+                cnt++;
+            }
             continue;
         }
         std::cout << static_cast<int>(board.getHex(ind[i])->getResource()) << ' ';

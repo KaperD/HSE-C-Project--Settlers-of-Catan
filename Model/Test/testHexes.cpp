@@ -17,7 +17,7 @@ TEST(HexesTest, HexDesert) {
 }
 
 TEST(HexesTest, giveResourcesTest) {
-    Random random(time(nullptr));
+    Random random(3);
     Catan board(random, 2);
     board.settle(BuildingType::VILLAGE, 6, 0);
     board.settle(BuildingType::ROAD, 5, 0);
@@ -51,7 +51,7 @@ TEST(HexesTest, giveResourcesTest) {
 }
 
 TEST(HexesTest, setRobbersTest) {
-    Random random(time(nullptr));
+    Random random(3);
     Catan board(random, 2);
     board.settle(BuildingType::VILLAGE, 2, 10);
     board.settle(BuildingType::ROAD, 2, 11);
@@ -86,9 +86,8 @@ TEST(HexesTest, setRobbersTest) {
 
 
     board.changeCurPlayer(PlayerNum::GAMER2);
-    board.setRobbers(hexNum);
+    Resource re = board.setRobbers(hexNum);
     ASSERT_EQ(board.getRobbersIndx(), hexNum);
-    //номер первого попавшегося ресурса может не совпадать с тем, что на гексе. Тест: 1589634983(seed), 1589637299
-    ASSERT_EQ(board.getPlayerResNum(PlayerNum::GAMER1, hexRe), 0);
-    ASSERT_EQ(board.getPlayerResNum(PlayerNum::GAMER2, hexRe), 1);
+    ASSERT_EQ(board.getPlayerResNum(PlayerNum::GAMER1, re), 0);
+    ASSERT_EQ(board.getPlayerResNum(PlayerNum::GAMER2, re), 1);
 }
