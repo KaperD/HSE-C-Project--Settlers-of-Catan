@@ -1601,6 +1601,7 @@ int GUI::getCoorsResoursesCards() {
         limit.delay();
 
     }
+    return -1;
 }
 
 
