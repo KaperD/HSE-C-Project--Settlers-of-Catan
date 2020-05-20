@@ -60,16 +60,18 @@ void CardHandler::processEvent(Event& event, bool needSend) {
             if (modelCardType == Board::DevelopmentCard::KNIGHT) {
                 int hexNum = gameView_.getCoorsRobber(gameView_);
                 gameView_.setRobber(hexNum);
-                gameModel_.setRobbers(hexNum);
                 event.mutable_cardinfo()->set_extradata(hexNum);
             } else if (modelCardType == Board::DevelopmentCard::MONOPOLY) {
-                gameView_.getCoorsResoursesCards();
-                //TODO: нужно получить по нормальному то, что сделала эта функция
+                int resource = gameView_.getCoorsResoursesCards();
+                event.mutable_cardinfo()->set_extradata(resource + 1);
+            } else {
+                event.mutable_cardinfo()->set_extradata(0);
             }
-        } else {
-            int extraData = event.mutable_cardinfo()->extradata();
-            gameModel_.playDevCard(modelCardType, extraData);
         }
+
+        int extraData = event.mutable_cardinfo()->extradata();
+        gameModel_.playDevCard(modelCardType, extraData);
+
         displayEvent(event);
         if (needSend) {
             sendEvent(event);
@@ -82,7 +84,7 @@ void CardHandler::processEvent(Event& event, bool needSend) {
  
 void CardHandler::displayEvent(Event& event) {
     int Player = event.playerid();
-
+    auto currentPlayer_ = static_cast<Board::PlayerNum>(Player + 1);
     gameView_.updatePoints(gameModel_.Catan::getVictoryPoints());
     if (Player == myTurn_) {
         std::vector<int> v;
@@ -94,6 +96,14 @@ void CardHandler::displayEvent(Event& event) {
         v.push_back(m[Board::Resource::WHEAT]);
         gameView_.updateResourses(v);
     }
+    auto m = gameModel_.getPlayerDevCards(currentPlayer_);
+    std::vector<bool> cards;
+    cards.push_back(m[Board::DevelopmentCard::KNIGHT] != 0);
+    cards.push_back(m[Board::DevelopmentCard::VICTORY_POINT] != 0);
+    cards.push_back(m[Board::DevelopmentCard::ROAD_BUILDING] != 0);
+    cards.push_back(m[Board::DevelopmentCard::MONOPOLY] != 0);
+    cards.push_back(m[Board::DevelopmentCard::INVENTION] != 0);
+    gameView_.updateDevCards(cards);
 }
  
  
