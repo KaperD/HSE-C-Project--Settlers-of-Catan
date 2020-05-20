@@ -11,10 +11,8 @@ namespace {
 void yield(size_t k) noexcept {
     if (k < 8) { 
         // pass
-    } else if(k < 128) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
     } else {
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
 }
 

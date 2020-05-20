@@ -21,7 +21,7 @@ public:
     void storeStartTime();
     void delay();
 private:
-    const int FPS = 120;
+    const int FPS = 30;
     const int frameDelay = 1000 / FPS;
     uint32_t frameStart = 0;
     int frameTime = 0;
@@ -148,6 +148,7 @@ class GUI {
 public:
     GUI(int player, int numberOfPlayers);
     ~GUI();
+    mutable std::mutex mutex_for_render {};
     mutable std::mutex mutex_for_roads {};
     mutable std::mutex mutex_for_buildings {};
     mutable std::mutex mutex_for_table {};

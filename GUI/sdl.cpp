@@ -327,7 +327,6 @@ void GUI::renderField() {
 
 void GUI::renderRoads() {
     {
-        std::lock_guard<std::mutex> lock(mutex_for_roads);
         for (auto& e: roads->vec) {
             if (e.built) {
                 SDL_RenderCopy(ren, texture_arr_road[e.type][e.colour], nullptr, &e.dest);
@@ -338,7 +337,7 @@ void GUI::renderRoads() {
     if (render_type.load() == 1) {
         int e = returnRoad(tmp_road.first.load(), tmp_road.second.load());
         if (e == -1) return;
-        std::lock_guard<std::mutex> lock(mutex_for_roads);// TODO: можно проверить, что дорога ещё не стоит, тогда уже построенные дороги не будут подсвечиваться
+        // TODO: можно проверить, что дорога ещё не стоит, тогда уже построенные дороги не будут подсвечиваться
         SDL_RenderCopy(ren,  cur_texture_arr_road[roads->vec[e].type], nullptr, &roads->vec[e].dest);
     }
 }
@@ -346,7 +345,6 @@ void GUI::renderRoads() {
 
 void GUI::renderBuildings() {
     {
-        std::lock_guard<std::mutex> lock(mutex_for_buildings);
         for (auto& e: buildings->vec) {
             if (e.built) {
                 SDL_RenderCopy(ren, texture_arr_building[e.built][e.colour], nullptr, &e.dest);
@@ -356,7 +354,7 @@ void GUI::renderBuildings() {
     if (render_type.load() == 2) {
         int e = returnBuilding(tmp_building.first.load(), tmp_building.second.load());
         if (e == -1) return;
-        std::lock_guard<std::mutex> lock(mutex_for_buildings);// TODO: можно проверить, что здание ещё не стоит
+        // TODO: можно проверить, что здание ещё не стоит
         SDL_RenderCopy(ren, cur_texture_arr_building[buildings->vec[e].built] , nullptr, &buildings->vec[e].dest);
     }
 }
@@ -417,20 +415,20 @@ void GUI::renderResourses() const {
             //     dest.x = t.dest.x - 170;
             //     dest.x+= (170 - dest.w)/2;
             // }
-            
+
             // dest.y = t.dest.y;
             // dest.y+= (170 - dest.h)/2;
             // SDL_RenderCopy(ren, texture, nullptr, &dest);
         }
-        
+
          SDL_RenderCopy(ren, texture_arr_resourses[t.type], nullptr, &t.dest);
          it ++;
-        
+
     }
 }
 
 
-SDL_Texture* GUI::Text(const std::string &message) {   
+SDL_Texture* GUI::Text(const std::string &message) {
     TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
     SDL_Surface *surf = TTF_RenderText_Blended(font, message.c_str(), color);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(ren, surf);
@@ -484,8 +482,7 @@ void GUI::renderText() const {
 }
 
 
-void GUI::renderConstTable(){
-    std::lock_guard<std::mutex> lock(mutex_for_table);
+void GUI::renderConstTable() {
     SDL_Rect dest;
     dest.x = 1380;
     dest.y = 0;
@@ -524,6 +521,7 @@ void GUI::renderBeginingMenu(){
 }
 
 void GUI::makeRender(GUI &gui) {
+    std::lock_guard<std::mutex> lock(mutex_for_render);
     SDL_RenderClear(ren);
     renderBackground();
     renderConstTable();
@@ -539,15 +537,13 @@ void GUI::makeRender(GUI &gui) {
     //renderTablesTime();
     if (render_type.load() != 92) renderText();
     //renderBeginingMenu();
-
-    
-
+    SDL_RenderPresent(ren);
 }
 
 
 
 void upgrade(GUI* g) {
-    constexpr int FPS = 120;
+    constexpr int FPS = 30;
     constexpr int frameDelay = 1000 / FPS;
 
     uint32_t frameStart = 0;
@@ -557,11 +553,13 @@ void upgrade(GUI* g) {
         frameStart = SDL_GetTicks();
 
         g->makeRender(*g);
-        SDL_RenderPresent(g->ren);
+
         if (g->quit.load()) return;
          frameTime = static_cast<int>(SDL_GetTicks() - frameStart);
-         if (frameDelay > frameTime) {
+         if (frameDelay - frameTime >= 20) {
              std::this_thread::sleep_for(std::chrono::milliseconds(frameDelay - frameTime));
+         } else {
+             std::this_thread::sleep_for(std::chrono::milliseconds(20));
          }
     }
 }
@@ -650,12 +648,6 @@ void GUI::getCoorsBuilding () {
 
         limit.storeStartTime();
 
-        clock_t end_time = clock();
-        if (end_time - begin_time > CLOCKS_PER_SEC * 30) {
-            cur_table = std::make_pair(table_time, clock() + 5*CLOCKS_PER_SEC);
-            render_type.store(old_render_type);
-            return;
-        }
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) {
                 quit.store(true);
@@ -721,7 +713,7 @@ Event GUI::ThirdStage (GUI &gui) {
                 if (x > 161 && x < 423 && y > 136- 48  && y < 317- 48) { // дорога
                     getCoorsRoad();
                     if (render_type.load() == 0) continue;
-                    std::lock_guard<std::mutex> lock(mutex_for_roads);
+                    //std::lock_guard<std::mutex> lock(mutex_for_render);
                     auto p = roads->vec[tmp_coors].get_model_coors();
                     Event event;
                     event.set_type(EventType::BUILD);
@@ -734,7 +726,7 @@ Event GUI::ThirdStage (GUI &gui) {
                 if (x > 161 && x < 423 && y > 373- 48 && y < 552- 48) { // derevnia
                     getCoorsBuilding();
                     if (render_type.load() == 0) continue;
-                    std::lock_guard<std::mutex> lock(mutex_for_buildings);
+                    //std::lock_guard<std::mutex> lock(mutex_for_render);
                     auto p = buildings->vec[tmp_coors].get_model_coors();
                     Event event;
                     event.set_type(EventType::BUILD);
@@ -765,7 +757,6 @@ Event GUI::ThirdStage (GUI &gui) {
 Event GUI::SecondStage (GUI &gui) {
     SDL_Event e;
     render_type.store(8);
-    std::cerr  << "eeeeee\n";
     Limiter limit;
 
     while (!quit.load()) {
@@ -804,9 +795,11 @@ Event GUI::SecondStage (GUI &gui) {
                     getCoorsCard();
                     if (render_type.load() == 0) continue;
                     Event event;
-                    event.set_type(EventType::CARD);
-                    auto q = event.mutable_cardinfo();
-                    q->set_cardtype(tmp_card);
+                    event.set_type(EventType::BUILD);
+                    auto info = event.mutable_buildinfo();
+                    info->set_buildingtype(4);
+                    info->set_x(0);
+                    info->set_y(0);
                     return event;
                 }
                 if (x > 161 && x < 423 && y > 610- 48 && y < 790- 48) { // derevnia
@@ -830,7 +823,6 @@ Event GUI::SecondStage (GUI &gui) {
     SDL_Event e;
 
     Limiter limit;
-    Event event;
 
     while(true){
         limit.storeStartTime();
@@ -840,6 +832,7 @@ Event GUI::SecondStage (GUI &gui) {
                 SDL_GetMouseState(&x, &y);
                 if (x > 200 && x < 480 && y > 98- 48 && y < 280- 48) {
                     Mix_PlayChannel(-1, dice_sound, 0);
+                    Event event;
                     event.set_type(EventType::DICE);
                     auto nums = event.mutable_diceinfo();
                     nums->set_number1(0);
@@ -852,7 +845,7 @@ Event GUI::SecondStage (GUI &gui) {
                     Event event;
                     event.set_type(EventType::CARD);
                     auto q = event.mutable_cardinfo();
-                    q->set_cardtype(tmp_card);
+                    q->set_cardtype(cur_card);
                     return event;
                 }
             }
@@ -877,7 +870,7 @@ std::pair<int, int> Obj::get_model_coors() {
 }
 
 void GUI::addRoad(std::pair<int, int> tmp, int player) {
-    std::lock_guard<std::mutex> lock(mutex_for_roads);
+    std::lock_guard<std::mutex> lock(mutex_for_render);
     for (auto& e : roads->vec) {
         if (tmp.first == e.model_x && tmp.second == e.model_y) {
             e.built++;
@@ -889,14 +882,12 @@ void GUI::addRoad(std::pair<int, int> tmp, int player) {
 }
 
 int GUI::returnRoad(int x, int y) const {
-    std::lock_guard<std::mutex> lock(mutex_for_roads);
     for (int i = 0; i < static_cast<int>(roads->vec.size()); ++i)
         if (roads->vec[i].is(x, y)) return i;
     return -1;
 }
 
 int GUI::returnBuilding(int x, int y) const {
-    std::lock_guard<std::mutex> lock(mutex_for_buildings);
     for (int i = 0; i < static_cast<int>(buildings->vec.size()); ++i)
         if (buildings->vec[i].is(x, y)) return i;
     return -1;
@@ -956,7 +947,7 @@ GUI::~GUI() {
 }
 
 void GUI::addBuilding(std::pair<int, int> tmp, int player) {
-    std::lock_guard<std::mutex> lock(mutex_for_buildings);
+    std::lock_guard<std::mutex> lock(mutex_for_render);
     for (auto& e:buildings->vec) {
         if (tmp.first == e.model_x && tmp.second == e.model_y) {
             e.built++;
@@ -999,7 +990,7 @@ Building_arr::Building_arr() {
             if (t == 9) t--;
             Obj tmp(X1 + j * DX / SCALE_X, Y1 + i * DY / SCALE_Y,
                     X2 + j * DX / SCALE_X, Y2 + i * DY / SCALE_Y,
-                   	t,  j*2 , 
+                   	t,  j*2 ,
                     NONE, dest, 0);
             //tmp.built = true;
             //std::cout << t << ' ' << j*2  << '\n';
@@ -1015,7 +1006,7 @@ void GUI::updatePlayer(int x) {
 }
 
 void GUI::updatePoints(std::vector<int> vec) {
-    std::lock_guard<std::mutex> lock(mutex_for_table);
+    std::lock_guard<std::mutex> lock(mutex_for_render);
     players_points = vec;
 
     SDL_Surface* svitok_down = SDL_LoadBMP("image/svitok_down.bmp");
@@ -1048,7 +1039,7 @@ void GUI::updatePoints(std::vector<int> vec) {
 }
 
 void GUI::updateResourses(std::vector<int> v) {
-    std::lock_guard<std::mutex> lock(mutex_for_table);
+    std::lock_guard<std::mutex> lock(mutex_for_render);
     resourses = std::move(v);
 
     SDL_Surface* svitok_up = SDL_LoadBMP("image/svitok_up.bmp");
@@ -1439,7 +1430,6 @@ Resourses_arr::Resourses_arr() {
 void GUI::getCoorsResourses() {
     int old_render_type = render_type.load();
     render_type.store(6);
-    SDL_Rect dest;
     SDL_Event e;
     Limiter limit;
 
@@ -1610,7 +1600,6 @@ void GUI::getCoorsCard() {
                 int x, y;
 
                 SDL_GetMouseState(&x, &y); // Получить координаты мыши
-                std::cout << x << ' ' << y << '\n';
                 if (x > 845 && x < 1107 && y > 707 && y < 887) { 
                     render_type.store(old_render_type);
                     return;

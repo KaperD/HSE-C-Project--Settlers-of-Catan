@@ -69,6 +69,7 @@ message Event {
 
 message Card {
     int32 cardType = 1;
+    int32 extraData = 2;
 }
 
 message Dice {
