@@ -9,6 +9,7 @@
 #include <time.h>
 #include <mutex>
 #include <atomic>
+#include <spinlock.h>
 
 #include "game.pb.h"
 
@@ -149,7 +150,7 @@ class GUI {
 public:
     GUI(int player, int numberOfPlayers);
     ~GUI();
-    mutable std::mutex mutex_for_render {};
+    mutable utility::spinlock mutex_for_render {};
 
     void setTable(int i);
 

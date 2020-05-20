@@ -228,7 +228,7 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     message.push_back(SDL_CreateTextureFromSurface(ren, surf));
     surf = TTF_RenderText_Blended(font, "Not Enough Resources", color_const_table);
     message.push_back(SDL_CreateTextureFromSurface(ren, surf));
-    surf = TTF_RenderText_Blended(font, "", color_const_table);
+    surf = TTF_RenderText_Blended(font, "Build road and village", color_const_table);
     message.push_back(SDL_CreateTextureFromSurface(ren, surf));
     SDL_FreeSurface(surf);
 
@@ -562,7 +562,7 @@ void GUI::renderBeginingMenu(){
 }
 
 void GUI::makeRender(GUI &gui) {
-    std::lock_guard<std::mutex> lock(mutex_for_render);
+    std::lock_guard<utility::spinlock> lock(mutex_for_render);
     SDL_RenderClear(ren);
     renderBackground();
     renderConstTable();
@@ -748,7 +748,7 @@ Event GUI::ThirdStage (GUI &gui) {
                 if (x > 161 && x < 423 && y > 136- 48  && y < 317- 48) { // дорога
                     getCoorsRoad();
                     if (render_type.load() == 0) continue;
-                    //std::lock_guard<std::mutex> lock(mutex_for_render);
+                    //std::lock_guard<utility::spinlock> lock(mutex_for_render);
                     auto p = roads->vec[tmp_coors].get_model_coors();
                     Event event;
                     event.set_type(EventType::BUILD);
@@ -761,7 +761,7 @@ Event GUI::ThirdStage (GUI &gui) {
                 if (x > 161 && x < 423 && y > 373- 48 && y < 552- 48) { // derevnia
                     getCoorsBuilding();
                     if (render_type.load() == 0) continue;
-                    //std::lock_guard<std::mutex> lock(mutex_for_render);
+                    //std::lock_guard<utility::spinlock> lock(mutex_for_render);
                     auto p = buildings->vec[tmp_coors].get_model_coors();
                     Event event;
                     event.set_type(EventType::BUILD);
@@ -905,7 +905,7 @@ std::pair<int, int> Obj::get_model_coors() {
 }
 
 void GUI::addRoad(std::pair<int, int> tmp, int player) {
-    std::lock_guard<std::mutex> lock(mutex_for_render);
+    std::lock_guard<utility::spinlock> lock(mutex_for_render);
     for (auto& e : roads->vec) {
         if (tmp.first == e.model_x && tmp.second == e.model_y) {
             e.built++;
@@ -982,7 +982,7 @@ GUI::~GUI() {
 }
 
 void GUI::addBuilding(std::pair<int, int> tmp, int player) {
-    std::lock_guard<std::mutex> lock(mutex_for_render);
+    std::lock_guard<utility::spinlock> lock(mutex_for_render);
     for (auto& e:buildings->vec) {
         if (tmp.first == e.model_x && tmp.second == e.model_y) {
             e.built++;
@@ -1045,7 +1045,7 @@ void GUI::updateDevCards (std::vector<bool> vec) {
 }
 
 void GUI::updatePoints(std::vector<int> vec) {
-    std::lock_guard<std::mutex> lock(mutex_for_render);
+    std::lock_guard<utility::spinlock> lock(mutex_for_render);
     players_points = vec;
 
     SDL_Surface* svitok_down = SDL_LoadBMP("image/svitok_down.bmp");
@@ -1078,7 +1078,7 @@ void GUI::updatePoints(std::vector<int> vec) {
 }
 
 void GUI::updateResourses(std::vector<int> v) {
-    std::lock_guard<std::mutex> lock(mutex_for_render);
+    std::lock_guard<utility::spinlock> lock(mutex_for_render);
     resourses = std::move(v);
 
     SDL_Surface* svitok_up = SDL_LoadBMP("image/svitok_up.bmp");

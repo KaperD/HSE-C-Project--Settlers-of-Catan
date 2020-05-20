@@ -440,20 +440,22 @@ bool GameController::BeginGame() {
                         if (!roadIsSet) {
                             handlers_[x]->processEvent(event, true);
                         } else {
-                            gameView_.setTable(3);
+                            gameView_.setTable(0);
                         }
                     }
                     if (type == Board::BuildingType::VILLAGE) {
                         if (!villageIsSet) {
                             handlers_[x]->processEvent(event, true);
                         } else {
-                            gameView_.setTable(3);
+                            gameView_.setTable(0);
                         }
                     }
                 } else if (x == EventType::ENDTURN) {
                     if (roadIsSet && villageIsSet) {
                         handlers_[x]->processEvent(event, true);
                         break;
+                    } else {
+                        gameView_.setTable(3);
                     }
                 } else if (x == EventType::ENDGAME) {
                     handlers_[x]->processEvent(event, true);
