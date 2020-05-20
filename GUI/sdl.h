@@ -150,10 +150,6 @@ public:
     GUI(int player, int numberOfPlayers);
     ~GUI();
     mutable std::mutex mutex_for_render {};
-    mutable std::mutex mutex_for_roads {};
-    mutable std::mutex mutex_for_buildings {};
-    mutable std::mutex mutex_for_table {};
-    mutable std::mutex mutex_for_table_time {};
 
     void setTable(int i);
 

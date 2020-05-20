@@ -121,13 +121,8 @@ void DiceHandler::processEvent(Event& event, bool needSend) {
     }
  
     int numberSum = number1_ + number2_;
- 
-    if (numberSum <= 0 || numberSum > 12) {
-        throw std::logic_error("Wrong dice number");
-    }
 
-
-    if (numberSum == 7) { // TODO: когда у GUI появится функция для разбойников, спроить здесь, куда их поставить
+    if (numberSum == 7) {
         gameView_.addDice(number1_, number2_);
         int hexNum = 0;
         if (Player - 1 == myTurn_) {
@@ -185,10 +180,11 @@ void MarketHandler::processEvent(Event& event, bool needSend) {
     std::cout << "ownedResource " << ownedResource_ << std::endl;
    
     if (gameModel_.trade(reFrom, reTo)) {
-        wasSuccess = true;
         if (needSend) {
             sendEvent(event);
         }
+    } else {
+        gameView_.setTable(2);
     }
 
     displayEvent(event);
@@ -238,7 +234,6 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
                 sendEvent(event);
             }
         } else {
-            std::cout <<  "card error\n";
             gameView_.setTable(2);
         }
     } else {
@@ -249,10 +244,8 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
                 sendEvent(event);
             }
         } else if (!gameModel_.checkCards(type)) {
-            std::cout <<  "check error\n";
             gameView_.setTable(2);
         } else if (!gameModel_.canBuild(type, x_, y_)){
-            std::cout <<  "checkbuild error\n";
             gameView_.setTable(0);
         }
     }
@@ -366,9 +359,9 @@ GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI
  
 void GameController::RunGame() {
     std::cout << myTurn_ << std::endl;
-    // if (BeginGame()) {
-    //     return;
-    // }
+     if (BeginGame()) {
+         return;
+     }
     gameModel_.gotoNextGamePhase();
     bool quit = false;
     while (!quit) {
@@ -443,11 +436,19 @@ bool GameController::BeginGame() {
                 event.set_playerid(myTurn_);
                 if (x == EventType::BUILD) {
                     auto type = static_cast<Board::BuildingType>(event.mutable_buildinfo()->buildingtype());
-                    if (type == Board::BuildingType::ROAD && !roadIsSet) {
-                        handlers_[x]->processEvent(event, true);
+                    if (type == Board::BuildingType::ROAD) {
+                        if (!roadIsSet) {
+                            handlers_[x]->processEvent(event, true);
+                        } else {
+                            gameView_.setTable(3);
+                        }
                     }
-                    if (type == Board::BuildingType::VILLAGE && !villageIsSet) {
-                        handlers_[x]->processEvent(event, true);
+                    if (type == Board::BuildingType::VILLAGE) {
+                        if (!villageIsSet) {
+                            handlers_[x]->processEvent(event, true);
+                        } else {
+                            gameView_.setTable(3);
+                        }
                     }
                 } else if (x == EventType::ENDTURN) {
                     if (roadIsSet && villageIsSet) {

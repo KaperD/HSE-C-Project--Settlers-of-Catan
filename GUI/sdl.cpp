@@ -228,6 +228,8 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     message.push_back(SDL_CreateTextureFromSurface(ren, surf));
     surf = TTF_RenderText_Blended(font, "Not Enough Resources", color_const_table);
     message.push_back(SDL_CreateTextureFromSurface(ren, surf));
+    surf = TTF_RenderText_Blended(font, "", color_const_table);
+    message.push_back(SDL_CreateTextureFromSurface(ren, surf));
     SDL_FreeSurface(surf);
 
     updatePoints(players_points);
@@ -384,7 +386,6 @@ void GUI::renderCurPlayer(){
 }
 
 void GUI::setTable(int i) {
-    std::lock_guard<std::mutex> lock(mutex_for_table_time);
     table_time_type.store(i);
 }   
 

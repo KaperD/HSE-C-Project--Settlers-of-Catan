@@ -78,7 +78,6 @@ private:
     int requiredResource_;
     int ownedResource_;
     int myTurn_;
-    bool wasSuccess = false;
 };
 
 class BuildHandler : public Handler {
