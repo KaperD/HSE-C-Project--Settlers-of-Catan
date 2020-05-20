@@ -20,15 +20,13 @@ namespace Controller {
 class Handler {
 public:
     Handler(Board::Catan& model, GUI::GUI& view, GameClient& client)
-    : currentPlayer_(0)
-    , gameModel_(model)
+    : gameModel_(model)
     , gameView_(view)
     , gameClient_(client) { }
     virtual void processEvent(::game::Event& event, bool needSend) = 0; ///< @brief Вызывает нужные команды у модели
     virtual void displayEvent(::game::Event& event) = 0; ///< @brief Вызывает нужные команды у GUI::GUI
     void sendEvent(::game::Event& event); ///< @brief Вызывает нужные команды у клиента
 protected:
-    int currentPlayer_;
     Board::Catan& gameModel_;
     GUI::GUI& gameView_;
     GameClient& gameClient_;
@@ -36,14 +34,16 @@ protected:
 
 class CardHandler : public Handler {
 public:
-    CardHandler(Board::Catan& model, GUI::GUI& view, GameClient& client)
+    CardHandler(Board::Catan& model, GUI::GUI& view, GameClient& client, int id)
     : Handler(model, view, client)
-    , cardType_(0) { }
+    , cardType_(0)
+    , myTurn_(id) { }
     void processEvent(::game::Event& event, bool needSend) override;
     void displayEvent(::game::Event& event) override;
     using Handler::sendEvent;
 private:
     int cardType_;
+    int myTurn_;
 };
 
 class DiceHandler : public Handler {
@@ -78,7 +78,6 @@ private:
     int requiredResource_;
     int ownedResource_;
     int myTurn_;
-    bool wasSuccess = false;
 };
 
 class BuildHandler : public Handler {

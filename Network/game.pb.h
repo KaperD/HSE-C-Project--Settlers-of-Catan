@@ -1283,6 +1283,7 @@ class Card :
 
   enum : int {
     kCardTypeFieldNumber = 1,
+    kExtraDataFieldNumber = 2,
   };
   // int32 cardType = 1;
   void clear_cardtype();
@@ -1293,12 +1294,22 @@ class Card :
   void _internal_set_cardtype(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
+  // int32 extraData = 2;
+  void clear_extradata();
+  ::PROTOBUF_NAMESPACE_ID::int32 extradata() const;
+  void set_extradata(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_extradata() const;
+  void _internal_set_extradata(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
   // @@protoc_insertion_point(class_scope:game.Card)
  private:
   class _Internal;
 
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
   ::PROTOBUF_NAMESPACE_ID::int32 cardtype_;
+  ::PROTOBUF_NAMESPACE_ID::int32 extradata_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_game_2eproto;
 };
@@ -2247,6 +2258,26 @@ inline void Card::_internal_set_cardtype(::PROTOBUF_NAMESPACE_ID::int32 value) {
 inline void Card::set_cardtype(::PROTOBUF_NAMESPACE_ID::int32 value) {
   _internal_set_cardtype(value);
   // @@protoc_insertion_point(field_set:game.Card.cardType)
+}
+
+// int32 extraData = 2;
+inline void Card::clear_extradata() {
+  extradata_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 Card::_internal_extradata() const {
+  return extradata_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 Card::extradata() const {
+  // @@protoc_insertion_point(field_get:game.Card.extraData)
+  return _internal_extradata();
+}
+inline void Card::_internal_set_extradata(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  extradata_ = value;
+}
+inline void Card::set_extradata(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_extradata(value);
+  // @@protoc_insertion_point(field_set:game.Card.extraData)
 }
 
 // -------------------------------------------------------------------
