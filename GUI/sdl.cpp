@@ -266,6 +266,7 @@ void GUI::renderCards() {
     dest.h = 700;
     dest.w = 300;
     for (int i = 0; i < texture_arr_card.size(); ++i) {
+        if (!dev_cards_vec[i]) return;
         auto e = texture_arr_card[i];
         SDL_RenderCopy(ren, e, nullptr, &dest);
         if (i == tmp_card) SDL_RenderCopy(ren, cur_card_texture, nullptr, &dest);
@@ -1532,12 +1533,13 @@ void GUI::getCoorsResourses() {
 }
 
 
-void GUI::getCoorsResoursesCards() {
+int GUI::getCoorsResoursesCards() {
     int old_render_type = render_type.load();
     render_type.store(67);
     SDL_Rect dest;
     SDL_Event e;
     Limiter limit;
+    int cur_resourse = -1;
 
     while (!quit.load()) {
 
@@ -1563,16 +1565,17 @@ void GUI::getCoorsResoursesCards() {
                 int x, y;
                 SDL_GetMouseState(&x, &y); // Получить координаты мыши
                 if (x > 161 && x < 423 && y > 136 && y < 317) { 
-                    return;
+                    return cur_resourse;
                 }
                 if (x > 161 && x < 423 && y > 373 && y < 552) { // derevnia
                     render_type.store(old_render_type);
-                    return;
+                    return -1;
                 }
                 int it = 0;
                 for (int j = 0; j < 5; ++j) {
                     auto &e = resourses_img->vec[j];
                     if (e.is(x,y)) {
+                        cur_resourse = j;
                         int tmp = e.built;
                         for (int i = (it/5)*5; i < 5 + 5*(it/5); ++i){
                             resourses_img->vec[i].built = 0;
@@ -1644,11 +1647,13 @@ void GUI::getCoorsCard() {
                 }
                 if (y > 175 && y < 623) {
                     for (int i = 0; i < 5; ++i) {
+                        if (!dev_cards_vec[i]) continue;
                         if (x > 150 + i * 350 && x < 150 + 300 + i *350) {
                             cur_card.store(i + 1);
+                            return;
                         }
                     }
-                    return;
+                   
                 }
                  
             }

@@ -187,7 +187,7 @@ public:
     std::vector<SDL_Texture *> texture_arr_resourses;
     SDL_Texture * texture_resourse_built;
     void updateDevCards (std::vector<bool> vec);
-    std::vector<bool> dev_cards_vec;
+    std::vector<bool> dev_cards_vec = {0, 0, 0, 0, 0};
 
     void renderBeginingMenu();
 
@@ -262,7 +262,7 @@ public:
     void renderCards();
     int returnRoad(int x, int y) const;
 
-    void getCoorsResoursesCards();
+    int getCoorsResoursesCards();
 
     int returnBuilding(int x, int y) const;
 
