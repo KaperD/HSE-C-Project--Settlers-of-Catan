@@ -263,16 +263,16 @@ void GUI::renderCards() {
     if (render_type.load() != 312) return;
     SDL_RenderCopy(ren, back_resourse, nullptr, nullptr);
     SDL_Rect dest;
-    dest.x = 150;
+    dest.x = 150-350;
     dest.y = 50;
     dest.h = 700;
     dest.w = 300;
     for (int i = 0; i < texture_arr_card.size(); ++i) {
-        if (!dev_cards_vec[i]) return;
+        dest.x+=350;
+        if (!dev_cards_vec[i]) continue;
         auto e = texture_arr_card[i];
         SDL_RenderCopy(ren, e, nullptr, &dest);
         if (i == tmp_card) SDL_RenderCopy(ren, cur_card_texture, nullptr, &dest);
-        dest.x+=350;
     }
     
 
