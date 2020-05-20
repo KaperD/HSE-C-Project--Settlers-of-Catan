@@ -1040,6 +1040,10 @@ void GUI::updatePlayer(int x) {
     cur_player = x;
 }
 
+void GUI::updateDevCards (std::vector<bool> vec) {
+    dev_cards_vec = vec;
+}
+
 void GUI::updatePoints(std::vector<int> vec) {
     std::lock_guard<std::mutex> lock(mutex_for_render);
     players_points = vec;

@@ -182,6 +182,8 @@ public:
     SDL_Texture * cur_texture_resourse;
     std::vector<SDL_Texture *> texture_arr_resourses;
     SDL_Texture * texture_resourse_built;
+    void updateDevCards (std::vector<bool> vec);
+    std::vector<bool> dev_cards_vec;
 
     void renderBeginingMenu();
 
