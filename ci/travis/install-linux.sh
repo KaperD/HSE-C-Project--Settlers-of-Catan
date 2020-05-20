@@ -40,4 +40,7 @@ sudo apt-get install libsdl2-net-dev
 sudo apt-get install libsdl2-ttf-dev 
 sudo apt-get install libsdl2-mixer-dev
 
+# SFML
+sudo apt-get install libsfml-dev
+
 protoc --version

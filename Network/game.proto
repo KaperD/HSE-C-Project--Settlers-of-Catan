@@ -3,18 +3,36 @@ syntax = "proto3";
 package game;
 
 service Network {
-    rpc Register(Void) returns (OrderInfo) {}
+    rpc StartNewGame(NumberOfPlayers) returns (OrderInfo) {}
+
+    rpc JoinGame(GameId) returns (OrderInfo) {}
 
     rpc SendEvent(Event) returns (Void) {}
 
     rpc GetEvent(Player) returns (Event) {}
+
+    rpc HasEvent(Player) returns (Bool) {}
 }
 
 message Void {}
 
+message Bool {
+    bool hasEvent = 1;
+}
+
+message NumberOfPlayers {
+    int32 numberOfPlayers = 1;
+}
+
+message GameId {
+    int32 gameId = 1;
+}
+
 message OrderInfo {
     int32 id = 1;
     int32 numberOfPlayers = 2;
+    int32 gameId = 3;
+    uint32 seed = 4;
 }
 
 
@@ -32,27 +50,32 @@ enum EventType {
 
 message Player {
     int32 playerId = 1;
+    int32 gameId = 2;
 }
 
 
 message Event {
     EventType type = 1;
     int32 playerId = 2;
+    int32 gameId = 3;
     
     oneof EventInfo {
-        Card cardInfo = 3;
-        Dice diceInfo = 4;
-        Market marketInfo = 5;
-        Build buildInfo = 6;
+        Card cardInfo = 4;
+        Dice diceInfo = 5;
+        Market marketInfo = 6;
+        Build buildInfo = 7;
     }
 }
 
 message Card {
     int32 cardType = 1;
+    int32 extraData = 2;
 }
 
 message Dice {
-    int32 number = 1;
+    int32 number1 = 1;
+    int32 number2 = 2;
+    int32 hexNumber = 3;
 }
 
 message Market {
