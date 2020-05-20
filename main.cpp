@@ -81,6 +81,8 @@ int main() {
 
     std::thread update(GUI::upgrade, &view);
 
+    std::thread TimeTable(GUI::setTimeTable, &view);
+
     Controller::GameController gc(wow, gameClient_, view, random, info);
 
     std::thread music(GUI::playMusic, &view);
@@ -89,6 +91,7 @@ int main() {
 
     music.join();
     update.join();
+    TimeTable.join();
 
     localServer.terminate();
     server.join();

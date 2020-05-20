@@ -221,6 +221,14 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     _3_Players = Inscription(gui, 1030, 240, "3 Players");
     _4_Players = Inscription(gui, 1030, 270, "4 Players");
     _type_game_id = Inscription(gui, 1030, 210, "Type Game Id");
+    
+    SDL_Surface *surf = TTF_RenderText_Blended(font, "You Cant Build Here", color_const_table);
+    message.push_back(SDL_CreateTextureFromSurface(ren, surf));
+    surf = TTF_RenderText_Blended(font, "You Dont Have This Card", color_const_table);
+    message.push_back(SDL_CreateTextureFromSurface(ren, surf));
+    surf = TTF_RenderText_Blended(font, "Not Enough Resources", color_const_table);
+    message.push_back(SDL_CreateTextureFromSurface(ren, surf));
+    SDL_FreeSurface(surf);
 
     updatePoints(players_points);
     updateResourses(resourses);
@@ -375,13 +383,45 @@ void GUI::renderCurPlayer(){
     } else render_type = 92;
 }
 
+void GUI::setTable(int i) {
+    std::lock_guard<std::mutex> lock(mutex_for_table_time);
+    table_time_type.store(i);
+}   
+
+void setTimeTable(GUI *gui) {
+    int k = 0;
+    int delta = 0;
+    while(true) {
+        if (gui->quit.load()) return;
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        if (gui->table_time_type.load() != -1 && delta == 0) {
+            delta = 1;
+            k = 4;
+        }
+        k-=delta;
+        if (k < 0)  {
+            gui->table_time_type.store(-1);
+            delta = 0;
+        }
+        
+    }
+}
+
 void GUI::renderTablesTime() const {
+    if (table_time_type.load() == -1) return;
     SDL_Rect dest;
-    dest.x = 200 + 500;
-    dest.y = 98 - 20;
-    dest.w = 480 - 200;
-    dest.h = 280 - 98;
-    if (clock() < cur_table.second) SDL_RenderCopy(ren, cur_table.first, nullptr, &dest);
+    dest.x = displayMode.w/2 - (1920.0 * 0.75)/2.0;
+    dest.y = 0;
+    dest.w = 1920.0 * 0.75;
+    dest.h = 200.0 * 0.75;
+    SDL_RenderCopy(ren, table_time, nullptr, &dest);
+    int iW, iH;
+    SDL_QueryTexture(message[table_time_type.load()], nullptr, nullptr, &iW, &iH);
+    dest.x = (2 * dest.x + dest.w - iW)/2;
+    dest.y = (dest.h - iH)/2;
+    dest.w = iW;
+    dest.h = iH;
+    SDL_RenderCopy(ren, message[table_time_type.load()], nullptr, &dest);
 }
 
 int GUI::returnResourses(int x, int y) const {
@@ -534,7 +574,7 @@ void GUI::makeRender(GUI &gui) {
     renderResourses();
     renderCards();
     if (render_type.load() != 92) renderTables();
-    //renderTablesTime();
+    renderTablesTime();
     if (render_type.load() != 92) renderText();
     //renderBeginingMenu();
     SDL_RenderPresent(ren);
@@ -576,6 +616,7 @@ GUI::GUI(int player, int numberOfPlayers) :num_players(numberOfPlayers), my_play
     ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     players_points.resize(num_players, 0);
     resourses = {2, 0, 4, 4, 2};
+    table_time_type.store(-1);
     //std::cout << "Sync " << SDL_GL_SetSwapInterval(1) << std::endl;
 }
 
@@ -593,13 +634,6 @@ void GUI::getCoorsRoad() {
     while (!quit.load()) {
 
         limit.storeStartTime(); // засекает начало итерации
-
-        clock_t end_time = clock();
-        if (end_time - begin_time > CLOCKS_PER_SEC * 30) {
-            cur_table = std::make_pair(table_time, clock() + 5*CLOCKS_PER_SEC);
-            render_type.store(old_render_type);
-            return;
-        }
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) {
                 quit.store(true);
@@ -792,7 +826,7 @@ Event GUI::SecondStage (GUI &gui) {
                     return event;
                 }
                 if (x > 161 && x < 423 && y > 373- 48 && y < 552- 48) { // derevnia
-                    getCoorsCard();
+                    //getCoorsCard();
                     if (render_type.load() == 0) continue;
                     Event event;
                     event.set_type(EventType::BUILD);
@@ -1610,6 +1644,7 @@ void GUI::getCoorsCard() {
                             cur_card.store(i + 1);
                         }
                     }
+                    return;
                 }
                  
             }
