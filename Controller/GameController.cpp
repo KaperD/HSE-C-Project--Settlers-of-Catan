@@ -238,7 +238,8 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
                 sendEvent(event);
             }
         } else {
-            // TODO: можно вывести сообщение об ощибке
+            std::cout <<  "card error\n";
+            gameView_.setTable(2);
         }
     } else {
         if (gameModel_.checkCards(type) && gameModel_.canBuild(type, x_, y_)) {
@@ -247,6 +248,12 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
             if (needSend) {
                 sendEvent(event);
             }
+        } else if (!gameModel_.checkCards(type)) {
+            std::cout <<  "check error\n";
+            gameView_.setTable(2);
+        } else if (!gameModel_.canBuild(type, x_, y_)){
+            std::cout <<  "checkbuild error\n";
+            gameView_.setTable(0);
         }
     }
 }

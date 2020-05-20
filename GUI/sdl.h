@@ -33,6 +33,7 @@ private:
 class GUI;
 void upgrade(GUI* g);
 void playMusic(GUI* gui);
+void setTimeTable(GUI *gui);
 
 enum Colour {
     RED,
@@ -152,6 +153,9 @@ public:
     mutable std::mutex mutex_for_roads {};
     mutable std::mutex mutex_for_buildings {};
     mutable std::mutex mutex_for_table {};
+    mutable std::mutex mutex_for_table_time {};
+
+    void setTable(int i);
 
     void renderCurPlayer();
 
@@ -165,10 +169,11 @@ public:
     SDL_Texture *back, *back_ground, *oct, *cur_road, *cur_road1,
             *cur_road2, *table, *table_1, *table_2, *cur_card_texture,
             *table_time, *house_cur, *house1_cur, *svitok;
+    std::vector<SDL_Texture *> message;
+    std::atomic<int> table_time_type;
     SDL_Texture* arr[6];
     SDL_Texture* build_texture_arr[3];
     SDL_Texture* cur_build_texture_arr[3];
-
     std::vector<SDL_Texture *> texture_arr_building[3];
     std::vector<SDL_Texture *> cur_texture_arr_building;
 
