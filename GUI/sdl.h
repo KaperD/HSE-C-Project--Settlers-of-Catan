@@ -153,6 +153,8 @@ public:
     mutable std::mutex mutex_for_buildings {};
     mutable std::mutex mutex_for_table {};
 
+    void renderCurPlayer();
+
     Robber_arr *robber = nullptr;
     Road_arr *roads = nullptr;
     Building_arr *buildings = nullptr;
@@ -161,7 +163,7 @@ public:
     Mix_Chunk *sfx, *button_sound, *build_sound, *dice_sound;
     std::pair<SDL_Texture*, int> cur_table;
     SDL_Texture *back, *back_ground, *oct, *cur_road, *cur_road1,
-            *cur_road2, *table, *table_1, *table_2,
+            *cur_road2, *table, *table_1, *table_2, *cur_card_texture,
             *table_time, *house_cur, *house1_cur, *svitok;
     SDL_Texture* arr[6];
     SDL_Texture* build_texture_arr[3];
@@ -190,6 +192,9 @@ public:
 
     int getGameId();
 
+    std::atomic<int> tmp_card;
+    std::atomic<int> cur_card;
+
     
 
     std::atomic<bool> quit { false };
@@ -217,6 +222,7 @@ public:
     SDL_Texture *texture_svitok_up, *texture_svitok_down;
     SDL_Texture *dice_shadow;
     std::vector<SDL_Texture *> table_shadow;
+    std::vector<SDL_Texture *> texture_arr_card;
     void makeTextureConstTable(std::vector<int>& vec, SDL_Surface* buff, SDL_Texture *&ans, int type);
     void destroyTextures();
     void renderBackground() const;
@@ -233,9 +239,9 @@ public:
     void getCoorsCard();
     void setRobber(int x);
 
-    Inscription _build_road, _build, _settlement, _end_turn, _go_back, _go_back2,
+    Inscription _build_road, _build, _settlement, _end_turn, _go_back, _go_back2, _go_back3,
                  _roll_the_dice, _play_a_card,_local_game, _game_on_server, _ok,
-                 _start_new_game, _join_game, _exit, _2_Players, _3_Players,
+                 _start_new_game, _join_game, _exit, _2_Players, _3_Players, _buy_card,
                 _4_Players, _type_game_id, _exchange, _resources, _next_phase;
 
     ::game::Event FirstStage();
@@ -246,8 +252,10 @@ public:
 
     void addRoad(std::pair<int, int> tmp, int player);
     void addBuilding(std::pair<int, int> tmp, int player);
-
+    void renderCards();
     int returnRoad(int x, int y) const;
+
+    void getCoorsResoursesCards();
 
     int returnBuilding(int x, int y) const;
 

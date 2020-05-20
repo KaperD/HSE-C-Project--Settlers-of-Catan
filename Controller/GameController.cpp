@@ -44,25 +44,56 @@ void CardHandler::processEvent(Event& event, bool needSend) {
     if (event.type() != EventType::CARD) {
         throw std::logic_error("Wrong type");
     }
- 
-    currentPlayer_ = event.playerid();
-    cardType_ = event.cardinfo().cardtype();
-    if (needSend) {
 
-    }
-    /*
-    if (gameModel_.hasCard(currentPlayer_, cardType_)) {
-        gameModel_.playCard(currentPlayer_, cardType_);
+    int Player = event.playerid() + 1;
+    auto currentPlayer_ = static_cast<Board::PlayerNum>(Player);
+    gameModel_.changeCurPlayer(currentPlayer_);
+
+    cardType_ = event.cardinfo().cardtype();
+    auto modelCardType = static_cast<Board::DevelopmentCard>(cardType_);
+
+    auto cards = gameModel_.getPlayerDevCards(currentPlayer_);
+
+    if (cards[modelCardType] > 0) {
+        if (Player - 1 == myTurn_) {
+            event.mutable_cardinfo()->set_extradata(0);
+            if (modelCardType == Board::DevelopmentCard::KNIGHT) {
+                int hexNum = gameView_.getCoorsRobber(gameView_);
+                gameView_.setRobber(hexNum);
+                gameModel_.setRobbers(hexNum);
+                event.mutable_cardinfo()->set_extradata(hexNum);
+            } else if (modelCardType == Board::DevelopmentCard::MONOPOLY) {
+                gameView_.getCoorsResoursesCards();
+                //TODO: нужно получить по нормальному то, что сделала эта функция
+            }
+        } else {
+            int extraData = event.mutable_cardinfo()->extradata();
+            gameModel_.playDevCard(modelCardType, extraData);
+        }
         displayEvent(event);
-        sendEvent(event);
+        if (needSend) {
+            sendEvent(event);
+        }
     } else {
-        Возможно сообщить игроку о том, что у него нет карты, но лучше просто не допустить такого.
+        //Возможно сообщить игроку о том, что у него нет карты, но лучше просто не допустить такого.
     }
-    */
+
 }
  
 void CardHandler::displayEvent(Event& event) {
-    static_cast<void>(event);
+    int Player = event.playerid();
+
+    gameView_.updatePoints(gameModel_.Catan::getVictoryPoints());
+    if (Player == myTurn_) {
+        std::vector<int> v;
+        auto m = gameModel_.getPlayerResources(static_cast<Board::PlayerNum>(Player + 1));
+        v.push_back(m[Board::Resource::WOOL]);
+        v.push_back(m[Board::Resource::ORE]);
+        v.push_back(m[Board::Resource::CLAY]);
+        v.push_back(m[Board::Resource::TREE]);
+        v.push_back(m[Board::Resource::WHEAT]);
+        gameView_.updateResourses(v);
+    }
 }
  
  
@@ -199,11 +230,23 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
  
     auto type = static_cast<Board::BuildingType>(buildingType_);
 
-    if (gameModel_.checkCards(type) && gameModel_.canBuild(type, x_, y_)) {
-        gameModel_.settle(type, x_, y_);
-        displayEvent(event);
-        if (needSend) {
-            sendEvent(event);
+    if (type == Board::BuildingType::DevCard) {
+        std::cout << "Card" << std::endl << std::endl;
+        if (gameModel_.buildDevCard() != Board::DevelopmentCard::NONE) {
+            displayEvent(event);
+            if (needSend) {
+                sendEvent(event);
+            }
+        } else {
+            // TODO: можно вывести сообщение об ощибке
+        }
+    } else {
+        if (gameModel_.checkCards(type) && gameModel_.canBuild(type, x_, y_)) {
+            gameModel_.settle(type, x_, y_);
+            displayEvent(event);
+            if (needSend) {
+                sendEvent(event);
+            }
         }
     }
 }
@@ -304,7 +347,7 @@ GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI
     for (int k = 0; k < 7; ++k) {
         handlers_.push_back(nullptr);
     }
-    handlers_[0] = std::make_unique<CardHandler     >(gameModel_, gameView_, gameClient_);
+    handlers_[0] = std::make_unique<CardHandler     >(gameModel_, gameView_, gameClient_, myTurn_);
     handlers_[1] = std::make_unique<DiceHandler     >(gameModel_, gameView_, gameClient_, ran, myTurn_);
     handlers_[2] = std::make_unique<MarketHandler   >(gameModel_, gameView_, gameClient_, myTurn_);
     handlers_[3] = std::make_unique<BuildHandler    >(gameModel_, gameView_, gameClient_, myTurn_);
@@ -316,9 +359,9 @@ GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI
  
 void GameController::RunGame() {
     std::cout << myTurn_ << std::endl;
-    if (BeginGame()) {
-        return;
-    }
+    // if (BeginGame()) {
+    //     return;
+    // }
     gameModel_.gotoNextGamePhase();
     bool quit = false;
     while (!quit) {

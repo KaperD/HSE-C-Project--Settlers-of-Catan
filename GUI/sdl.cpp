@@ -112,6 +112,13 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     cur_texture_resourse = IMG_LoadTexture(ren, "image/cur_resourse.bmp");
     texture_resourse_built = IMG_LoadTexture(ren, "image/built_resourse.bmp");
 
+    texture_arr_card.push_back(IMG_LoadTexture(ren, "image/card1.bmp"));
+    texture_arr_card.push_back(IMG_LoadTexture(ren, "image/card2.bmp"));
+    texture_arr_card.push_back(IMG_LoadTexture(ren, "image/card3.bmp"));
+    texture_arr_card.push_back(IMG_LoadTexture(ren, "image/card4.bmp"));
+    texture_arr_card.push_back(IMG_LoadTexture(ren, "image/card5.bmp"));
+
+
 
 
     (cur_texture_arr_building).push_back(IMG_LoadTexture(ren, "image/cur_house.bmp"));
@@ -151,6 +158,8 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     (texture_arr_road[2]).push_back(IMG_LoadTexture(ren, "image/road2_green.bmp"));
     (texture_arr_road[2]).push_back(IMG_LoadTexture(ren, "image/road2_blue.bmp"));
 
+    cur_card_texture = IMG_LoadTexture(ren, "image/cur_card.bmp");
+
     dice.push_back(nullptr);
     dice.push_back(IMG_LoadTexture(ren, "image/dice1.bmp"));
     dice.push_back(IMG_LoadTexture(ren, "image/dice2.bmp"));
@@ -165,12 +174,12 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     table_shadow.push_back(IMG_LoadTexture(ren, "image/table_shadow2.bmp"));
     table_shadow.push_back(IMG_LoadTexture(ren, "image/table_shadow3.bmp"));
 
-    players_names.push_back("LOL");
-    players_names.push_back("KEK");
-    players_names.push_back("ALLAH");
-    players_names.push_back("AKBAR");
+    players_names.push_back("Player 1");
+    players_names.push_back("Player 2");
+    players_names.push_back("Player 3");
+    players_names.push_back("Player 4");
 
-
+    players_names.resize(num_players);
 
 
     auto font = TTF_OpenFont("sample.ttf", 32);
@@ -188,10 +197,11 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     _build_road = Inscription(gui, 423 + 161, 317 + 136 - 2 * 48, "Build Road");
     _build = Inscription(gui, 423 + 161, (373 + 552) / 2 + 373 - 3*48/2, "Build");
     _settlement = Inscription(gui, 423 + 161, (373 + 552) / 2 + 552 - 3*48/2, "Settlement");
-    _next_phase = Inscription(gui, 423 + 161, (373 + 552) - 2*48, "Next Phase");
+    _next_phase = Inscription(gui, 423 + 161, 610 + 790 - 2 * 48, "Next Phase");
+    _buy_card = Inscription(gui, 423 + 161, (373 + 552) - 2*48, "Buy Card");
     _exchange = Inscription(gui, 423 + 161, (317 + 136) / 2  + 136 - 3*48/2, "Exchange");
     _resources = Inscription(gui, 423 + 161, (317 + 136) / 2 + 317 - 3*48/2, "Resources");
-
+    _go_back3 = Inscription(gui, 839 + 1121, 698 + 896 , "Go Back");
 
     _end_turn = Inscription(gui, 423 + 161, 610 + 790 - 2 * 48, "End Turn");
     //_end_turn = Inscription(gui, 423 + 161, 846 + 1020 - 2 * 48, "End Turn");
@@ -235,8 +245,26 @@ void GUI::renderBackground() const {
     dest1.h = displayMode.h;
     assert(ren != nullptr);
     SDL_RenderCopy(ren, back_ground, nullptr, &dest1);
-    if (render_type.load() <= 10)
-        SDL_RenderCopy(ren, back, nullptr, &dest1);
+    //if (render_type.load() <= 10)
+    SDL_RenderCopy(ren, back, nullptr, &dest1);
+}
+
+void GUI::renderCards() {
+    if (render_type.load() != 312) return;
+    SDL_RenderCopy(ren, back_resourse, nullptr, nullptr);
+    SDL_Rect dest;
+    dest.x = 150;
+    dest.y = 50;
+    dest.h = 700;
+    dest.w = 300;
+    for (int i = 0; i < texture_arr_card.size(); ++i) {
+        auto e = texture_arr_card[i];
+        SDL_RenderCopy(ren, e, nullptr, &dest);
+        if (i == tmp_card) SDL_RenderCopy(ren, cur_card_texture, nullptr, &dest);
+        dest.x+=350;
+    }
+    
+
 }
 
 void GUI::renderDice() {
@@ -262,12 +290,17 @@ void GUI::renderTables() const {
     dest.w = 540*1.2;
     dest.h = 960*1.2;
 
-    if (render_type.load() == 0)
+    if (render_type.load() == 0 || render_type.load() == 8)
         SDL_RenderCopy(ren, tables_arr[2], nullptr,&dest);
     if (render_type.load() == 1 || render_type.load() == 2 || render_type.load() == 37)
         SDL_RenderCopy(ren, tables_arr[0], nullptr,&dest);
-    if (render_type.load() == 5 || render_type.load() == 6 || render_type.load() == 8)
+    if (render_type.load() == 5 || render_type.load() == 6 || render_type.load() == 67)
         SDL_RenderCopy(ren, tables_arr[1], nullptr,&dest);
+    if (render_type.load() == 312) {
+        dest.x = displayMode.w / 2 - dest.w / 2;
+        dest.y = 670;
+        SDL_RenderCopy(ren, tables_arr[0], nullptr,&dest);
+    }
 }
 
 
@@ -326,6 +359,22 @@ void GUI::renderBuildings() {
     }
 }
 
+void GUI::renderCurPlayer(){
+    if (my_player == cur_player) {
+        TTF_Font *font = TTF_OpenFont("sample.ttf", 64);
+        SDL_Color cur_color = { 200, 0, 0, 255 };
+        SDL_Surface *surf = TTF_RenderText_Blended(font, "Your Turn", cur_color);
+        SDL_Texture *texture = SDL_CreateTextureFromSurface(ren, surf);
+        SDL_FreeSurface(surf);
+        TTF_CloseFont(font);
+        SDL_Rect dest;
+        SDL_QueryTexture(texture, nullptr, nullptr, &dest.w, &dest.h);
+        dest.x = 1488;
+        dest.y = 55;
+        SDL_RenderCopy(ren, texture, nullptr, &dest);
+    } else render_type = 92;
+}
+
 void GUI::renderTablesTime() const {
     SDL_Rect dest;
     dest.x = 200 + 500;
@@ -336,42 +385,44 @@ void GUI::renderTablesTime() const {
 }
 
 int GUI::returnResourses(int x, int y) const {
+    
     for (int i = 0; i < static_cast<int>(buildings->vec.size()); ++i)
-        if (resourses_img->vec[i].is(x, y)) return i;
+        if (resourses_img->vec[i].is(x, y)) return (render_type.load() != 67) || (i < 5) ? i : -1;
     return -1;
 }
 
 void GUI::renderResourses() const {
-    if (render_type != 6) return;
+    if (!(render_type.load() == 6 || render_type.load() == 67)) return;
     SDL_RenderCopy(ren, back_resourse, nullptr, nullptr);
     int e = returnResourses(tmp_resours.first.load(), tmp_resours.second.load());
     if (e != -1) SDL_RenderCopy(ren, cur_texture_resourse , nullptr, &resourses_img->vec[e].dest);
     int it = 0;
     for (auto& t: resourses_img->vec) {
-        if (t.built) {
+        if (render_type.load() == 67 && it > 4) break;
+       if (t.built) {
             SDL_RenderCopy(ren, texture_resourse_built, nullptr, &t.dest);
-            TTF_Font *font = TTF_OpenFont("sample.ttf", 128);
-            SDL_Surface *surf = TTF_RenderText_Blended(font, std::to_string(t.built).c_str(), color);
-            SDL_Texture *texture = SDL_CreateTextureFromSurface(ren, surf);
-            SDL_FreeSurface(surf);
-            TTF_CloseFont(font);
-            SDL_Rect dest;
-            SDL_QueryTexture(texture, nullptr, nullptr, &dest.w, &dest.h);
-            if (it < 5) {
-                dest.x = t.dest.x + 170;
-                dest.x+= (170 - dest.w)/2;
-            } else {
-                dest.x = t.dest.x - 170;
-                dest.x+= (170 - dest.w)/2;
-            }
+            // TTF_Font *font = TTF_OpenFont("sample.ttf", 128);
+            // SDL_Surface *surf = TTF_RenderText_Blended(font, std::to_string(t.built).c_str(), color);
+            // SDL_Texture *texture = SDL_CreateTextureFromSurface(ren, surf);
+            // SDL_FreeSurface(surf);
+            // TTF_CloseFont(font);
+            // SDL_Rect dest;
+            // SDL_QueryTexture(texture, nullptr, nullptr, &dest.w, &dest.h);
+            // if (it < 5) {
+            //     dest.x = t.dest.x + 170;
+            //     dest.x+= (170 - dest.w)/2;
+            // } else {
+            //     dest.x = t.dest.x - 170;
+            //     dest.x+= (170 - dest.w)/2;
+            // }
 
-            dest.y = t.dest.y;
-            dest.y+= (170 - dest.h)/2;
-            SDL_RenderCopy(ren, texture, nullptr, &dest);
+            // dest.y = t.dest.y;
+            // dest.y+= (170 - dest.h)/2;
+            // SDL_RenderCopy(ren, texture, nullptr, &dest);
         }
 
-        SDL_RenderCopy(ren, texture_arr_resourses[t.type], nullptr, &t.dest);
-        it ++;
+         SDL_RenderCopy(ren, texture_arr_resourses[t.type], nullptr, &t.dest);
+         it ++;
 
     }
 }
@@ -411,7 +462,7 @@ void GUI::renderText() const {
         SDL_RenderCopy(ren, _roll_the_dice.texture, nullptr, &_roll_the_dice.dest);
         SDL_RenderCopy(ren, _play_a_card.texture, nullptr, &_play_a_card.dest);
     }
-    if (render_type.load() == 6) {
+    if (render_type.load() == 6 || render_type.load() == 67) {
         SDL_RenderCopy(ren, _ok.texture, nullptr, &_ok.dest);
         SDL_RenderCopy(ren, _go_back2.texture, nullptr, &_go_back2.dest);
     }
@@ -419,10 +470,15 @@ void GUI::renderText() const {
         SDL_RenderCopy(ren, _exchange.texture, nullptr, &_exchange.dest);
         SDL_RenderCopy(ren, _resources.texture, nullptr, &_resources.dest);
         SDL_RenderCopy(ren, _next_phase.texture, nullptr, &_next_phase.dest);
+        SDL_RenderCopy(ren, _buy_card.texture, nullptr, &_buy_card.dest);
     }
     if (render_type.load() == 37) {
         SDL_RenderCopy(ren, _ok.texture, nullptr, &_ok.dest);
     }
+    if (render_type.load() == 312) {
+        SDL_RenderCopy(ren, _go_back3.texture, nullptr, &_go_back3.dest);
+    }
+
 }
 
 
@@ -474,10 +530,12 @@ void GUI::makeRender(GUI &gui) {
     renderBuildings();
     renderDice();
     robber->render(gui);
+    renderCurPlayer();
     renderResourses();
-    renderTables();
+    renderCards();
+    if (render_type.load() != 92) renderTables();
     //renderTablesTime();
-    renderText();
+    if (render_type.load() != 92) renderText();
     //renderBeginingMenu();
     SDL_RenderPresent(ren);
 }
@@ -651,7 +709,7 @@ Event GUI::ThirdStage (GUI &gui) {
                 Mix_PlayChannel(-1, button_sound, 0);
                 int x, y;
                 SDL_GetMouseState(&x, &y);
-                //std::cout << x << ' ' << y << '\n';
+                std::cout << x << ' ' << y << '\n';
                 if (x > 161 && x < 423 && y > 136- 48  && y < 317- 48) { // дорога
                     getCoorsRoad();
                     if (render_type.load() == 0) continue;
@@ -699,7 +757,6 @@ Event GUI::ThirdStage (GUI &gui) {
 Event GUI::SecondStage (GUI &gui) {
     SDL_Event e;
     render_type.store(8);
-    std::cerr  << "eeeeee\n";
     Limiter limit;
 
     while (!quit.load()) {
@@ -735,6 +792,17 @@ Event GUI::SecondStage (GUI &gui) {
                     return event;
                 }
                 if (x > 161 && x < 423 && y > 373- 48 && y < 552- 48) { // derevnia
+                    getCoorsCard();
+                    if (render_type.load() == 0) continue;
+                    Event event;
+                    event.set_type(EventType::BUILD);
+                    auto info = event.mutable_buildinfo();
+                    info->set_buildingtype(4);
+                    info->set_x(0);
+                    info->set_y(0);
+                    return event;
+                }
+                if (x > 161 && x < 423 && y > 610- 48 && y < 790- 48) { // derevnia
                     Event event;
                     event.set_type(EventType::NEXTPHASE);
                     return event;
@@ -755,7 +823,6 @@ Event GUI::SecondStage (GUI &gui) {
     SDL_Event e;
 
     Limiter limit;
-    Event event;
 
     while(true){
         limit.storeStartTime();
@@ -765,6 +832,7 @@ Event GUI::SecondStage (GUI &gui) {
                 SDL_GetMouseState(&x, &y);
                 if (x > 200 && x < 480 && y > 98- 48 && y < 280- 48) {
                     Mix_PlayChannel(-1, dice_sound, 0);
+                    Event event;
                     event.set_type(EventType::DICE);
                     auto nums = event.mutable_diceinfo();
                     nums->set_number1(0);
@@ -772,8 +840,12 @@ Event GUI::SecondStage (GUI &gui) {
                     return event;
                 }
                 if (x > 200 && x < 480 && y > 300 - 48 && y < 482- 48) {
-                    event.set_type(EventType::CARD);
                     getCoorsCard();
+                    if (render_type.load() == 0) continue;
+                    Event event;
+                    event.set_type(EventType::CARD);
+                    auto q = event.mutable_cardinfo();
+                    q->set_cardtype(cur_card);
                     return event;
                 }
             }
@@ -782,9 +854,6 @@ Event GUI::SecondStage (GUI &gui) {
     }
 }
 
-void GUI::getCoorsCard() {
-
-}
 
 void GUI::addDice(int x, int y) {
     dice1.store(x);
@@ -1422,6 +1491,134 @@ void GUI::getCoorsResourses() {
         limit.delay();
 
     }
+}
+
+
+void GUI::getCoorsResoursesCards() {
+    int old_render_type = render_type.load();
+    render_type.store(67);
+    SDL_Rect dest;
+    SDL_Event e;
+    Limiter limit;
+
+    while (!quit.load()) {
+
+        limit.storeStartTime();
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) {
+                quit.store(true);
+            }
+
+            if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE) {
+                quit.store(true);
+                break;
+            }
+            if( e.type == SDL_MOUSEMOTION ) {
+                int x,y;
+                x = e.motion.x;
+                y = e.motion.y;
+                tmp_resours.first.store(x);
+                tmp_resours.second.store(y);
+            }
+            if (e.type == SDL_MOUSEBUTTONDOWN) {
+                Mix_PlayChannel(-1, button_sound, 0);
+                int x, y;
+                SDL_GetMouseState(&x, &y); // Получить координаты мыши
+                if (x > 161 && x < 423 && y > 136 && y < 317) { 
+                    return;
+                }
+                if (x > 161 && x < 423 && y > 373 && y < 552) { // derevnia
+                    render_type.store(old_render_type);
+                    return;
+                }
+                int it = 0;
+                for (int j = 0; j < 5; ++j) {
+                    auto &e = resourses_img->vec[j];
+                    if (e.is(x,y)) {
+                        int tmp = e.built;
+                        for (int i = (it/5)*5; i < 5 + 5*(it/5); ++i){
+                            resourses_img->vec[i].built = 0;
+                        }
+                        e.built = tmp + 1;
+                        if (j/5) {
+                            tmp_resourses.second = j - 5;
+                            tmp_resourses_num.second = e.built;
+                        } else {
+                            tmp_resourses.first = j;
+                            tmp_resourses_num.first = e.built;
+                        }
+                        
+                        resourses_img->vec[(j+5)%10].built = 0;
+                        break;
+                    }
+                    it ++;
+                } 
+            }
+        }
+
+        limit.delay();
+
+    }
+}
+
+
+void GUI::getCoorsCard() {
+    int old_render_type = render_type.load();
+    render_type.store(312);
+    SDL_Rect dest;
+    SDL_Event e;
+    Limiter limit;
+
+    while (!quit.load()) {
+
+        limit.storeStartTime();
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) {
+                quit.store(true);
+            }
+
+            if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE) {
+                quit.store(true);
+                break;
+            }
+            if( e.type == SDL_MOUSEMOTION ) {
+                int x,y;
+                x = e.motion.x;
+                y = e.motion.y;
+                tmp_card.store(-1);
+                if (y > 175 && y < 623) {
+                    for (int i = 0; i < 5; ++i) {
+                        if (x > 150 + i * 350 && x < 150 + 300 + i *350) {
+                            tmp_card.store(i);
+                        }
+                    }
+                } 
+                
+            }
+            if (e.type == SDL_MOUSEBUTTONDOWN) {
+                Mix_PlayChannel(-1, button_sound, 0);
+                int x, y;
+
+                SDL_GetMouseState(&x, &y); // Получить координаты мыши
+                if (x > 845 && x < 1107 && y > 707 && y < 887) { 
+                    render_type.store(old_render_type);
+                    return;
+                }
+                if (y > 175 && y < 623) {
+                    for (int i = 0; i < 5; ++i) {
+                        if (x > 150 + i * 350 && x < 150 + 300 + i *350) {
+                            cur_card.store(i + 1);
+                        }
+                    }
+                }
+                 
+            }
+        }
+
+        limit.delay();
+
+    }
+
 }
 
 } // namespace GUI
