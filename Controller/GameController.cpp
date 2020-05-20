@@ -64,12 +64,13 @@ void CardHandler::processEvent(Event& event, bool needSend) {
                 event.mutable_cardinfo()->set_extradata(hexNum);
             } else if (modelCardType == Board::DevelopmentCard::MONOPOLY) {
                 gameView_.getCoorsResoursesCards();
-                //TODO: нужно получить по нормальному то, что сделала эта функция
+
             }
-        } else {
-            int extraData = event.mutable_cardinfo()->extradata();
-            gameModel_.playDevCard(modelCardType, extraData);
         }
+
+        int extraData = event.mutable_cardinfo()->extradata();
+        gameModel_.playDevCard(modelCardType, extraData);
+
         displayEvent(event);
         if (needSend) {
             sendEvent(event);
