@@ -359,9 +359,9 @@ GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI
  
 void GameController::RunGame() {
     std::cout << myTurn_ << std::endl;
-     if (BeginGame()) {
-         return;
-     }
+    //  if (BeginGame()) {
+    //      return;
+    //  }
     gameModel_.gotoNextGamePhase();
     bool quit = false;
     while (!quit) {
