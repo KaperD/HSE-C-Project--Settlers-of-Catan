@@ -614,7 +614,7 @@ GUI::GUI(int player, int numberOfPlayers) :num_players(numberOfPlayers), my_play
 
     Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 4096);
     SDL_GetDesktopDisplayMode(0,&displayMode);
-    win = SDL_CreateWindow("Settlers of Catan", 0, 0, displayMode.w, displayMode.h, SDL_WINDOW_SHOWN);
+    win = SDL_CreateWindow("Settlers of Catan", 0, 0, displayMode.w, displayMode.h, SDL_WINDOW_FULLSCREEN);
     ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     players_points.resize(num_players, 0);
     resourses = {2, 0, 4, 4, 2};

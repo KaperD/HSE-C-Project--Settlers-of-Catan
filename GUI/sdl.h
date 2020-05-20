@@ -199,7 +199,7 @@ public:
     std::atomic<int> tmp_card;
     std::atomic<int> cur_card;
 
-    
+
 
     std::atomic<bool> quit { false };
     int  end_time_dice = 0;
@@ -217,7 +217,7 @@ public:
     std::atomic<int> dice2 { 0 };
 
     SDL_Texture *ppp;
-    
+
 
     SDL_Color color = { 243, 195, 79, 255 };
     SDL_Color color_const_table = { 79, 51, 14, 255 };

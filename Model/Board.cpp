@@ -579,10 +579,10 @@ const std::unordered_map<Resource, int>& Catan::getPlayerResources(PlayerNum pla
 }
 
 bool Catan::trade(Resource re_for_trade, Resource need_re) {
-    if (getPlayerCardNum(re_for_trade) < 4) {
+    if (getPlayerCardNum(re_for_trade) < 3) {
         return false;
     }
-    players[cur_player]->getResource(re_for_trade, 4);
+    players[cur_player]->getResource(re_for_trade, 3);
     players[cur_player]->giveResource(need_re, 1);
     return true;
 }
