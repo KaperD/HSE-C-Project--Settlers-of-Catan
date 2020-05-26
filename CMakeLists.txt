@@ -108,5 +108,5 @@ include_directories(Utility)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
 
-target_compile_options(project PRIVATE)
+target_compile_options(project PRIVATE -Wall -Werror -Wextra)
 

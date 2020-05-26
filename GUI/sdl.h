@@ -254,7 +254,7 @@ public:
     std::atomic<int> tmp_card;
     std::atomic<int> cur_card;
 
-    
+
 
     std::atomic<bool> quit { false };
     int  end_time_dice = 0;
@@ -272,7 +272,7 @@ public:
     std::atomic<int> dice2 { 0 };
 
     SDL_Texture *ppp;
-    
+
 
     SDL_Color color = { 243, 195, 79, 255 };
     SDL_Color color_const_table = { 79, 51, 14, 255 };
@@ -304,10 +304,10 @@ public:
                 _4_Players, _type_game_id, _exchange, _resources, _next_phase;
 
     ::game::Event FirstStage();
-    ::game::Event ThirdStage(GUI &gui);
-    ::game::Event SecondStage (GUI &gui);
+    ::game::Event ThirdStage();
+    ::game::Event SecondStage ();
 
-    ::game::Event getEvent(GUI &gui);
+    ::game::Event getEvent();
 
     void addRoad(std::pair<int, int> tmp, int player);
     void addBuilding(std::pair<int, int> tmp, int player);

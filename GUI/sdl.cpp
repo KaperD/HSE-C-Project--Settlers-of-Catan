@@ -182,7 +182,7 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     players_names.resize(num_players);
 
 
-    auto font = TTF_OpenFont("sample.ttf", 32);
+    auto font = TTF_OpenFont("image/sample.ttf", 32);
     sfx = nullptr;
     sfx = Mix_LoadWAV("image/music.wav");
     Mix_VolumeChunk(sfx, MIX_MAX_VOLUME / 4);
@@ -267,7 +267,7 @@ void GUI::renderCards() {
     dest.y = 50;
     dest.h = 700;
     dest.w = 300;
-    for (int i = 0; i < texture_arr_card.size(); ++i) {
+    for (int i = 0; i < static_cast<int>(texture_arr_card.size()); ++i) {
         dest.x+=350;
         if (!dev_cards_vec[i]) continue;
         auto e = texture_arr_card[i];
@@ -372,7 +372,7 @@ void GUI::renderBuildings() {
 
 void GUI::renderCurPlayer(){
     if (my_player == cur_player) {
-        TTF_Font *font = TTF_OpenFont("sample.ttf", 64);
+        TTF_Font *font = TTF_OpenFont("image/sample.ttf", 64);
         SDL_Color cur_color = { 200, 0, 0, 255 };
         SDL_Surface *surf = TTF_RenderText_Blended(font, "Your Turn", cur_color);
         SDL_Texture *texture = SDL_CreateTextureFromSurface(ren, surf);
@@ -443,7 +443,7 @@ void GUI::renderResourses() const {
         if (render_type.load() == 67 && it > 4) break;
        if (t.built) {
             SDL_RenderCopy(ren, texture_resourse_built, nullptr, &t.dest);
-            // TTF_Font *font = TTF_OpenFont("sample.ttf", 128);
+            // TTF_Font *font = TTF_OpenFont("image/sample.ttf", 128);
             // SDL_Surface *surf = TTF_RenderText_Blended(font, std::to_string(t.built).c_str(), color);
             // SDL_Texture *texture = SDL_CreateTextureFromSurface(ren, surf);
             // SDL_FreeSurface(surf);
@@ -471,7 +471,7 @@ void GUI::renderResourses() const {
 
 
 SDL_Texture* GUI::Text(const std::string &message) {
-    TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
+    TTF_Font *font = TTF_OpenFont("image/sample.ttf", 32);
     SDL_Surface *surf = TTF_RenderText_Blended(font, message.c_str(), color);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(ren, surf);
     SDL_FreeSurface(surf);
@@ -620,7 +620,9 @@ GUI::GUI(int player, int numberOfPlayers) :num_players(numberOfPlayers), my_play
     players_points.resize(num_players, 0);
     resourses = {2, 0, 4, 4, 2};
     table_time_type.store(-1);
-    //std::cout << "Sync " << SDL_GL_SetSwapInterval(1) << std::endl;
+    auto back = IMG_LoadTexture(ren, "image/standby.bmp");
+    SDL_RenderCopy(ren, back, nullptr, nullptr);
+    SDL_RenderPresent(ren);
 }
 
 
@@ -630,7 +632,6 @@ void GUI::getCoorsRoad() {
     render_type.store(1);
     //SDL_Rect dest;
     SDL_Event e;
-    clock_t begin_time = clock();
 
     Limiter limit;
 
@@ -677,7 +678,6 @@ void GUI::getCoorsBuilding () {
     render_type.store(2);
     //SDL_Rect dest;
     SDL_Event e;
-    clock_t begin_time = clock();
 
     Limiter limit;
 
@@ -719,7 +719,7 @@ void GUI::getCoorsBuilding () {
     }
 }
 
-Event GUI::ThirdStage (GUI &gui) {
+Event GUI::ThirdStage () {
     SDL_Event e;
     render_type.store(0);
 
@@ -791,7 +791,7 @@ Event GUI::ThirdStage (GUI &gui) {
 
 
 
-Event GUI::SecondStage (GUI &gui) {
+Event GUI::SecondStage () {
     SDL_Event e;
     render_type.store(8);
     Limiter limit;
@@ -1055,7 +1055,7 @@ void GUI::updatePoints(std::vector<int> vec) {
        throw (std::runtime_error("null"));
    }
 
-    TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
+    TTF_Font *font = TTF_OpenFont("image/sample.ttf", 32);
     if (font == nullptr) {
         throw (std::runtime_error("null"));
     }
@@ -1088,7 +1088,7 @@ void GUI::updateResourses(std::vector<int> v) {
         throw (std::runtime_error("null"));
     }
 
-    TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
+    TTF_Font *font = TTF_OpenFont("image/sample.ttf", 32);
     if (font == nullptr) {
         throw (std::runtime_error("null"));
     }
@@ -1139,7 +1139,7 @@ void GUI::updateResourses(std::vector<int> v) {
 
 
 void GUI::makeTextureConstTable(std::vector<int>& vec, SDL_Surface* buff, SDL_Texture *&ans, int type) {
-    TTF_Font *font = TTF_OpenFont("sample.ttf", 32);
+    TTF_Font *font = TTF_OpenFont("image/sample.ttf", 32);
     if (font == nullptr) {
         throw (std::runtime_error("null"));
     }
@@ -1297,7 +1297,7 @@ int GUI::getGameId() {
     return 0;
 }
 
-::game::Event GUI::getEvent(GUI &gui) {
+::game::Event GUI::getEvent() {
     static int gameStage = 0;
     Event event;
     if (gameStage == 0) {
@@ -1305,11 +1305,11 @@ int GUI::getGameId() {
         if (event.type() == EventType::DICE) ++gameStage;
         return event;
     } else if (gameStage == 1) {
-        event = SecondStage(gui);
+        event = SecondStage();
         if (event.type() == EventType::NEXTPHASE) gameStage++;
         return event;
     } else {
-        event = ThirdStage(gui);
+        event = ThirdStage();
         if (event.type() == EventType::ENDTURN) gameStage = 0;
         return event;
     }
@@ -1341,7 +1341,6 @@ std::pair<int, int> Robber_arr::get_coors(int type, GUI &gui) {
     int tx = gui.displayMode.w / 2 - 250*sqrt(3)/2;
     int ty = gui.displayMode.h / 2 - 550;
     int k = 3;
-    int it = 0;
     int x, y;
     if (type) {x = x_r.load(); y = y_r.load();}
     else {x = x_tmp.load(); y = y_tmp.load();}
@@ -1349,7 +1348,7 @@ std::pair<int, int> Robber_arr::get_coors(int type, GUI &gui) {
         ty += 150;
         for (int q = 0; q < k; ++q){
             tx += 100*sqrt(3);
-            for (int p = 0; p < vec.size(); ++p){
+            for (int p = 0; p < static_cast<int>(vec.size()); ++p){
                 auto e = vec[p];
                 if (x > e.first && x < e.first + (100*sqrt(3)) ) {
                     double cur_x = x - e.first;
@@ -1387,7 +1386,6 @@ Robber_arr::Robber_arr (GUI &gui) {
     int tx = gui.displayMode.w / 2 - 250*sqrt(3);
     int ty = gui.displayMode.h / 2 - 550;
     int k = 3;
-    int it = 0;
     for (int i = 0; i < 5; ++i){
         ty += 150;
         for (int q = 0; q < k; ++q){
@@ -1505,7 +1503,7 @@ void GUI::getCoorsResourses() {
                     return;
                 }
                 int it = 0;
-                for (int j = 0; j < resourses_img->vec.size(); ++j) {
+                for (int j = 0; j < static_cast<int>(resourses_img->vec.size()); ++j) {
                     auto &e = resourses_img->vec[j];
                     if (e.is(x,y)) {
                         int tmp = e.built;
@@ -1538,7 +1536,6 @@ void GUI::getCoorsResourses() {
 int GUI::getCoorsResoursesCards() {
     int old_render_type = render_type.load();
     render_type.store(67);
-    SDL_Rect dest;
     SDL_Event e;
     Limiter limit;
     int cur_resourse = -1;
@@ -1609,7 +1606,6 @@ int GUI::getCoorsResoursesCards() {
 void GUI::getCoorsCard() {
     int old_render_type = render_type.load();
     render_type.store(312);
-    SDL_Rect dest;
     SDL_Event e;
     Limiter limit;
 
