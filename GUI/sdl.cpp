@@ -616,6 +616,7 @@ GUI::GUI(int player, int numberOfPlayers) :num_players(numberOfPlayers), my_play
     SDL_GetDesktopDisplayMode(0,&displayMode);
     win = SDL_CreateWindow("Settlers of Catan", 0, 0, displayMode.w, displayMode.h, SDL_WINDOW_FULLSCREEN);
     ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    SDL_SetWindowIcon(win, SDL_LoadBMP("image/robber.bmp"));
     players_points.resize(num_players, 0);
     resourses = {2, 0, 4, 4, 2};
     table_time_type.store(-1);

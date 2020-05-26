@@ -286,15 +286,18 @@ void BuildHandler::displayEvent(Event& event) {
         v.push_back(m[Board::Resource::WHEAT]);
         gameView_.updateResourses(v);
 
+
         auto m1 = gameModel_.getPlayerDevCards(static_cast<Board::PlayerNum>(Player + 1));
         std::vector<bool> cards;
         cards.push_back(m1[Board::DevelopmentCard::KNIGHT] != 0);
         cards.push_back(m1[Board::DevelopmentCard::VICTORY_POINT] != 0);
+
         cards.push_back(m1[Board::DevelopmentCard::ROAD_BUILDING] != 0);
         cards.push_back(m1[Board::DevelopmentCard::MONOPOLY] != 0);
         cards.push_back(m1[Board::DevelopmentCard::INVENTION] != 0);
         gameView_.updateDevCards(cards);
     }
+
 }
  
  
@@ -379,9 +382,11 @@ GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI
  
 void GameController::RunGame() {
     std::cout << myTurn_ << std::endl;
-    if (BeginGame()) {
-        return;
-    }
+     if (BeginGame()) {
+         return;
+     }
+
+
     gameModel_.gotoNextGamePhase();
     bool quit = false;
     while (!quit) {

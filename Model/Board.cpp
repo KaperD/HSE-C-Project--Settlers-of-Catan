@@ -16,11 +16,11 @@ static bool check(int x, int y) {
 //===============Player===================
 
 Player::Player(PlayerNum id) : id(id), victory_points(0) {
-    cards[Resource::WOOL] = 2;
-    cards[Resource::ORE] = 0;
-    cards[Resource::CLAY] = 4;
-    cards[Resource::TREE] = 4;
-    cards[Resource::WHEAT] = 2;
+    cards[Resource::WOOL] = 10;
+    cards[Resource::ORE] = 10;
+    cards[Resource::CLAY] = 10;
+    cards[Resource::TREE] = 10;
+    cards[Resource::WHEAT] = 10;
 
     dev_cards[DevelopmentCard::KNIGHT] = 0;
     dev_cards[DevelopmentCard::ROAD_BUILDING] = 0;
