@@ -321,6 +321,7 @@ void EndTurnHandler::displayEvent(Event& event) {
 //===============NextPhaseHandler===============
  
 void NextPhaseHandler::processEvent(Event& event, bool needSend) {
+    static_cast<void>(needSend);
     if (event.type() != EventType::NEXTPHASE) {
         throw std::logic_error("Wrong type");
     }
@@ -388,7 +389,7 @@ void GameController::RunGame() {
 
         if (currentTurn_ == myTurn_) {
             while (true) {
-                Event event = gameView_.getEvent(gameView_);
+                Event event = gameView_.getEvent();
                 int x = event.type();
                 event.set_playerid(myTurn_);
                 handlers_[x]->processEvent(event, true);
@@ -450,7 +451,7 @@ bool GameController::BeginGame() {
         villageIsSet = false;
         if (currentTurn_ == myTurn_) {
             while (true) {
-                Event event = gameView_.ThirdStage(gameView_);
+                Event event = gameView_.ThirdStage();
                 int x = event.type();
                 event.set_playerid(myTurn_);
                 if (x == EventType::BUILD) {

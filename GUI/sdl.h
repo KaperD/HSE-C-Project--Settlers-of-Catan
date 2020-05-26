@@ -249,10 +249,10 @@ public:
                 _4_Players, _type_game_id, _exchange, _resources, _next_phase;
 
     ::game::Event FirstStage();
-    ::game::Event ThirdStage(GUI &gui);
-    ::game::Event SecondStage (GUI &gui);
+    ::game::Event ThirdStage();
+    ::game::Event SecondStage ();
 
-    ::game::Event getEvent(GUI &gui);
+    ::game::Event getEvent();
 
     void addRoad(std::pair<int, int> tmp, int player);
     void addBuilding(std::pair<int, int> tmp, int player);
