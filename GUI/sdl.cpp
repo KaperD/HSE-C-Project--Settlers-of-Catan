@@ -2,7 +2,6 @@
 #include <SDL2/SDL_image.h>
 //#include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_ttf.h>
-#include <iostream>
 #include <thread>
 #include <ctime>
 #include <cassert>
@@ -34,9 +33,9 @@ using ::game::Event;
 using ::game::EventType;
 
 void playMusic(GUI* gui) {
+    Mix_VolumeMusic(SDL_MIX_MAXVOLUME / 4);
     while (!gui->quit.load()) {
-        std::cout << "MUSIC" << std::endl;
-        Mix_PlayChannel(-1, gui->sfx, 1000);
+        Mix_PlayMusic(gui->sfx, -1);
         for (int i = 0; i < 18000; ++i) {
             if (gui->quit.load()) return;
             std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -46,25 +45,25 @@ void playMusic(GUI* gui) {
 
 void GUI::loadTextures(utility::Random& random, GUI& gui) {
     auto randomResouresAndNumbers = random.generateResourcesAndNumbers();
-    std::string s = "image/oct .bmp";
     
     std::vector<SDL_Texture *> v1;
+
 
     std::vector<int> sameOrderWithModel = {0, 2, 4, 6, 8, 10, 12, 14, 15, 16, 17, 18, 7, 9, 11, 13, 1, 3, 5};
     for (int k = 0; k < 19; ++k) {
         int i = sameOrderWithModel[k];
-        std::string ss = "image/number";
+        std::string s = "/usr/share/CatanImages/oct";
+        std::string ss = "/usr/share/CatanImages/number";
         int resource = randomResouresAndNumbers[i].resource;
         int number = randomResouresAndNumbers[i].number;
-        s[9] = resource + '0'; // TODO: Числа в названиях файлов должны соответствовать enum в модели
-
+        s += std::to_string(resource); // TODO: Числа в названиях файлов должны соответствовать enum в модели
+        s += ".png";
         ss = ss + std::to_string(number);
-        ss = ss + ".bmp";
+        ss = ss + ".png";
         SDL_Surface* numberImg = nullptr;
 
         if (number) numberImg = IMG_Load(ss.c_str()); // TODO: Вместо 2 нужно ставить число number, кроме случая, когда число 0, в этом случае не нужно изображение чилса
-        
-        //std::cerr << ss;
+
         SDL_Surface* hex = IMG_Load(s.c_str());
         if (number) {
             SDL_Rect dest;
@@ -73,7 +72,6 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
             dest.w = static_cast<int>(static_cast<double>(numberImg->w) * 0.5);
             dest.h = static_cast<int>(static_cast<double>(numberImg->h) * 0.5);
             if (SDL_BlitScaled(numberImg, nullptr, hex, &dest) != 0) {
-               // std::cout << "Wrong Blit" << std::endl;
             }
         } else {
             robber->x_r.store(robber->vec[k].first + 50);
@@ -83,96 +81,96 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
         SDL_FreeSurface(numberImg);
         SDL_FreeSurface(hex);
     }
-    back_ground = IMG_LoadTexture(ren, "image/back_ground.bmp");
-    back = IMG_LoadTexture(ren, "image/back.bmp");
+    back_ground = IMG_LoadTexture(ren, "/usr/share/CatanImages/back_ground.png");
+    back = IMG_LoadTexture(ren, "/usr/share/CatanImages/back.png");
 
-    (cur_texture_arr_road).push_back(IMG_LoadTexture(ren, "image/cur_road.bmp"));
-    (cur_texture_arr_road).push_back(IMG_LoadTexture(ren, "image/cur_road1.bmp"));
-    (cur_texture_arr_road).push_back(IMG_LoadTexture(ren, "image/cur_road2.bmp"));
+    (cur_texture_arr_road).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/cur_road.png"));
+    (cur_texture_arr_road).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/cur_road1.png"));
+    (cur_texture_arr_road).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/cur_road2.png"));
 
-    table = IMG_LoadTexture(ren, "image/table.bmp");
-    table_1 = IMG_LoadTexture(ren, "image/table_1.bmp");
-    table_2 = IMG_LoadTexture(ren, "image/table_1.bmp");
-    table_time = IMG_LoadTexture(ren, "image/table_time.bmp");
+    table = IMG_LoadTexture(ren, "/usr/share/CatanImages/table.png");
+    table_1 = IMG_LoadTexture(ren, "/usr/share/CatanImages/table_1.png");
+    table_2 = IMG_LoadTexture(ren, "/usr/share/CatanImages/table_1.png");
+    table_time = IMG_LoadTexture(ren, "/usr/share/CatanImages/table_time.png");
 
-    svitok = IMG_LoadTexture(ren, "image/svitok.bmp");
+    svitok = IMG_LoadTexture(ren, "/usr/share/CatanImages/svitok.png");
 
-    tables_arr.push_back(IMG_LoadTexture(ren, "image/1_tables.bmp"));
-    tables_arr.push_back(IMG_LoadTexture(ren, "image/2_tables.bmp"));
-    tables_arr.push_back(IMG_LoadTexture(ren, "image/3_tables.bmp"));
-    tables_arr.push_back(IMG_LoadTexture(ren, "image/4_tables.bmp"));
-    back_resourse = IMG_LoadTexture(ren, "image/back_resourse.bmp");
+    tables_arr.push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/1_tables.png"));
+    tables_arr.push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/2_tables.png"));
+    tables_arr.push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/3_tables.png"));
+    tables_arr.push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/4_tables.png"));
+    back_resourse = IMG_LoadTexture(ren, "/usr/share/CatanImages/back_resourse.png");
 
-    texture_arr_resourses.push_back(IMG_LoadTexture(ren, "image/sheep.bmp"));
-    texture_arr_resourses.push_back(IMG_LoadTexture(ren, "image/stone.bmp"));
-    texture_arr_resourses.push_back(IMG_LoadTexture(ren, "image/clay.bmp"));
-    texture_arr_resourses.push_back(IMG_LoadTexture(ren, "image/wood.bmp"));
-    texture_arr_resourses.push_back(IMG_LoadTexture(ren, "image/wheat.bmp"));
+    texture_arr_resourses.push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/sheep.png"));
+    texture_arr_resourses.push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/stone.png"));
+    texture_arr_resourses.push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/clay.png"));
+    texture_arr_resourses.push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/wood.png"));
+    texture_arr_resourses.push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/wheat.png"));
 
-    cur_texture_resourse = IMG_LoadTexture(ren, "image/cur_resourse.bmp");
-    texture_resourse_built = IMG_LoadTexture(ren, "image/built_resourse.bmp");
+    cur_texture_resourse = IMG_LoadTexture(ren, "/usr/share/CatanImages/cur_resourse.png");
+    texture_resourse_built = IMG_LoadTexture(ren, "/usr/share/CatanImages/built_resourse.png");
 
-    texture_arr_card.push_back(IMG_LoadTexture(ren, "image/card1.bmp"));
-    texture_arr_card.push_back(IMG_LoadTexture(ren, "image/card2.bmp"));
-    texture_arr_card.push_back(IMG_LoadTexture(ren, "image/card3.bmp"));
-    texture_arr_card.push_back(IMG_LoadTexture(ren, "image/card4.bmp"));
-    texture_arr_card.push_back(IMG_LoadTexture(ren, "image/card5.bmp"));
-
-
+    texture_arr_card.push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/card1.png"));
+    texture_arr_card.push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/card2.png"));
+    texture_arr_card.push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/card3.png"));
+    texture_arr_card.push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/card4.png"));
+    texture_arr_card.push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/card5.png"));
 
 
-    (cur_texture_arr_building).push_back(IMG_LoadTexture(ren, "image/cur_house.bmp"));
-    (cur_texture_arr_building).push_back(IMG_LoadTexture(ren, "image/cur_house1.bmp"));
+
+
+    (cur_texture_arr_building).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/cur_house.png"));
+    (cur_texture_arr_building).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/cur_house1.png"));
     (cur_texture_arr_building).push_back(nullptr);
 
-    (texture_arr_building[0]).push_back(IMG_LoadTexture(ren, "image/house_yellow.bmp"));
-    (texture_arr_building[0]).push_back(IMG_LoadTexture(ren, "image/house_red.bmp"));
-    (texture_arr_building[0]).push_back(IMG_LoadTexture(ren, "image/house_green.bmp"));
-    (texture_arr_building[0]).push_back(IMG_LoadTexture(ren, "image/house_blue.bmp"));
+    (texture_arr_building[0]).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/house_yellow.png"));
+    (texture_arr_building[0]).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/house_red.png"));
+    (texture_arr_building[0]).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/house_green.png"));
+    (texture_arr_building[0]).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/house_blue.png"));
 
-    (texture_arr_building[1]).push_back(IMG_LoadTexture(ren, "image/house_yellow.bmp"));
-    (texture_arr_building[1]).push_back(IMG_LoadTexture(ren, "image/house_red.bmp"));
-    (texture_arr_building[1]).push_back(IMG_LoadTexture(ren, "image/house_green.bmp"));
-    (texture_arr_building[1]).push_back(IMG_LoadTexture(ren, "image/house_blue.bmp"));
+    (texture_arr_building[1]).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/house_yellow.png"));
+    (texture_arr_building[1]).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/house_red.png"));
+    (texture_arr_building[1]).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/house_green.png"));
+    (texture_arr_building[1]).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/house_blue.png"));
 
-    (texture_arr_building[2]).push_back(IMG_LoadTexture(ren, "image/house1_yellow.bmp"));
-    (texture_arr_building[2]).push_back(IMG_LoadTexture(ren, "image/house1_red.bmp"));
-    (texture_arr_building[2]).push_back(IMG_LoadTexture(ren, "image/house1_green.bmp"));
-    (texture_arr_building[2]).push_back(IMG_LoadTexture(ren, "image/house1_blue.bmp"));
-
-    
-    (texture_arr_road[0]).push_back(IMG_LoadTexture(ren, "image/road_yellow.bmp"));
-    (texture_arr_road[0]).push_back(IMG_LoadTexture(ren, "image/road_red.bmp"));
-    (texture_arr_road[0]).push_back(IMG_LoadTexture(ren, "image/road_green.bmp"));
-    (texture_arr_road[0]).push_back(IMG_LoadTexture(ren, "image/road_blue.bmp"));
+    (texture_arr_building[2]).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/house1_yellow.png"));
+    (texture_arr_building[2]).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/house1_red.png"));
+    (texture_arr_building[2]).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/house1_green.png"));
+    (texture_arr_building[2]).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/house1_blue.png"));
 
     
-    (texture_arr_road[1]).push_back(IMG_LoadTexture(ren, "image/road1_yellow.bmp"));
-    (texture_arr_road[1]).push_back(IMG_LoadTexture(ren, "image/road1_red.bmp"));
-    (texture_arr_road[1]).push_back(IMG_LoadTexture(ren, "image/road1_green.bmp"));
-    (texture_arr_road[1]).push_back(IMG_LoadTexture(ren, "image/road1_blue.bmp"));
+    (texture_arr_road[0]).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/road_yellow.png"));
+    (texture_arr_road[0]).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/road_red.png"));
+    (texture_arr_road[0]).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/road_green.png"));
+    (texture_arr_road[0]).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/road_blue.png"));
 
     
-    (texture_arr_road[2]).push_back(IMG_LoadTexture(ren, "image/road2_yellow.bmp"));
-    (texture_arr_road[2]).push_back(IMG_LoadTexture(ren, "image/road2_red.bmp"));
-    (texture_arr_road[2]).push_back(IMG_LoadTexture(ren, "image/road2_green.bmp"));
-    (texture_arr_road[2]).push_back(IMG_LoadTexture(ren, "image/road2_blue.bmp"));
+    (texture_arr_road[1]).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/road1_yellow.png"));
+    (texture_arr_road[1]).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/road1_red.png"));
+    (texture_arr_road[1]).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/road1_green.png"));
+    (texture_arr_road[1]).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/road1_blue.png"));
 
-    cur_card_texture = IMG_LoadTexture(ren, "image/cur_card.bmp");
+    
+    (texture_arr_road[2]).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/road2_yellow.png"));
+    (texture_arr_road[2]).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/road2_red.png"));
+    (texture_arr_road[2]).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/road2_green.png"));
+    (texture_arr_road[2]).push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/road2_blue.png"));
+
+    cur_card_texture = IMG_LoadTexture(ren, "/usr/share/CatanImages/cur_card.png");
 
     dice.push_back(nullptr);
-    dice.push_back(IMG_LoadTexture(ren, "image/dice1.bmp"));
-    dice.push_back(IMG_LoadTexture(ren, "image/dice2.bmp"));
-    dice.push_back(IMG_LoadTexture(ren, "image/dice3.bmp"));
-    dice.push_back(IMG_LoadTexture(ren, "image/dice4.bmp"));
-    dice.push_back(IMG_LoadTexture(ren, "image/dice5.bmp"));
-    dice.push_back(IMG_LoadTexture(ren, "image/dice6.bmp"));
+    dice.push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/dice1.png"));
+    dice.push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/dice2.png"));
+    dice.push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/dice3.png"));
+    dice.push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/dice4.png"));
+    dice.push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/dice5.png"));
+    dice.push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/dice6.png"));
 
-    dice_shadow = IMG_LoadTexture(ren, "image/dice_shadow.bmp");
+    dice_shadow = IMG_LoadTexture(ren, "/usr/share/CatanImages/dice_shadow.png");
     table_shadow.push_back(nullptr);
-    table_shadow.push_back(IMG_LoadTexture(ren, "image/table_shadow1.bmp"));
-    table_shadow.push_back(IMG_LoadTexture(ren, "image/table_shadow2.bmp"));
-    table_shadow.push_back(IMG_LoadTexture(ren, "image/table_shadow3.bmp"));
+    table_shadow.push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/table_shadow1.png"));
+    table_shadow.push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/table_shadow2.png"));
+    table_shadow.push_back(IMG_LoadTexture(ren, "/usr/share/CatanImages/table_shadow3.png"));
 
     players_names.push_back("Player 1");
     players_names.push_back("Player 2");
@@ -182,17 +180,14 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     players_names.resize(num_players);
 
 
-    auto font = TTF_OpenFont("image/sample.ttf", 32);
-    sfx = nullptr;
-    sfx = Mix_LoadWAV("image/music.wav");
-    Mix_VolumeChunk(sfx, MIX_MAX_VOLUME / 4);
-    button_sound = Mix_LoadWAV("image/button_sound.wav");
+    auto font = TTF_OpenFont("/usr/share/CatanImages/sample.ttf", 32);
+    sfx = Mix_LoadMUS("/usr/share/CatanImages/music.mp3");
+    button_sound = Mix_LoadWAV("/usr/share/CatanImages/button_sound.wav");
     Mix_VolumeChunk(button_sound, MIX_MAX_VOLUME / 4);
-    build_sound = Mix_LoadWAV("image/build_sound.wav");
+    build_sound = Mix_LoadWAV("/usr/share/CatanImages/build_sound.wav");
     Mix_VolumeChunk(build_sound, MIX_MAX_VOLUME / 12);
-    if (sfx == nullptr)  std::cout << "Hhhh";
-    dice_sound = Mix_LoadWAV("image/dice_sound.wav");
-    Mix_VolumeChunk(dice_sound, MIX_MAX_VOLUME * 20);
+    dice_sound = Mix_LoadWAV("/usr/share/CatanImages/dice_sound.wav");
+    Mix_VolumeChunk(dice_sound, MIX_MAX_VOLUME);
 
     _build_road = Inscription(gui, 423 + 161, 317 + 136 - 2 * 48, "Build Road");
     _build = Inscription(gui, 423 + 161, (373 + 552) / 2 + 373 - 3*48/2, "Build");
@@ -232,9 +227,15 @@ void GUI::loadTextures(utility::Random& random, GUI& gui) {
     message.push_back(SDL_CreateTextureFromSurface(ren, surf));
     SDL_FreeSurface(surf);
 
+    TTF_Font *bigFont = TTF_OpenFont("/usr/share/CatanImages/sample.ttf", 64);
+    SDL_Color cur_color = { 200, 0, 0, 255 };
+    SDL_Surface *yourTurn = TTF_RenderText_Blended(bigFont, "Your Turn", cur_color);
+    yourTurnTexture = SDL_CreateTextureFromSurface(ren, yourTurn);
+    SDL_FreeSurface(surf);
+    TTF_CloseFont(bigFont);
+
     updatePoints(players_points);
     updateResourses(resourses);
-    //std::cerr << "EEEEEEEEEEEEEEEE BOY";
     TTF_CloseFont(font);
 }
 
@@ -245,6 +246,69 @@ void GUI::destroyTextures() { // TODO: Удалять всё, а не тольк
     Mix_CloseAudio();
     SDL_DestroyTexture(back_ground);
     SDL_DestroyTexture(back);
+
+    for (auto& i : cur_texture_arr_road) {
+        SDL_DestroyTexture(i);
+    }
+
+    SDL_DestroyTexture(table);
+    SDL_DestroyTexture(table_1);
+    SDL_DestroyTexture(table_2);
+    SDL_DestroyTexture(table_time);
+
+    SDL_DestroyTexture(svitok);
+
+    for (auto& i : tables_arr) {
+        SDL_DestroyTexture(i);
+    }
+
+    SDL_DestroyTexture(back_resourse);
+
+    for (auto& i : texture_arr_resourses) {
+        SDL_DestroyTexture(i);
+    }
+
+    SDL_DestroyTexture(cur_texture_resourse);
+    SDL_DestroyTexture(texture_resourse_built);
+
+
+    for (auto& i : texture_arr_card) {
+        SDL_DestroyTexture(i);
+    }
+
+    for (auto& i : cur_texture_arr_building) {
+        SDL_DestroyTexture(i);
+    }
+
+    for (auto& o : texture_arr_building) {
+        for (auto& i : o) {
+            SDL_DestroyTexture(i);
+        }
+    }
+
+    for (auto& o : texture_arr_road) {
+        for (auto& i : o) {
+            SDL_DestroyTexture(i);
+        }
+    }
+
+    SDL_DestroyTexture(cur_card_texture);
+
+    for (auto& i : dice) {
+        SDL_DestroyTexture(i);
+    }
+
+    SDL_DestroyTexture(dice_shadow);
+
+    for (auto& i : table_shadow) {
+        SDL_DestroyTexture(i);
+    }
+
+    for (auto& i : message) {
+        SDL_DestroyTexture(i);
+    }
+
+    SDL_DestroyTexture(yourTurnTexture);
 }
 
 void GUI::renderBackground() const {
@@ -372,17 +436,11 @@ void GUI::renderBuildings() {
 
 void GUI::renderCurPlayer(){
     if (my_player == cur_player) {
-        TTF_Font *font = TTF_OpenFont("image/sample.ttf", 64);
-        SDL_Color cur_color = { 200, 0, 0, 255 };
-        SDL_Surface *surf = TTF_RenderText_Blended(font, "Your Turn", cur_color);
-        SDL_Texture *texture = SDL_CreateTextureFromSurface(ren, surf);
-        SDL_FreeSurface(surf);
-        TTF_CloseFont(font);
         SDL_Rect dest;
-        SDL_QueryTexture(texture, nullptr, nullptr, &dest.w, &dest.h);
+        SDL_QueryTexture(yourTurnTexture, nullptr, nullptr, &dest.w, &dest.h);
         dest.x = 1488;
         dest.y = 55;
-        SDL_RenderCopy(ren, texture, nullptr, &dest);
+        SDL_RenderCopy(ren, yourTurnTexture, nullptr, &dest);
     } else render_type = 92;
 }
 
@@ -443,7 +501,7 @@ void GUI::renderResourses() const {
         if (render_type.load() == 67 && it > 4) break;
        if (t.built) {
             SDL_RenderCopy(ren, texture_resourse_built, nullptr, &t.dest);
-            // TTF_Font *font = TTF_OpenFont("image/sample.ttf", 128);
+            // TTF_Font *font = TTF_OpenFont("/usr/share/CatanImages/sample.ttf", 128);
             // SDL_Surface *surf = TTF_RenderText_Blended(font, std::to_string(t.built).c_str(), color);
             // SDL_Texture *texture = SDL_CreateTextureFromSurface(ren, surf);
             // SDL_FreeSurface(surf);
@@ -470,9 +528,9 @@ void GUI::renderResourses() const {
 }
 
 
-SDL_Texture* GUI::Text(const std::string &message) {
-    TTF_Font *font = TTF_OpenFont("image/sample.ttf", 32);
-    SDL_Surface *surf = TTF_RenderText_Blended(font, message.c_str(), color);
+SDL_Texture* GUI::Text(const std::string &mess) {
+    TTF_Font *font = TTF_OpenFont("/usr/share/CatanImages/sample.ttf", 32);
+    SDL_Surface *surf = TTF_RenderText_Blended(font, mess.c_str(), color);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(ren, surf);
     SDL_FreeSurface(surf);
     TTF_CloseFont(font);
@@ -597,12 +655,12 @@ void upgrade(GUI* g) {
         g->makeRender(*g);
 
         if (g->quit.load()) return;
-         frameTime = static_cast<int>(SDL_GetTicks() - frameStart);
-         if (frameDelay - frameTime >= 20) {
-             std::this_thread::sleep_for(std::chrono::milliseconds(frameDelay - frameTime));
-         } else {
-             std::this_thread::sleep_for(std::chrono::milliseconds(20));
-         }
+        frameTime = static_cast<int>(SDL_GetTicks() - frameStart);
+        if (frameDelay - frameTime >= 20) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(frameDelay - frameTime));
+        } else {
+            std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        }
     }
 }
 
@@ -616,12 +674,12 @@ GUI::GUI(int player, int numberOfPlayers) :num_players(numberOfPlayers), my_play
     SDL_GetDesktopDisplayMode(0,&displayMode);
     win = SDL_CreateWindow("Settlers of Catan", 0, 0, displayMode.w, displayMode.h, SDL_WINDOW_FULLSCREEN);
     ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    SDL_SetWindowIcon(win, SDL_LoadBMP("image/robber.bmp"));
+    SDL_SetWindowIcon(win, SDL_LoadBMP("/usr/share/CatanImages/robber.png"));
     players_points.resize(num_players, 0);
     resourses = {2, 0, 4, 4, 2};
     table_time_type.store(-1);
-    auto back = IMG_LoadTexture(ren, "image/standby.bmp");
-    SDL_RenderCopy(ren, back, nullptr, nullptr);
+    auto loadingScreen = IMG_LoadTexture(ren, "/usr/share/CatanImages/standby.png");
+    SDL_RenderCopy(ren, loadingScreen, nullptr, nullptr);
     SDL_RenderPresent(ren);
 }
 
@@ -662,7 +720,6 @@ void GUI::getCoorsRoad() {
                     return;
                 }
                 tmp_coors = returnRoad(x, y);
-                //std::cout << x << ' ' << y << '\n';
                 if (tmp_coors != -1) return;
             }
         }
@@ -746,7 +803,6 @@ Event GUI::ThirdStage () {
                 Mix_PlayChannel(-1, button_sound, 0);
                 int x, y;
                 SDL_GetMouseState(&x, &y);
-                std::cout << x << ' ' << y << '\n';
                 if (x > 161 && x < 423 && y > 136- 48  && y < 317- 48) { // дорога
                     getCoorsRoad();
                     if (render_type.load() == 0) continue;
@@ -817,7 +873,6 @@ Event GUI::SecondStage () {
                 Mix_PlayChannel(-1, button_sound, 0);
                 int x, y;
                 SDL_GetMouseState(&x, &y);
-                //std::cout << x << ' ' << y << '\n';
                 if (x > 161 && x < 423 && y > 136- 48  && y < 317- 48) { // дорога
                     getCoorsResourses();
                     if (render_type.load() == 0) continue;
@@ -969,7 +1024,6 @@ Road_arr::Road_arr() {
                     i * 2, 	j * 2 + 1,
                     NONE, dest, type);
             vec.push_back(tmp);
-//            std::cout << i * 2 << ' ' << j * 2 + 1 << std::endl;
         }
     }
 }
@@ -1030,7 +1084,6 @@ Building_arr::Building_arr() {
                    	t,  j*2 ,
                     NONE, dest, 0);
             //tmp.built = true;
-            //std::cout << t << ' ' << j*2  << '\n';
             vec.push_back(tmp);
         }
     }
@@ -1050,12 +1103,12 @@ void GUI::updatePoints(std::vector<int> vec) {
     std::lock_guard<utility::spinlock> lock(mutex_for_render);
     players_points = vec;
 
-    SDL_Surface* svitok_down = SDL_LoadBMP("image/svitok_down.bmp");
+    SDL_Surface* svitok_down = IMG_Load("/usr/share/CatanImages/svitok_down.png");
    if (svitok_down == nullptr) {
        throw (std::runtime_error("null"));
    }
 
-    TTF_Font *font = TTF_OpenFont("image/sample.ttf", 32);
+    TTF_Font *font = TTF_OpenFont("/usr/share/CatanImages/sample.ttf", 32);
     if (font == nullptr) {
         throw (std::runtime_error("null"));
     }
@@ -1083,12 +1136,12 @@ void GUI::updateResourses(std::vector<int> v) {
     std::lock_guard<utility::spinlock> lock(mutex_for_render);
     resourses = std::move(v);
 
-    SDL_Surface* svitok_up = SDL_LoadBMP("image/svitok_up.bmp");
+    SDL_Surface* svitok_up = IMG_Load("/usr/share/CatanImages/svitok_up.png");
     if (svitok_up == nullptr) {
         throw (std::runtime_error("null"));
     }
 
-    TTF_Font *font = TTF_OpenFont("image/sample.ttf", 32);
+    TTF_Font *font = TTF_OpenFont("/usr/share/CatanImages/sample.ttf", 32);
     if (font == nullptr) {
         throw (std::runtime_error("null"));
     }
@@ -1139,7 +1192,7 @@ void GUI::updateResourses(std::vector<int> v) {
 
 
 void GUI::makeTextureConstTable(std::vector<int>& vec, SDL_Surface* buff, SDL_Texture *&ans, int type) {
-    TTF_Font *font = TTF_OpenFont("image/sample.ttf", 32);
+    TTF_Font *font = TTF_OpenFont("/usr/share/CatanImages/sample.ttf", 32);
     if (font == nullptr) {
         throw (std::runtime_error("null"));
     }
@@ -1326,7 +1379,7 @@ void Robber_arr::render(GUI &gui){
             dest.x = tmp.first;
             dest.y = tmp.second;
             SDL_RenderCopy(gui.ren, texture_oct, nullptr, &dest);
-        } //else std::cerr << "(";
+        }
 
     }
     std::pair<int, int> tmp = get_coors(1, gui);
@@ -1334,7 +1387,7 @@ void Robber_arr::render(GUI &gui){
     dest.y = tmp.second;
     if (tmp.first!=-1 && tmp.second!= -1) {
         SDL_RenderCopy(gui.ren, texture_robber, nullptr, &dest);
-    } //else std::cerr << ")";    
+    }
 }
 
 std::pair<int, int> Robber_arr::get_coors(int type, GUI &gui) {
@@ -1396,8 +1449,8 @@ Robber_arr::Robber_arr (GUI &gui) {
         if (i < 2) {k+=1;tx-= 50*sqrt(3);}
         else {k-=1;tx+= 50*sqrt(3);}
     }
-    texture_oct = IMG_LoadTexture(gui.ren, "image/cur_oct.bmp");
-    texture_robber = IMG_LoadTexture(gui.ren, "image/robber.bmp");
+    texture_oct = IMG_LoadTexture(gui.ren, "/usr/share/CatanImages/cur_oct.png");
+    texture_robber = IMG_LoadTexture(gui.ren, "/usr/share/CatanImages/robber.png");
 }
 
 int GUI::getCoorsRobber(GUI &gui) {
@@ -1504,19 +1557,19 @@ void GUI::getCoorsResourses() {
                 }
                 int it = 0;
                 for (int j = 0; j < static_cast<int>(resourses_img->vec.size()); ++j) {
-                    auto &e = resourses_img->vec[j];
-                    if (e.is(x,y)) {
-                        int tmp = e.built;
+                    auto &res = resourses_img->vec[j];
+                    if (res.is(x,y)) {
+                        int tmp = res.built;
                         for (int i = (it/5)*5; i < 5 + 5*(it/5); ++i){
                             resourses_img->vec[i].built = 0;
                         }
-                        e.built = tmp + 1;
+                        res.built = tmp + 1;
                         if (j/5) {
                             tmp_resourses.second = j - 5;
-                            tmp_resourses_num.second = e.built;
+                            tmp_resourses_num.second = res.built;
                         } else {
                             tmp_resourses.first = j;
-                            tmp_resourses_num.first = e.built;
+                            tmp_resourses_num.first = res.built;
                         }
                         
                         resourses_img->vec[(j+5)%10].built = 0;
@@ -1572,20 +1625,20 @@ int GUI::getCoorsResoursesCards() {
                 }
                 int it = 0;
                 for (int j = 0; j < 5; ++j) {
-                    auto &e = resourses_img->vec[j];
-                    if (e.is(x,y)) {
+                    auto &res = resourses_img->vec[j];
+                    if (res.is(x,y)) {
                         cur_resourse = j;
-                        int tmp = e.built;
+                        int tmp = res.built;
                         for (int i = (it/5)*5; i < 5 + 5*(it/5); ++i){
                             resourses_img->vec[i].built = 0;
                         }
-                        e.built = tmp + 1;
+                        res.built = tmp + 1;
                         if (j/5) {
                             tmp_resourses.second = j - 5;
-                            tmp_resourses_num.second = e.built;
+                            tmp_resourses_num.second = res.built;
                         } else {
                             tmp_resourses.first = j;
-                            tmp_resourses_num.first = e.built;
+                            tmp_resourses_num.first = res.built;
                         }
                         
                         resourses_img->vec[(j+5)%10].built = 0;

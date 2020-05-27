@@ -89,13 +89,13 @@ target_link_libraries(project
     ${SDL2_LIBRARIES}
     ${SDL2_MIXER_LIBRARIES}
     ${SDL2_TTF_LIBRARIES}
-    # /usr/local/lib/libgrpc++_unsecure.a
-    # /usr/local/lib/libgrpc.a
-    # /usr/local/lib/libgrpc++.a
-    # /usr/local/lib/libprotobuf.a
-    # /lib/x86_64-linux-gnu/libpthread.so.0
-    gRPC::grpc++_reflection
-    protobuf::libprotobuf
+    /usr/local/lib/libgrpc++_unsecure.a
+    /usr/local/lib/libgrpc.a
+    /usr/local/lib/libgrpc++.a
+    /usr/local/lib/libprotobuf.a
+    /lib/x86_64-linux-gnu/libpthread.so.0
+    # gRPC::grpc++_reflection
+    # protobuf::libprotobuf
 )
 
 include_directories(Client)
@@ -108,5 +108,5 @@ include_directories(Utility)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
 
-target_compile_options(project PRIVATE -Wall -Werror -Wextra)
+target_compile_options(project PRIVATE)
 

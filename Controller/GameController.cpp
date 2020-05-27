@@ -1,8 +1,6 @@
 #include <memory>
 #include <stdexcept>
 #include <random>
-#include <ctime>
-#include <iostream>
 #include <thread>
 #include <chrono>
  
@@ -83,26 +81,24 @@ void CardHandler::processEvent(Event& event, bool needSend) {
 }
  
 void CardHandler::displayEvent(Event& event) {
-    int Player = event.playerid();
-    auto currentPlayer_ = static_cast<Board::PlayerNum>(Player + 1);
+    static_cast<void>(event);
     gameView_.updatePoints(gameModel_.Catan::getVictoryPoints());
-    if (Player == myTurn_) {
-        std::vector<int> v;
-        auto m = gameModel_.getPlayerResources(static_cast<Board::PlayerNum>(Player + 1));
-        v.push_back(m[Board::Resource::WOOL]);
-        v.push_back(m[Board::Resource::ORE]);
-        v.push_back(m[Board::Resource::CLAY]);
-        v.push_back(m[Board::Resource::TREE]);
-        v.push_back(m[Board::Resource::WHEAT]);
-        gameView_.updateResourses(v);
-    } // TODO: убрать if
-    auto m = gameModel_.getPlayerDevCards(currentPlayer_);
+    std::vector<int> v;
+    auto m = gameModel_.getPlayerResources(static_cast<Board::PlayerNum>(myTurn_ + 1));
+    v.push_back(m[Board::Resource::WOOL]);
+    v.push_back(m[Board::Resource::ORE]);
+    v.push_back(m[Board::Resource::CLAY]);
+    v.push_back(m[Board::Resource::TREE]);
+    v.push_back(m[Board::Resource::WHEAT]);
+    gameView_.updateResourses(v);
+
+    auto m2 = gameModel_.getPlayerDevCards(static_cast<Board::PlayerNum>(myTurn_ + 1));
     std::vector<bool> cards;
-    cards.push_back(m[Board::DevelopmentCard::KNIGHT] != 0);
-    cards.push_back(m[Board::DevelopmentCard::VICTORY_POINT] != 0);
-    cards.push_back(m[Board::DevelopmentCard::ROAD_BUILDING] != 0);
-    cards.push_back(m[Board::DevelopmentCard::MONOPOLY] != 0);
-    cards.push_back(m[Board::DevelopmentCard::INVENTION] != 0);
+    cards.push_back(m2[Board::DevelopmentCard::KNIGHT] != 0);
+    cards.push_back(m2[Board::DevelopmentCard::VICTORY_POINT] != 0);
+    cards.push_back(m2[Board::DevelopmentCard::ROAD_BUILDING] != 0);
+    cards.push_back(m2[Board::DevelopmentCard::MONOPOLY] != 0);
+    cards.push_back(m2[Board::DevelopmentCard::INVENTION] != 0);
     gameView_.updateDevCards(cards);
 }
  
@@ -186,14 +182,12 @@ void MarketHandler::processEvent(Event& event, bool needSend) {
  
     auto reTo = static_cast<Board::Resource>(++requiredResource_);
     auto reFrom = static_cast<Board::Resource>(++ownedResource_);
-    std::cout << "requiredResource " << requiredResource_ << std::endl;
-    std::cout << "ownedResource " << ownedResource_ << std::endl;
    
     if (gameModel_.trade(reFrom, reTo)) {
         if (needSend) {
             sendEvent(event);
         }
-    } else {
+    } else if (Player == myTurn_ + 1) {
         gameView_.setTable(2);
     }
 
@@ -237,13 +231,12 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
     auto type = static_cast<Board::BuildingType>(buildingType_);
 
     if (type == Board::BuildingType::DevCard) {
-        std::cout << "Card" << std::endl << std::endl;
         if (gameModel_.buildDevCard() != Board::DevelopmentCard::NONE) {
             displayEvent(event);
             if (needSend) {
                 sendEvent(event);
             }
-        } else {
+        } else if (Player == myTurn_ + 1) {
             gameView_.setTable(2);
         }
     } else {
@@ -254,9 +247,9 @@ void BuildHandler::processEvent(Event& event, bool needSend) {
                 sendEvent(event);
             }
         } else if (!gameModel_.checkCards(type)) {
-            gameView_.setTable(2);
+            if (Player == myTurn_ + 1) gameView_.setTable(2);
         } else if (!gameModel_.canBuild(type, x_, y_)){
-            gameView_.setTable(0);
+            if (Player == myTurn_ + 1) gameView_.setTable(0);
         }
     }
 }
@@ -365,7 +358,6 @@ GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI
     , gameClient_(client)
     , myTurn_(info.id())
     , numberOfPlayers_(info.numberofplayers()) {
-    std::cout << "My turn is " << myTurn_ << ", numOfPl " << numberOfPlayers_ << std::endl;
  
     for (int k = 0; k < 7; ++k) {
         handlers_.push_back(nullptr);
@@ -381,7 +373,6 @@ GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI
  
  
 void GameController::RunGame() {
-    std::cout << myTurn_ << std::endl;
      if (BeginGame()) {
          return;
      }
@@ -417,7 +408,6 @@ void GameController::RunGame() {
         } else {
             while (true) {
                 if (!gameClient_.HasEvent()) {
-                    std::cout << "I'm sleeping" << std::endl;
                     std::this_thread::sleep_for(std::chrono::seconds(1));
                     continue;
                 }
@@ -490,7 +480,6 @@ bool GameController::BeginGame() {
         } else {
             while (true) {
                 if (!gameClient_.HasEvent()) {
-                    std::cout << "I'm sleeping" << std::endl;
                     std::this_thread::sleep_for(std::chrono::seconds(1));
                     continue;
                 }

@@ -4,7 +4,6 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_ttf.h>
-#include <iostream>
 #include <random>
 #include <time.h>
 #include <mutex>
@@ -137,9 +136,9 @@ public:
 
 class Image {
 public:
-    explicit Image(std::string s, SDL_Renderer *ren);
-    explicit Image(std::string s, int x, int y, int w, int h, SDL_Renderer *ren);
-    explicit Image(std::string s, SDL_Rect _dest, SDL_Renderer *ren);
+    explicit Image(const std::string& s, SDL_Renderer *ren);
+    explicit Image(const std::string& s, int x, int y, int w, int h, SDL_Renderer *ren);
+    explicit Image(const std::string& s, SDL_Rect _dest, SDL_Renderer *ren);
     ~Image();
     void render(SDL_Renderer *ren, SDL_Rect _dest);
     void render(SDL_Renderer *ren);
@@ -147,36 +146,6 @@ private:
     SDL_Texture *texture{};
     SDL_Rect dest{};
 };
-
-void Image::render(SDL_Renderer *ren) {
-    SDL_RenderCopy(ren, texture, nullptr, &dest);
-}
-
-void Image::render(SDL_Renderer *ren, SDL_Rect _dest) {
-    dest = _dest;
-    render(ren);
-}
-
-Image::Image(std::string s, SDL_Renderer *ren){
-    texture = IMG_LoadTexture(ren, s.c_str());
-}
-
-Image::Image(std::string s, int x, int y, int w, int h, SDL_Renderer *ren) {
-    texture = IMG_LoadTexture(ren, s.c_str());
-    dest.x = x;
-    dest.y = y;
-    dest.w = w;
-    dest.h = h;
-}
-
-Image::Image(std::string s, SDL_Rect _dest, SDL_Renderer *ren) {
-    texture = IMG_LoadTexture(ren, s.c_str());
-    dest = _dest;
-}
-
-Image::~Image() {
-    SDL_DestroyTexture(texture);
-}
 
 class ImageArr {
 public:
@@ -198,6 +167,10 @@ public:
     SDL_Texture *texture;
     Inscription(GUI& gui, int _x, int _y, const std::string &s);
     Inscription() = default;
+
+//    ~Inscription() {
+//        SDL_DestroyTexture(texture);
+//    }
 };
 
 
@@ -216,7 +189,8 @@ public:
     Building_arr *buildings = nullptr;
     std::pair<std::atomic<int>, std::atomic<int>> tmp_road;
 
-    Mix_Chunk *sfx, *button_sound, *build_sound, *dice_sound;
+    Mix_Music *sfx;
+    Mix_Chunk *button_sound, *build_sound, *dice_sound;
     std::pair<SDL_Texture*, int> cur_table;
     SDL_Texture *back, *back_ground, *oct, *cur_road, *cur_road1,
             *cur_road2, *table, *table_1, *table_2, *cur_card_texture,
@@ -280,6 +254,9 @@ public:
     SDL_Texture* back_resourse;
     SDL_Texture *texture_svitok_up, *texture_svitok_down;
     SDL_Texture *dice_shadow;
+
+    SDL_Texture* yourTurnTexture;
+
     std::vector<SDL_Texture *> table_shadow;
     std::vector<SDL_Texture *> texture_arr_card;
     void makeTextureConstTable(std::vector<int>& vec, SDL_Surface* buff, SDL_Texture *&ans, int type);
