@@ -31,6 +31,7 @@
 $ xhost local:root
 $ sudo docker run -e DISPLAY=unix$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -it -v /dev/snd:/dev/snd --privileged ubuntu:18.04
 $ apt-get update
+$ apt-get install wget
 $ cd home
 $ wget https://github.com/KaperD/HSE-C-Project--Settlers-of-Catan/raw/cmake/Build/Catan_1.1_amd64.deb
 $ apt install ./Catan_1.1_amd64.deb
