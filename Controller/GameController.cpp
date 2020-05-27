@@ -95,7 +95,7 @@ void CardHandler::displayEvent(Event& event) {
         v.push_back(m[Board::Resource::TREE]);
         v.push_back(m[Board::Resource::WHEAT]);
         gameView_.updateResourses(v);
-    }
+    } // TODO: убрать if
     auto m = gameModel_.getPlayerDevCards(currentPlayer_);
     std::vector<bool> cards;
     cards.push_back(m[Board::DevelopmentCard::KNIGHT] != 0);
@@ -285,7 +285,19 @@ void BuildHandler::displayEvent(Event& event) {
         v.push_back(m[Board::Resource::TREE]);
         v.push_back(m[Board::Resource::WHEAT]);
         gameView_.updateResourses(v);
+
+
+        auto m1 = gameModel_.getPlayerDevCards(static_cast<Board::PlayerNum>(Player + 1));
+        std::vector<bool> cards;
+        cards.push_back(m1[Board::DevelopmentCard::KNIGHT] != 0);
+        cards.push_back(m1[Board::DevelopmentCard::VICTORY_POINT] != 0);
+
+        cards.push_back(m1[Board::DevelopmentCard::ROAD_BUILDING] != 0);
+        cards.push_back(m1[Board::DevelopmentCard::MONOPOLY] != 0);
+        cards.push_back(m1[Board::DevelopmentCard::INVENTION] != 0);
+        gameView_.updateDevCards(cards);
     }
+
 }
  
  
@@ -312,6 +324,7 @@ void EndTurnHandler::displayEvent(Event& event) {
 //===============NextPhaseHandler===============
  
 void NextPhaseHandler::processEvent(Event& event, bool needSend) {
+    static_cast<void>(needSend);
     if (event.type() != EventType::NEXTPHASE) {
         throw std::logic_error("Wrong type");
     }
@@ -369,9 +382,11 @@ GameController::GameController(Board::Catan& model, GameClient& client, GUI::GUI
  
 void GameController::RunGame() {
     std::cout << myTurn_ << std::endl;
-    //  if (BeginGame()) {
-    //      return;
-    //  }
+     if (BeginGame()) {
+         return;
+     }
+
+
     gameModel_.gotoNextGamePhase();
     bool quit = false;
     while (!quit) {
@@ -379,7 +394,7 @@ void GameController::RunGame() {
 
         if (currentTurn_ == myTurn_) {
             while (true) {
-                Event event = gameView_.getEvent(gameView_);
+                Event event = gameView_.getEvent();
                 int x = event.type();
                 event.set_playerid(myTurn_);
                 handlers_[x]->processEvent(event, true);
@@ -436,12 +451,12 @@ bool GameController::BeginGame() {
         } else {
             currentTurn_ = turn;
         }
-        gameView_.updatePlayer(turn);
+        gameView_.updatePlayer(currentTurn_);
         roadIsSet = false;
         villageIsSet = false;
         if (currentTurn_ == myTurn_) {
             while (true) {
-                Event event = gameView_.ThirdStage(gameView_);
+                Event event = gameView_.ThirdStage();
                 int x = event.type();
                 event.set_playerid(myTurn_);
                 if (x == EventType::BUILD) {

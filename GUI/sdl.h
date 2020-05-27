@@ -111,6 +111,12 @@ public:
     std::vector<Obj> vec;
 };
 
+class Stage {
+public:
+
+private:
+
+};
 
 class Robber_arr {
 public:
@@ -129,6 +135,55 @@ public:
     void set (int x);
 };
 
+class Image {
+public:
+    explicit Image(std::string s, SDL_Renderer *ren);
+    explicit Image(std::string s, int x, int y, int w, int h, SDL_Renderer *ren);
+    explicit Image(std::string s, SDL_Rect _dest, SDL_Renderer *ren);
+    ~Image();
+    void render(SDL_Renderer *ren, SDL_Rect _dest);
+    void render(SDL_Renderer *ren);
+private:
+    SDL_Texture *texture{};
+    SDL_Rect dest{};
+};
+
+void Image::render(SDL_Renderer *ren) {
+    SDL_RenderCopy(ren, texture, nullptr, &dest);
+}
+
+void Image::render(SDL_Renderer *ren, SDL_Rect _dest) {
+    dest = _dest;
+    render(ren);
+}
+
+Image::Image(std::string s, SDL_Renderer *ren){
+    texture = IMG_LoadTexture(ren, s.c_str());
+}
+
+Image::Image(std::string s, int x, int y, int w, int h, SDL_Renderer *ren) {
+    texture = IMG_LoadTexture(ren, s.c_str());
+    dest.x = x;
+    dest.y = y;
+    dest.w = w;
+    dest.h = h;
+}
+
+Image::Image(std::string s, SDL_Rect _dest, SDL_Renderer *ren) {
+    texture = IMG_LoadTexture(ren, s.c_str());
+    dest = _dest;
+}
+
+Image::~Image() {
+    SDL_DestroyTexture(texture);
+}
+
+class ImageArr {
+public:
+
+private:
+    std::vector<Image> vec;
+};
 
 class Resourses_arr {
 public:
@@ -199,7 +254,7 @@ public:
     std::atomic<int> tmp_card;
     std::atomic<int> cur_card;
 
-    
+
 
     std::atomic<bool> quit { false };
     int  end_time_dice = 0;
@@ -217,7 +272,7 @@ public:
     std::atomic<int> dice2 { 0 };
 
     SDL_Texture *ppp;
-    
+
 
     SDL_Color color = { 243, 195, 79, 255 };
     SDL_Color color_const_table = { 79, 51, 14, 255 };
@@ -249,10 +304,10 @@ public:
                 _4_Players, _type_game_id, _exchange, _resources, _next_phase;
 
     ::game::Event FirstStage();
-    ::game::Event ThirdStage(GUI &gui);
-    ::game::Event SecondStage (GUI &gui);
+    ::game::Event ThirdStage();
+    ::game::Event SecondStage ();
 
-    ::game::Event getEvent(GUI &gui);
+    ::game::Event getEvent();
 
     void addRoad(std::pair<int, int> tmp, int player);
     void addBuilding(std::pair<int, int> tmp, int player);
