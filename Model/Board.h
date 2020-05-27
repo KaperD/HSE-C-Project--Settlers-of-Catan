@@ -9,7 +9,6 @@
 namespace Board {
 
 constexpr int TERRITORIESNUM = 5;
-constexpr int VERTEXNUM = 54;
 constexpr int FIELDHEIGHT = 11;
 constexpr int FIELDWIDTH = 21;
 constexpr int HEXESNUM = 19;
@@ -115,7 +114,6 @@ public:
     int getVictoryPoints() const;
     int getKnightsNum() const;
     int getResourceNum(Resource re) const;
-    int getDevCardNum(DevelopmentCard dev_card) const;
     auto& getResources() const;
     auto& getDevCards() const;
 
@@ -137,40 +135,28 @@ public:
     void giveResources(int cubes_num);
     Resource setRobbers(int hex_num);
 
-    //возвращает true, если торговля прошла успешно, false, если не хватило ресурсов на обмен
     bool trade(Resource re_for_trade, Resource need_re);
-    //TODO: доработать логику торговли с другими игроками, сейчас пока сыро
-    void tradeWith(PlayerNum customerID, Resource re_for_trade, int tradeReNum, Resource need_re, int needReNum);
 
-    //возвращает NONE, если что-то пошло не так
     DevelopmentCard buildDevCard();
-    //TODO: разобрать случай с постройкой дорог
     void playDevCard(DevelopmentCard card, int extraData);
 
     bool canBuild(BuildingType mod, int x, int y) const;
     bool checkCards(BuildingType building);
 
     int getPlayerResNum(PlayerNum playerID, Resource re) const;
-    int getPlayerDevCardNum(PlayerNum playerID, DevelopmentCard devCard) const;
     const std::unordered_map<Resource, int>& getPlayerResources(PlayerNum playerID) const;
     const std::unordered_map<DevelopmentCard, int>& getPlayerDevCards(PlayerNum playerID) const;
     std::vector<int> getVictoryPoints() const;
     const std::unique_ptr<Cell>& getFieldCell(int x, int y) const;
     const std::unique_ptr<Hexagon>& getHex(int indx) const;
-    PlayerNum getCurPlayer() const;
     int getRobbersIndx() const;
 
     void changeCurPlayer(PlayerNum new_player);
-    void nextPlayer();
 
     int getRoadsRecord() const;
     PlayerNum getRoadsRecordHolder() const;
-    int getKnightRecord() const;
-    PlayerNum getKnightRecordHolder() const;
-    void setKnightRecord(int new_record);
 
     void gotoNextGamePhase();
-    bool isBeginning() const;
     bool isFinished();
 
 private:
@@ -192,6 +178,8 @@ private:
             PlayerNum::GAMER2, PlayerNum::GAMER3,
             PlayerNum::GAMER4
     };
+
+    void setKnightRecord(int new_record);
 
     int findRoadsRecord(const std::unique_ptr<Cell>& v);
     void setRoadsRecord(int new_record);

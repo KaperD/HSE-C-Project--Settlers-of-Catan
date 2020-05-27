@@ -16,11 +16,11 @@ static bool check(int x, int y) {
 //===============Player===================
 
 Player::Player(PlayerNum id) : id(id), victory_points(0) {
-    cards[Resource::WOOL] = 10;
-    cards[Resource::ORE] = 10;
-    cards[Resource::CLAY] = 10;
-    cards[Resource::TREE] = 10;
-    cards[Resource::WHEAT] = 10;
+    cards[Resource::WOOL] = 2;
+    cards[Resource::ORE] = 0;
+    cards[Resource::CLAY] = 4;
+    cards[Resource::TREE] = 4;
+    cards[Resource::WHEAT] = 2;
 
     dev_cards[DevelopmentCard::KNIGHT] = 0;
     dev_cards[DevelopmentCard::ROAD_BUILDING] = 0;
@@ -74,10 +74,6 @@ void Player::delDevCard(DevelopmentCard dev_card) {
 
 int Player::getResourceNum(Resource re) const {
     return cards[re];
-}
-
-int Player::getDevCardNum(DevelopmentCard dev_card) const {
-    return dev_cards[dev_card];
 }
 
 auto& Player::getResources() const {
@@ -159,7 +155,6 @@ Vertex::Vertex(int x, int y, bool direction) : Cell(BuildingType::VILLAGE) {
 //===============Road=================
 
 Road::Road(int x, int y, bool is_horizontal, bool is_even) : Cell(BuildingType::ROAD) {
-    //TODO: рефакторинг на свой страх и риск
     if (is_horizontal) {
         vertexes.emplace_back(x, y - 1);
         vertexes.emplace_back(x, y + 1);
@@ -312,10 +307,6 @@ const std::unique_ptr<Hexagon>& Catan::getHex(int indx) const {
 
 void Catan::gotoNextGamePhase() {
     is_beginning = false;
-}
-
-bool Catan::isBeginning() const {
-    return is_beginning;
 }
 
 bool Catan::canBuild(BuildingType mod, int x, int y) const {
@@ -537,22 +528,6 @@ void Catan::changeCurPlayer(PlayerNum new_player) {
     cur_player = new_player;
 }
 
-void Catan::nextPlayer() {
-    int curInd = 0;
-    for (int i = 1; i <= gamersNum; i++) {
-        if (playersIDs[i] == cur_player) curInd = i;
-    }
-    if (curInd == gamersNum) {
-        cur_player = PlayerNum::GAMER1;
-        return;
-    }
-    cur_player = playersIDs[curInd + 1];
-}
-
-PlayerNum Catan::getCurPlayer() const {
-    return cur_player;
-}
-
 void Catan::giveResources(int cubes_num) {
     for (int i = 0; i < HEXESNUM; i++) {
         if (cubes_num != hexes[i]->getNum() || hexes[i]->robbersIsHere()) continue;
@@ -587,18 +562,6 @@ bool Catan::trade(Resource re_for_trade, Resource need_re) {
     return true;
 }
 
-void Catan::tradeWith(PlayerNum customerID, Resource re_for_trade, int tradeReNum, Resource need_re, int needReNum) {
-    players[customerID]->getResource(need_re, needReNum);
-    players[customerID]->giveResource(re_for_trade, tradeReNum);
-
-    players[cur_player]->getResource(re_for_trade, tradeReNum);
-    players[cur_player]->giveResource(need_re, needReNum);
-}
-
-int Catan::getPlayerDevCardNum(PlayerNum playerID, DevelopmentCard devCard) const {
-    return players[playerID]->getDevCardNum(devCard);
-}
-
 const std::unordered_map<DevelopmentCard, int>& Catan::getPlayerDevCards(PlayerNum playerID) const {
     return players[playerID]->getDevCards();
 }
@@ -628,8 +591,7 @@ void Catan::playDevCard(DevelopmentCard card, int extraData) {
         setRobbers(extraData);
         players[cur_player]->incrArmy();
         if (players[cur_player]->getKnightsNum() > knights_record) {
-            knights_record = players[cur_player]->getKnightsNum();
-            last_knights_record_holder = cur_player;
+            setKnightRecord(knights_record = players[cur_player]->getKnightsNum());
         }
     }
     if (card == DevelopmentCard::VICTORY_POINT) {
@@ -663,14 +625,6 @@ int Catan::getRoadsRecord() const {
 
 PlayerNum Catan::getRoadsRecordHolder() const {
     return last_roads_record_holder;
-}
-
-int Catan::getKnightRecord() const {
-    return knights_record;
-}
-
-PlayerNum Catan::getKnightRecordHolder() const {
-    return last_knights_record_holder;
 }
 
 void Catan::setRoadsRecord(int new_record) {

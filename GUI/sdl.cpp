@@ -44,6 +44,36 @@ void playMusic(GUI* gui) {
     }
 }
 
+void Image::render(SDL_Renderer *ren) {
+    SDL_RenderCopy(ren, texture, nullptr, &dest);
+}
+
+void Image::render(SDL_Renderer *ren, SDL_Rect _dest) {
+    dest = _dest;
+    render(ren);
+}
+
+Image::Image(std::string s, SDL_Renderer *ren){
+    texture = IMG_LoadTexture(ren, s.c_str());
+}
+
+Image::Image(std::string s, int x, int y, int w, int h, SDL_Renderer *ren) {
+    texture = IMG_LoadTexture(ren, s.c_str());
+    dest.x = x;
+    dest.y = y;
+    dest.w = w;
+    dest.h = h;
+}
+
+Image::Image(std::string s, SDL_Rect _dest, SDL_Renderer *ren) {
+    texture = IMG_LoadTexture(ren, s.c_str());
+    dest = _dest;
+}
+
+Image::~Image() {
+    SDL_DestroyTexture(texture);
+}
+
 void GUI::loadTextures(utility::Random& random, GUI& gui) {
     auto randomResouresAndNumbers = random.generateResourcesAndNumbers();
     std::string s = "image/oct .bmp";
