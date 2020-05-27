@@ -200,7 +200,7 @@ TEST(RoadsRecord, cycle_level3_boss) {
     ASSERT_EQ(board.getRoadsRecordHolder(), PlayerNum::GAMER1);
     ASSERT_EQ(board.getRoadsRecord(), 15);
 }
-TEST(RoadsRecord, cycle_level_death1) { //СМЕРТЬ
+TEST(RoadsRecord, cycle_level_death1) {
     Random random(time(nullptr));
     Catan board(random, 2);
     board.settle(BuildingType::VILLAGE, 4 ,8);
@@ -220,7 +220,7 @@ TEST(RoadsRecord, cycle_level_death1) { //СМЕРТЬ
     board.settle(BuildingType::ROAD, 6, 15);
 
     ASSERT_EQ(board.getRoadsRecordHolder(), PlayerNum::GAMER1);
-    ASSERT_EQ(board.getRoadsRecord(), 8); //must be 9, but (((
+    ASSERT_EQ(board.getRoadsRecord(), 8);
 }
 
 TEST(RoadsRecord, cycle_level_death2) {
