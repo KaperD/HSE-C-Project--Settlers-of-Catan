@@ -4,7 +4,6 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_ttf.h>
-#include <iostream>
 #include <random>
 #include <time.h>
 #include <mutex>
@@ -111,6 +110,12 @@ public:
     std::vector<Obj> vec;
 };
 
+class Stage {
+public:
+
+private:
+
+};
 
 class Robber_arr {
 public:
@@ -129,6 +134,25 @@ public:
     void set (int x);
 };
 
+class Image {
+public:
+    explicit Image(const std::string& s, SDL_Renderer *ren);
+    explicit Image(const std::string& s, int x, int y, int w, int h, SDL_Renderer *ren);
+    explicit Image(const std::string& s, SDL_Rect _dest, SDL_Renderer *ren);
+    ~Image();
+    void render(SDL_Renderer *ren, SDL_Rect _dest);
+    void render(SDL_Renderer *ren);
+private:
+    SDL_Texture *texture{};
+    SDL_Rect dest{};
+};
+
+class ImageArr {
+public:
+
+private:
+    std::vector<Image> vec;
+};
 
 class Resourses_arr {
 public:
@@ -143,6 +167,10 @@ public:
     SDL_Texture *texture;
     Inscription(GUI& gui, int _x, int _y, const std::string &s);
     Inscription() = default;
+
+//    ~Inscription() {
+//        SDL_DestroyTexture(texture);
+//    }
 };
 
 
@@ -161,7 +189,8 @@ public:
     Building_arr *buildings = nullptr;
     std::pair<std::atomic<int>, std::atomic<int>> tmp_road;
 
-    Mix_Chunk *sfx, *button_sound, *build_sound, *dice_sound;
+    Mix_Music *sfx;
+    Mix_Chunk *button_sound, *build_sound, *dice_sound;
     std::pair<SDL_Texture*, int> cur_table;
     SDL_Texture *back, *back_ground, *oct, *cur_road, *cur_road1,
             *cur_road2, *table, *table_1, *table_2, *cur_card_texture,
@@ -225,6 +254,9 @@ public:
     SDL_Texture* back_resourse;
     SDL_Texture *texture_svitok_up, *texture_svitok_down;
     SDL_Texture *dice_shadow;
+
+    SDL_Texture* yourTurnTexture;
+
     std::vector<SDL_Texture *> table_shadow;
     std::vector<SDL_Texture *> texture_arr_card;
     void makeTextureConstTable(std::vector<int>& vec, SDL_Surface* buff, SDL_Texture *&ans, int type);
@@ -249,10 +281,10 @@ public:
                 _4_Players, _type_game_id, _exchange, _resources, _next_phase;
 
     ::game::Event FirstStage();
-    ::game::Event ThirdStage(GUI &gui);
-    ::game::Event SecondStage (GUI &gui);
+    ::game::Event ThirdStage();
+    ::game::Event SecondStage ();
 
-    ::game::Event getEvent(GUI &gui);
+    ::game::Event getEvent();
 
     void addRoad(std::pair<int, int> tmp, int player);
     void addBuilding(std::pair<int, int> tmp, int player);
